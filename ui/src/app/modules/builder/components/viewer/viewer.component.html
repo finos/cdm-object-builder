@@ -1,0 +1,18 @@
+<div class="viewer">
+  <div class="controls">
+    <mat-button-toggle-group #group="matButtonToggleGroup">
+      <mat-button-toggle value="tabular" checked>Tabular</mat-button-toggle>
+      <mat-button-toggle value="json">JSON</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div [ngSwitch]="group.value">
+    <div class="json" *ngSwitchCase="'json'">
+      <pre>{{ cdmJson | json }}</pre>
+    </div>
+    <app-tabular-view
+      *ngSwitchCase="'tabular'"
+      [cdmJson]="cdmJson"
+    ></app-tabular-view>
+  </div>
+</div>

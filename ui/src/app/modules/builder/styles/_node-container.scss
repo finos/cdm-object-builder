@@ -1,0 +1,11 @@
+.node-container {
+  min-height: var(--min-node-height);
+  display: flex;
+  flex-direction: row;
+  border: 1px solid var(--border-color);
+  padding: 8px 4px 8px 8px;
+  app-node-details {
+    width: 100%;
+    padding-left: 40px;
+  }
+}

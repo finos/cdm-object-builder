@@ -1,0 +1,22 @@
+<div class="container" *ngIf="breadcrumbs$ | async as breadcrumbs">
+  <ng-container *ngFor="let breadcrumb of breadcrumbs; first as isFirst">
+    <ng-container
+      [ngTemplateOutlet]="isFirst ? noLinkSpan : linkSpan"
+      [ngTemplateOutletContext]="{ breadcrumb: breadcrumb }"
+    >
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #noLinkSpan let-breadcrumb="breadcrumb">
+  <span>{{ breadcrumb.type.name }}</span>
+</ng-template>
+
+<ng-template #linkSpan let-breadcrumb="breadcrumb"
+  ><span>
+    ->
+    <a href="javascript: void(0);" (click)="breadcrumbClick(breadcrumb)">{{
+      breadcrumb.definition.name
+    }}</a></span
+  ></ng-template
+>

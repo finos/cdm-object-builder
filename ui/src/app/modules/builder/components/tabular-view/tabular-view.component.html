@@ -1,0 +1,14 @@
+<div class="transpose-toggle">
+  <mat-slide-toggle color="primary" (toggleChange)="toggleTranspose()"
+    >Transpose</mat-slide-toggle
+  >
+</div>
+<div class="grid" [ngStyle]="gridData.style">
+  <div
+    *ngFor="let item of gridData.items"
+    [ngStyle]="item.style"
+    [class.leaf]="item.leaf"
+  >
+    {{ item.name }}
+  </div>
+</div>

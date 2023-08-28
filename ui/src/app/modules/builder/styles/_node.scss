@@ -1,0 +1,21 @@
+@import "./node-container";
+
+:host {
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+  flex-direction: row;
+
+  .spacer {
+    width: 40px;
+  }
+
+  app-duplicate-sub-tree {
+    align-self: center;
+  }
+  app-delete {
+    align-self: center;
+  }
+}

@@ -1,0 +1,18 @@
+<div class="node-container">
+  <app-node-details [jsonAttributeNode]="jsonAttributeNode">
+    <div *ngFor="let value of values; index as i; trackBy: trackBy">
+      <mat-form-field appearance="standard" class="input-field">
+        <input matInput [(ngModel)]="values[i]" />
+      </mat-form-field>
+      <app-stacked-node-controls
+        [jsonAttributeNode]="jsonAttributeNode"
+        [currentNodeIndex]="i"
+        [siblingCount]="values.length"
+      ></app-stacked-node-controls>
+    </div>
+  </app-node-details>
+  <div class="controls">
+    <div class="spacer"></div>
+    <app-delete [jsonAttributeNode]="jsonAttributeNode"></app-delete>
+  </div>
+</div>

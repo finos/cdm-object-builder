@@ -1,0 +1,15 @@
+<div class="controls">
+  <div class="model-details">
+    <span>{{ $modelName | async }}</span>
+    <span>{{ $modelVersion | async }}</span>
+  </div>
+</div>
+
+<mat-tab-group (selectedTabChange)="viewer.refreshViewer()">
+  <mat-tab label="Builder">
+    <app-builder></app-builder>
+  </mat-tab>
+  <mat-tab label="Viewer">
+    <app-viewer #viewer></app-viewer>
+  </mat-tab>
+</mat-tab-group>

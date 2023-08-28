@@ -1,0 +1,10 @@
+::ng-deep .add-attribute-menu {
+  max-width: 50vw !important;
+  .mat-menu-item {
+    height: initial;
+  }
+
+  .mat-menu-item:not(:last-child) {
+    border-bottom: 1px solid lightgray;
+  }
+}

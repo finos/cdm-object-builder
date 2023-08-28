@@ -1,0 +1,98 @@
+@import "../../styles/node-container";
+
+:host {
+  position: relative;
+}
+
+.root-container {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  background-color: white;
+  border-bottom: 1px solid var(--border-color);
+
+  .root-content {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .description {
+      padding-left: 20px;
+      width: 40vw;
+      font-size: 0.8em;
+    }
+
+    .controls {
+      margin-left: auto;
+      padding-right: 10px;
+
+      input {
+        display: none;
+      }
+
+      fa-icon {
+        padding-right: 10px;
+      }
+    }
+  }
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  margin-top: -1px;
+  background-clip: content-box, padding-box;
+  background-image: linear-gradient(to bottom, white 0%, white 100%),
+    linear-gradient(
+      to bottom,
+      var(--background-color) 0%,
+      var(--background-color) 100%
+    );
+
+  .expand-toggle {
+    width: 20px;
+    flex: 0 0 20px;
+    box-sizing: border-box;
+    background-color: var(--light-purple);
+    align-self: stretch;
+    border-top: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.tree {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.raw-viewer {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.node-component-container {
+  cursor: pointer;
+  width: 100%;
+
+  &.node-hover {
+    background: var(--light-purple-hover);
+    transition: background 0.3s ease-in-out;
+  }
+
+  &.node-selected {
+    margin: -1px;
+    background: var(--light-purple-select);
+    cursor: default;
+    border: 1px solid var(--primary-color);
+    z-index: 1;
+  }
+}

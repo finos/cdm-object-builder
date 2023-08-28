@@ -1,0 +1,14 @@
+<span *ngIf="isMultiCardinality && siblingCount > 1"
+  ><button
+    mat-icon-button
+    (click)="deleteValue(currentNodeIndex)"
+    color="primary"
+  >
+    <fa-icon [icon]="faTrashCan" size="sm"></fa-icon>
+  </button>
+</span>
+<span *ngIf="isMultiCardinality && currentNodeIndex === siblingCount - 1">
+  <button mat-icon-button (click)="addValue()" color="primary">
+    <fa-icon [icon]="faPlus" size="sm"></fa-icon>
+  </button>
+</span>

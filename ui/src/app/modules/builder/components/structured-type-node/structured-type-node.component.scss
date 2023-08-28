@@ -1,0 +1,24 @@
+@import "../../styles/node";
+
+.node-container {
+  app-node-details {
+    padding-left: 0;
+  }
+}
+
+.mat-menu-item {
+  :not(&[disabled="true"]) {
+    .menu-item-icon,
+    .menu-item-label {
+      color: var(--primary-color);
+    }
+  }
+
+  .menu-item-label {
+    padding-left: 10px;
+  }
+}
+
+input {
+  display: none;
+}
