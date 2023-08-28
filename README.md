@@ -2,13 +2,13 @@
 
 # Object Builder
 
-This project is a utility tool for dynamically generating Common Domain Model<sup>(TM)</sup> (CDM)  objects using a visual UI builder which can then be reviewed. 
+This project is a utility tool for dynamically generating Common Domain Model<sup>TM</sup> (CDM)  objects using a visual UI builder which can then be reviewed. 
 
-The tool provides functionality for navigating the CDM<sup>(TM)</sup> starting at a root type and traversing its nodes (attributes) to build up an object visually in the user interface.
+The tool provides functionality for navigating the CDM<sup>TM</sup> starting at a root type and traversing its nodes (attributes) to build up an object visually in the user interface.
 
-The version of the CDM<sup>(TM)</sup> used is fixed at build time in the model file ./ui/src/app/modules/builder/services/builder-api.model.ts. 
+The version of the CDM<sup>TM</sup> used is fixed at build time in the model file ./ui/src/app/modules/builder/services/builder-api.model.ts. 
 
-The Common Domain Model<sup>(TM)</sup> is a registered trademark of FINOS. For more information please visit https://cdm.finos.org/
+The Common Domain Model<sup>TM</sup> is a registered trademark of FINOS. For more information please visit https://cdm.finos.org/
 
 ## Installation
 
