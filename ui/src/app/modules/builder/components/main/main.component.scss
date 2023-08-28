@@ -1,0 +1,32 @@
+.controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+
+  .model-details {
+    padding-left: 10px;
+    padding-top: 10px;
+    span {
+      padding-right: 10px;
+    }
+  }
+
+  .root-node-selector {
+    ::ng-deep .mat-form-field-wrapper {
+      margin-bottom: -1.25em;
+    }
+  }
+}
+
+mat-tab-group {
+  height: calc(100% - 95px);
+}
+
+::ng-deep .mat-tab-body-active {
+  background-color: var(--background-color);
+}
+
+::ng-deep .mat-tab-body-wrapper {
+  height: 100%;
+}

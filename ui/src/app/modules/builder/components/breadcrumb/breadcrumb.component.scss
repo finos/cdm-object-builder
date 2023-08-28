@@ -1,0 +1,19 @@
+:host {
+  font-size: 0.8em;
+  display: block;
+  border-top: 1px solid var(--border-color);
+
+  .container {
+    padding-left: 24px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  a {
+    color: black;
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+}

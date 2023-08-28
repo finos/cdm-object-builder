@@ -1,0 +1,86 @@
+<div class="root-container" *ngIf="jsonRootNode$ | async as rootNode">
+  <div class="root-content">
+    <app-add-attribute [jsonNode]="rootNode"></app-add-attribute>
+    <span class="root-node-selector">
+      <mat-form-field appearance="standard">
+        <mat-label>Select root type</mat-label>
+        <mat-select [(value)]="selectedRootType">
+          <mat-option
+            *ngFor="let rootType of rootTypes | async"
+            [value]="rootType"
+          >
+            {{ rootType.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </span>
+    <span class="description">{{ rootNode.type.description }}</span>
+    <span class="controls"
+      ><input
+        #inputElement
+        type="file"
+        [multiple]="false"
+        [formControl]="inputFormControl"
+        accept=".json"
+        (change)="onImportFileChange($event)"
+      />
+      <button mat-button (click)="inputElement.click()" color="primary">
+        <fa-icon [icon]="faFileImport" class="menu-item-icon"></fa-icon>
+        Import</button
+      ><button mat-button (click)="export()" color="primary">
+        <fa-icon [icon]="faFileExport" class="menu-item-icon"></fa-icon>
+        Export</button
+      ><button mat-button (click)="clear()" color="primary">
+        <fa-icon [icon]="faEraser" class="menu-item-icon"></fa-icon>Clear
+      </button></span
+    >
+  </div>
+  <app-breadcrumb></app-breadcrumb>
+</div>
+
+<div class="tree">
+  <mat-tree #treeSelector [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree-node
+      *matTreeNodeDef="let node"
+      matTreeNodePadding
+      matTreeNodePaddingIndent="20px"
+      class="tree-node"
+    >
+      <div class="expand-toggle">
+        <button
+          mat-icon-button
+          [disabled]="!node.expandable"
+          color="primary"
+          matTreeNodeToggle
+          (click)="node.isExpanded = !node.isExpanded"
+          [style.visibility]="
+            isStructuredType(node.jsonNode.definition.type)
+              ? 'visible'
+              : 'hidden'
+          "
+        >
+          <fa-icon
+            [icon]="
+              !node.expandable
+                ? faChevronRight
+                : treeControl.isExpanded(node)
+                ? faChevronDown
+                : faChevronRight
+            "
+          ></fa-icon>
+        </button>
+      </div>
+      <div
+        [appSelectNode]="node.jsonNode"
+        class="node-component-container"
+        [id]="node.jsonNode.id"
+      >
+        <ng-container
+          *ngComponentOutlet="
+            node.jsonNode.definition.type | nodeTypeSwitch;
+            injector: node.jsonNode | nodeInjector
+          "
+        ></ng-container></div
+    ></mat-tree-node>
+  </mat-tree>
+</div>

@@ -1,0 +1,49 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.node-details {
+  display: grid;
+  grid-template-columns: max-content minmax(max-content, 1fr) max-content minmax(
+      min-content,
+      1fr
+    );
+  column-gap: 10px;
+
+  .form {
+    align-self: center;
+  }
+
+  .description {
+    grid-row: span 2 / auto;
+    justify-self: end;
+    align-self: center;
+    font-size: 0.8em;
+
+    p {
+      &.compact {
+        width: 350px;
+      }
+      &:not(.compact) {
+        width: 40vw;
+      }
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0;
+    }
+  }
+
+  .name,
+  .type {
+    align-self: center;
+  }
+
+  .type {
+    font-size: 0.8em;
+    color: darkgrey;
+  }
+}

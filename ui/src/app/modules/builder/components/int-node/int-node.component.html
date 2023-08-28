@@ -1,0 +1,15 @@
+<div class="node-container">
+  <app-node-details [jsonAttributeNode]="jsonAttributeNode">
+    <mat-form-field appearance="standard" class="input-field">
+      <input
+        matInput
+        [(ngModel)]="jsonAttributeNode.value"
+        type="number"
+        pattern="^[0-9]+$"
+      /> </mat-form-field
+  ></app-node-details>
+  <div class="controls">
+    <div class="spacer"></div>
+    <app-delete [jsonAttributeNode]="jsonAttributeNode"></app-delete>
+  </div>
+</div>

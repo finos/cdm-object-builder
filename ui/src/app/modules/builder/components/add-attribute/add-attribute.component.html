@@ -1,0 +1,24 @@
+<div>
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="menu"
+    [disabled]="!(hasAttributesToAdd | async)"
+    color="primary"
+  >
+    <fa-icon [icon]="faPlus"></fa-icon>
+  </button>
+
+  <mat-menu #menu="matMenu" class="add-attribute-menu">
+    <button
+      mat-menu-item
+      *ngFor="let attribute of availableAttributes | async"
+      (click)="addAttribute(attribute)"
+    >
+      <app-node-details
+        [jsonAttributeNode]="{ definition: attribute, id: 0 }"
+        [compactView]="true"
+        [displayDescription]="true"
+      ></app-node-details>
+    </button>
+  </mat-menu>
+</div>

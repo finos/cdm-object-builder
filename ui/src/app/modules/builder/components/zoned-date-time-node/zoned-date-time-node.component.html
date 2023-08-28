@@ -1,0 +1,12 @@
+<div class="node-container">
+  <app-node-details [jsonAttributeNode]="jsonAttributeNode">
+    <mat-form-field appearance="standard" class="input-field">
+      <input matInput [matDatepicker]="picker" [formControl]="dateControl" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker> </mat-form-field
+  ></app-node-details>
+  <div class="controls">
+    <div class="spacer"></div>
+    <app-delete [jsonAttributeNode]="jsonAttributeNode"></app-delete>
+  </div>
+</div>

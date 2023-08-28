@@ -1,0 +1,18 @@
+<div class="node-details">
+  <div class="name">{{ jsonAttributeNode.definition.name }}</div>
+  <div class="type">
+    {{ typeName }} ({{
+      jsonAttributeNode.definition.cardinality.lowerBound
+    }}..{{ jsonAttributeNode.definition.cardinality.upperBound }})
+  </div>
+  <div class="form"><ng-content></ng-content></div>
+  <div class="description">
+    <p
+      [matTooltip]="jsonAttributeNode.definition.description || ''"
+      [class.compact]="compactView"
+      *ngIf="displayDescription"
+    >
+      {{ jsonAttributeNode.definition.description }}
+    </p>
+  </div>
+</div>

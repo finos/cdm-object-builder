@@ -1,0 +1,36 @@
+<div class="node-container">
+  <app-add-attribute [jsonNode]="jsonAttributeNode"></app-add-attribute>
+  <app-node-details [jsonAttributeNode]="jsonAttributeNode"></app-node-details>
+  <div class="controls">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <fa-icon [icon]="faEllipsisVertical"></fa-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <button
+        mat-menu-item
+        *ngIf="isMultiCardinality"
+        (click)="duplicate()"
+        [disabled]="(isNodeExhausted$ | async) || false"
+      >
+        <fa-icon [icon]="faCopy" class="menu-item-icon"></fa-icon>
+        <span class="menu-item-label">Duplicate</span>
+      </button>
+      <button mat-menu-item (click)="fileInput.click()">
+        <fa-icon [icon]="faFileImport" class="menu-item-icon"></fa-icon
+        ><span class="menu-item-label">Import</span>
+      </button>
+    </mat-menu>
+    <app-delete [jsonAttributeNode]="jsonAttributeNode"></app-delete>
+  </div>
+</div>
+
+<ng-container>
+  <input
+    #fileInput
+    type="file"
+    [multiple]="false"
+    [formControl]="inputFormControl"
+    accept=".json"
+    (change)="onImportFileChange($event)"
+/></ng-container>
