@@ -12,10 +12,11 @@ defaults:
   run:
     shell: bash
     working-directory: server
-    
+
 on:
   push:
     branches: [ "main" ]
+    paths: ['server/**']
   pull_request:
     branches: [ "main" ]
 
