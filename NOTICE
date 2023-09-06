@@ -2,3 +2,9 @@ Object Builder - FINOS
 Copyright 2022-2023 ISDA isdalegal@isda.org
 
 This product includes software developed at the Fintech Open Source Foundation (https://www.finos.org/).
+
+The following libraries are included in this project and are subject to the Eclipse Public License 2.0 (EPL 2.0):
+- junit
+- xtext
+- logback-classic
+- logback-core
