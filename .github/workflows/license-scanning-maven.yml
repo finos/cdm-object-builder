@@ -6,11 +6,12 @@ defaults:
     working-directory: server
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 8,18 * * 1-5'
   push:
     paths:
-      - 'pom.xml'
-      - '.github/workflows/license-scanning.yml'
+      - '**/pom.xml'
+      - '.github/workflows/license-scanning-maven.yml'
 
 env:
   ALLOW_LICENSES: "'The Apache Software License, Version 2.0' and licenses/license/name!='BSD' and licenses/license/name!='BSD-style license' and licenses/license/name!='Apache License, Version 2.0'"
@@ -33,13 +34,14 @@ jobs:
       run: mvn clean install -DskipTests
     - name: License XML report
       run: mvn org.codehaus.mojo:license-maven-plugin:2.0.0:download-licenses
+      working-directory: server
     - name: Validate XML report
       run: |
         LICENSE_REPORT=`xq "//dependency[licenses/license/name!=${{ env.ALLOW_LICENSES }}]" ./${{ env.REPORT_PATH }}`
         LINES_FOUND=`echo $LICENSE_REPORT | wc -l`
         echo "License issues found ..."
         if [ $LINES_FOUND -gt 1 ]; then echo $LICENSE_REPORT ; exit -1; fi
-      working-directory: ${{ matrix.module-folder }}
+      working-directory: server
     - name: Upload license reports
       uses: actions/upload-artifact@v3
       with:

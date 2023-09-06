@@ -2,3 +2,20 @@ Object Builder - FINOS
 Copyright 2022-2023 ISDA isdalegal@isda.org
 
 This product includes software developed at the Fintech Open Source Foundation (https://www.finos.org/).
+
+The following libraries are included in this project and are subject to the Eclipse Public License 2.0 (EPL 2.0):
+
+1. JUnit 4.13.1 (https://junit.org/junit4/)
+
+   License: Eclipse Public License 2.0 (EPL 2.0)
+   License URL: https://www.eclipse.org/legal/epl-2.0/
+
+4. Eclipse Xtext (https://www.eclipse.org/Xtext/)
+
+   License: Eclipse Public License 2.0 (EPL 2.0)
+   License URL: https://www.eclipse.org/legal/epl-2.0/
+
+5. Logback Classic and Logback Core (https://logback.qos.ch/)
+
+   License: Eclipse Public License 2.0 (EPL 2.0)
+   License URL: https://www.eclipse.org/legal/epl-2.0/
