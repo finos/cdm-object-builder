@@ -1,5 +1,10 @@
 name: License Scanning for Maven
 
+defaults:
+  run:
+    shell: bash
+    working-directory: server
+
 on:
   schedule:
     - cron: '0 8,18 * * 1-5'
