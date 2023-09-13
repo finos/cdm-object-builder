@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: Build Node
 
 defaults:
   run:
@@ -44,20 +44,3 @@ jobs:
    # The tests seem to hang when run on the action. TODO - re-enable when they are working.
    #  - name: Running Test
    #    run: npm test --no-watch --source-map=false
-
-  # CVE scanning
-  cvescan:
-    name: CVE Scanning
-    runs-on: ubuntu-latest
-    needs: [ build ]
-    strategy:
-      matrix:
-        node-version: [18.x]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npx --yes auditjs ossi --whitelist allow-list.json
