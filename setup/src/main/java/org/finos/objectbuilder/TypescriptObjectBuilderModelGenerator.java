@@ -1,4 +1,4 @@
-package com.regnosys;
+package org.finos.objectbuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -343,14 +343,17 @@ public class TypescriptObjectBuilderModelGenerator {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            System.out.println("Usage: TypescriptObjectBuilderModelGenerator <output file>");
+        if (args.length != 3) {
+            System.out.println("Usage: TypescriptObjectBuilderModelGenerator <output file> <groupId> <modelName>");
 
-            System.out.println("E.G. >: TypescriptObjectBuilderModelGenerator ../ui/src/app/modules/builder/services/builder-api.model.ts");
+            System.out.println("E.G. >: TypescriptObjectBuilderModelGenerator ../ui/src/app/modules/builder/services/builder-api.model.ts org.finos.cdm cdm-java");
             System.exit(1);
         }
 
-        var outputFile = args[0];
+        var outputFile = args[0]; //../ui/src/app/modules/builder/services/builder-api.model.ts
+        var groupId =  args[1]; //"org.finos.cdm";
+        var modelName = args[2]; // "cdm-java";
+
         TypescriptObjectBuilderModelGenerator typescriptObjectBuilderModelGenerator = new TypescriptObjectBuilderModelGenerator();
 
         List<StructuredType> structuredTypes = typescriptObjectBuilderModelGenerator.rootTypes();
@@ -359,10 +362,6 @@ public class TypescriptObjectBuilderModelGenerator {
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         StringBuilder outString = new StringBuilder();
-
-        // todo - param this
-        String groupId = "org.finos.cdm";
-        String modelName = "cdm-java";
 
         outString.append("export const modelName = \"").append(modelName).append("\";");
         outString.append(System.lineSeparator());

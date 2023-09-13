@@ -118,4 +118,4 @@ dist
 .tern-port
 
 .idea
-server/target
+setup/target
