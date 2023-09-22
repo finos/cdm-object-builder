@@ -1,7 +1,7 @@
 SPDXVersion: SPDX-2.0
 DataLicense: CC0-1.0
 Creator: ISDA
-PackageName: Object Builder
+PackageName: CDM Object Builder
 PackageOriginator: ISDA
-PackageHomePage: https://github.com/finos/object-builder
+PackageHomePage: https://github.com/finos/cdm-object-builder
 PackageLicenseDeclared: Apache-2.0
