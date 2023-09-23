@@ -1,6 +1,6 @@
 [![FINOS - Incubating](https://cdn.jsdelivr.net/gh/finos/contrib-toolbox@master/images/badge-incubating.svg)](https://community.finos.org/docs/governance/Software-Projects/stages/incubating)
 
-# Object Builder
+# CDM Object Builder
 
 This project is a utility tool for dynamically generating Common Domain Model<sup>TM</sup> (CDM)  objects using a visual UI builder which can then be reviewed. 
 
