@@ -12,14 +12,9 @@ The Common Domain Model<sup>TM</sup> is a registered trademark of FINOS. For mor
 
 ## Installation
 
-To build and deploy the docker image run the following:
-
-```sh
-docker build -t regnosys-docker-registry.jfrog.io/regnosys/poc/cdm-object-builder:mp . && docker push regnosys-docker-registry.jfrog.io/regnosys/poc/cdm-object-builder:mp
-```
-
 To start the web-based user interface locally, navigate to the ./ui folder and run 
 ```sh
+npm ci
 npm start 
 ```
 
