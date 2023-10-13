@@ -6,17 +6,17 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Build Maven
 
 defaults:
   run:
     shell: bash
-    working-directory: server
+    working-directory: setup
 
 on:
   push:
     branches: [ "main" ]
-    paths: ['server/**']
+    paths: ['setup/**']
   pull_request:
     branches: [ "main" ]
 
