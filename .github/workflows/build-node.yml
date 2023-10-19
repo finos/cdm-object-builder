@@ -21,7 +21,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: nanasess/setup-chromedriver@v2
       with:
         # Optional: do not specify to match Chrome's version

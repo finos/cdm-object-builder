@@ -366,7 +366,6 @@ public class TypescriptObjectBuilderModelGenerator {
         outString.append("export const modelName = \"").append(modelName).append("\";");
         outString.append(System.lineSeparator());
 
-
         outString.append("export const modelVersion = \"").append(typescriptObjectBuilderModelGenerator.modelVersion(groupId, modelName)).append("\";");
         outString.append(System.lineSeparator());
 
