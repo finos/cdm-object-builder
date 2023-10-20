@@ -27,7 +27,7 @@ A use case for the Object Builder is the selection of Eligible Collateral Schedu
 
 To update the version of the model used by this tool  execute the Java utility 
 ```sh
-./server/src/main/java/com/regnosys/TypescriptObjectBuilderModelGenerator.java
+./setup/src/main/java/com/finos/TypescriptObjectBuilderModelGenerator.java
 ```
  and follow the instructions outlined in the main() method.
 
