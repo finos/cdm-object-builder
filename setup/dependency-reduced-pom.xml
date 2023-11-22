@@ -186,8 +186,8 @@
     <xtext.version>2.27.0</xtext.version>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <finos.cdm.version>5.0.0-dev.7</finos.cdm.version>
-    <rosetta.dsl.version>8.3.1</rosetta.dsl.version>
+    <finos.cdm.version>5.0.1</finos.cdm.version>
+    <rosetta.dsl.version>9.0.3</rosetta.dsl.version>
     <logback.version>1.4.11</logback.version>
   </properties>
 </project>
