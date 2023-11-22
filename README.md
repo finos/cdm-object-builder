@@ -48,8 +48,7 @@ java -jar target/object-builder-0.0.0.master.jar ../ui/src/app/modules/builder/s
 
 Example:
 
-![2023-11-22 15 34 15 (1)](https://github.com/finos/cdm-object-builder/assets/19842097/855de77c-49c2-4d43-bcf1-c2eeff451e2c)
-
+![2023-11-22 15 34 15 (2)](https://github.com/finos/cdm-object-builder/assets/19842097/dffb994d-5ba9-448f-9e84-63526310771d)
 
 ## Roadmap
 
