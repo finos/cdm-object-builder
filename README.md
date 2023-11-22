@@ -23,13 +23,33 @@ npm start
 A use case for the Object Builder is the selection of Eligible Collateral Schedules.
 
 
-## Development setup
+## Development setup for updating the CDM version
 
-To update the version of the model used by this tool  execute the Java utility 
+To update the version of the model used by this tool execute the Java utility.
+
+Steps:
+
+1. Update the `finos.cdm.version` property in the pom.xml file to match the [version](https://github.com/finos/common-domain-model/releases) of the [cdm](https://github.com/finos/common-domain-model)
+2. Update the `rosetta.dsl.version` property in the pom.xml to the DSL version used in the CDM (See pom.xml in the [cdm](https://github.com/finos/common-domain-model) project to get the correct version)
+3. Build the set up tool using `mvn`
+
 ```sh
-./setup/src/main/java/com/finos/objectbuilder/TypescriptObjectBuilderModelGenerator.java
+cd setup
+mvn clean install
 ```
- and follow the instructions outlined in the main() method.
+
+4. Run the executable jar file - this will update the `builder-api.model.ts` file to support the given cdm version.
+
+```sh
+java -jar target/object-builder-0.0.0.master.jar ../ui/src/app/modules/builder/services/builder-api.model.ts org.finos.cdm cdm-java
+```
+
+5. Commit the `builder-api.model.ts` file in a new PR.
+
+Example:
+
+![image](https://github.com/finos/cdm-object-builder/assets/19842097/c32d8108-59fc-4aeb-b005-041fc37b4ecb)
+
 
 ## Roadmap
 
