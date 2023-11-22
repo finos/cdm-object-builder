@@ -8,7 +8,10 @@ import com.regnosys.rosetta.RosettaStandaloneSetup;
 import com.regnosys.rosetta.common.serialisation.RosettaObjectMapper;
 import com.regnosys.rosetta.common.util.ClassPathUtils;
 import com.regnosys.rosetta.generator.java.enums.EnumHelper;
-import com.regnosys.rosetta.rosetta.*;
+import com.regnosys.rosetta.rosetta.RosettaEnumValue;
+import com.regnosys.rosetta.rosetta.RosettaEnumeration;
+import com.regnosys.rosetta.rosetta.RosettaModel;
+import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.simple.AnnotationRef;
 import com.regnosys.rosetta.rosetta.simple.Attribute;
 import com.regnosys.rosetta.rosetta.simple.Data;
@@ -27,7 +30,6 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -174,6 +176,7 @@ public class TypescriptObjectBuilderModelGenerator {
         BOOLEAN("boolean"),
         TIME("time"),
         DATE("date"),
+        DATE_TIME("dateTime"),
         ZONED_DATE_TIME("zonedDateTime"),
         ;
 
