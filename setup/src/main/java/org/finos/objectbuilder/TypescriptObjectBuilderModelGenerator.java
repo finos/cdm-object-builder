@@ -27,7 +27,6 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -174,6 +173,7 @@ public class TypescriptObjectBuilderModelGenerator {
         BOOLEAN("boolean"),
         TIME("time"),
         DATE("date"),
+        DATE_TIME("dateTime"),
         ZONED_DATE_TIME("zonedDateTime"),
         ;
 
