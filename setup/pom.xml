@@ -18,7 +18,7 @@
         <finos.cdm.version>5.2.0</finos.cdm.version>
         <rosetta.dsl.version>9.1.3</rosetta.dsl.version>
         <xtext.version>2.27.0</xtext.version>
-        <logback.version>1.4.12</logback.version>
+        <logback.version>1.4.14</logback.version>
         <guava.version>32.1.3-jre</guava.version>
     </properties>
 
@@ -70,51 +70,6 @@
             <dependency>
                 <groupId>org.eclipse.xtext</groupId>
                 <artifactId>org.eclipse.xtext</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.ide</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.testing</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.xbase</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.generator</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.common.types</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.ecore</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtext</groupId>
-                <artifactId>org.eclipse.xtext.util</artifactId>
-                <version>${xtext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.xtend</groupId>
-                <artifactId>org.eclipse.xtend.lib</artifactId>
                 <version>${xtext.version}</version>
             </dependency>
             <dependency>
