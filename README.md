@@ -23,7 +23,21 @@ npm start
 A use case for the Object Builder is the selection of Eligible Collateral Schedules.
 
 
+## 
+
 ## Development setup for updating the CDM version
+
+### Basic Method
+
+There is an `npm` command that is set up to update to the latest model vesion. The command assumes that `mvn` and `java` are installed.
+
+Steps:
+1. Run the command `cd ui && npm run update-model`
+2. Check the file `ui/src/app/modules/builder/services/builder-api.model.ts` is updated.
+3. Create a PR, Review and Merge.
+
+### Advanced setup
+
 
 To update the version of the model used by this tool execute the Java utility.
 
