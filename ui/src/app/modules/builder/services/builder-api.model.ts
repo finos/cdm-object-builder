@@ -1,21 +1,6 @@
 export const modelName = "cdm-java";
-export const modelVersion = "5.2.0";
+export const modelVersion = "5.3.2";
 export const rootTypesJson = [ {
-  "typeCategory" : "StructuredType",
-  "name" : "Observation",
-  "namespace" : "cdm.observable.event",
-  "description" : "Defines a single, numerical value that was observed in the marketplace. Observations of market data are made independently to business events or trade life-cycle events, so data instances of Observation can be created independently of any other model type, hence it is annotated as a root type. Observations will be broadly reused in many situations, so references to Observation are supported via the 'key' annotation."
-}, {
-  "typeCategory" : "StructuredType",
-  "name" : "LegalAgreement",
-  "namespace" : "cdm.legaldocumentation.common",
-  "description" : "The specification of a legal agreement between two parties, being negotiated or having been executed. This includes the baseline information and the optional specialised elections"
-}, {
-  "typeCategory" : "StructuredType",
-  "name" : "WorkflowStep",
-  "namespace" : "cdm.event.workflow",
-  "description" : "A workflow step represents the state of a business event. The workflow step contains a reference to a previous WorkflowStep in order to preserve lineage. A workflow step is accepted if it contains a business event, proposed if proposedEvent is present and is rejected if the rejected flag is set."
-}, {
   "typeCategory" : "StructuredType",
   "name" : "Instruction",
   "namespace" : "cdm.event.common",
@@ -59,8 +44,51 @@ export const rootTypesJson = [ {
   "typeCategory" : "StructuredType",
   "name" : "EligibleCollateralSpecificationInstruction",
   "namespace" : "cdm.product.collateral"
+}, {
+  "typeCategory" : "StructuredType",
+  "name" : "Observation",
+  "namespace" : "cdm.observable.event",
+  "description" : "Defines a single, numerical value that was observed in the marketplace. Observations of market data are made independently to business events or trade life-cycle events, so data instances of Observation can be created independently of any other model type, hence it is annotated as a root type. Observations will be broadly reused in many situations, so references to Observation are supported via the 'key' annotation."
+}, {
+  "typeCategory" : "StructuredType",
+  "name" : "LegalAgreement",
+  "namespace" : "cdm.legaldocumentation.common",
+  "description" : "The specification of a legal agreement between two parties, being negotiated or having been executed. This includes the baseline information and the optional specialised elections"
+}, {
+  "typeCategory" : "StructuredType",
+  "name" : "WorkflowStep",
+  "namespace" : "cdm.event.workflow",
+  "description" : "A workflow step represents the state of a business event. The workflow step contains a reference to a previous WorkflowStep in order to preserve lineage. A workflow step is accepted if it contains a business event, proposed if proposedEvent is present and is rejected if the rejected flag is set."
 } ];
 export const attributesJson = {
+  "cdm.product.common.settlement.LoanParticipation" : [ {
+    "name" : "qualifyingParticipationSeller",
+    "type" : "string",
+    "description" : "If Direct Loan Participation is specified as a deliverable obligation characteristic, this specifies any requirements for the Qualifying Participation Seller. The requirements may be listed free-form. ISDA 2003 Term: Qualifying Participation Seller.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "applicable",
+    "type" : "boolean",
+    "description" : "Indicates whether the provision is applicable.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "partialCashSettlement",
+    "type" : "boolean",
+    "description" : "Specifies whether either 'Partial Cash Settlement of Assignable Loans', 'Partial Cash Settlement of Consent Required Loans' or 'Partial Cash Settlement of Participations' is applicable. If this element is specified and Assignable Loan is a Deliverable Obligation Characteristic, any Assignable Loan that is deliverable, but where a non-receipt of Consent by the Physical Settlement Date has occurred, the Loan can be cash settled rather than physically delivered. If this element is specified and Consent Required Loan is a Deliverable Obligation Characteristic, any Consent Required Loan that is deliverable, but where a non-receipt of Consent by the Physical Settlement Date has occurred, the Loan can be cash settled rather than physically delivered. If this element is specified and Direct Loan Participation is a Deliverable Obligation Characteristic, any Participation that is deliverable, but where this participation has not been effected (has not come into effect) by the Physical Settlement Date, the participation can be cash settled rather than physically delivered.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.base.staticdata.identifier.LocationIdentifier" : [ {
     "name" : "locationIdentifierType",
     "type" : {
@@ -137,34 +165,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "*",
       "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.common.settlement.LoanParticipation" : [ {
-    "name" : "qualifyingParticipationSeller",
-    "type" : "string",
-    "description" : "If Direct Loan Participation is specified as a deliverable obligation characteristic, this specifies any requirements for the Qualifying Participation Seller. The requirements may be listed free-form. ISDA 2003 Term: Qualifying Participation Seller.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "applicable",
-    "type" : "boolean",
-    "description" : "Indicates whether the provision is applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "partialCashSettlement",
-    "type" : "boolean",
-    "description" : "Specifies whether either 'Partial Cash Settlement of Assignable Loans', 'Partial Cash Settlement of Consent Required Loans' or 'Partial Cash Settlement of Participations' is applicable. If this element is specified and Assignable Loan is a Deliverable Obligation Characteristic, any Assignable Loan that is deliverable, but where a non-receipt of Consent by the Physical Settlement Date has occurred, the Loan can be cash settled rather than physically delivered. If this element is specified and Consent Required Loan is a Deliverable Obligation Characteristic, any Consent Required Loan that is deliverable, but where a non-receipt of Consent by the Physical Settlement Date has occurred, the Loan can be cash settled rather than physically delivered. If this element is specified and Direct Loan Participation is a Deliverable Obligation Characteristic, any Participation that is deliverable, but where this participation has not been effected (has not come into effect) by the Physical Settlement Date, the participation can be cash settled rather than physically delivered.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
     },
     "metaField" : false
   } ],
@@ -499,66 +499,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.base.staticdata.asset.common.Taxonomy" : [ {
-    "name" : "source",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "TaxonomySourceEnum",
-      "values" : [ {
-        "name" : "CFI",
-        "displayName" : "CFI",
-        "description" : "Represents the ISO 10962 Classification of Financial Instruments code."
-      }, {
-        "name" : "ISDA",
-        "displayName" : "ISDA",
-        "description" : "Represents the ISDA product taxonomy."
-      }, {
-        "name" : "ICAD",
-        "displayName" : "ICAD",
-        "description" : "Represents the ISDA Collateral Asset Definition Idenifier code."
-      }, {
-        "name" : "EMIR",
-        "displayName" : "EMIR",
-        "description" : "Represents the EMIR Article 9 Asset Definition Identifier code."
-      }, {
-        "name" : "EU_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS",
-        "displayName" : "EU_EMIR_EligibleCollateralAssetClass",
-        "description" : "Identifies European Union Eligible Collateral Assets classification categories based on EMIR Uncleared Margin Rules."
-      }, {
-        "name" : "UK_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS",
-        "displayName" : "UK_EMIR_EligibleCollateralAssetClass",
-        "description" : "Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities.Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM."
-      }, {
-        "name" : "US_CFTC_PR_ELIGIBLE_COLLATERAL_ASSET_CLASS",
-        "displayName" : "US_CFTC_PR_EligibleCollateralAssetClass",
-        "description" : "Identifies US Eligible Collateral Assets classification categories based on Uncleared Margin Rules published by the CFTC and the US Prudential Regulator. Note: While the same basic categories exist in the CFTC and US Prudential Regulators margin rules, the precise definitions or application of those rules could differ between the two rules."
-      }, {
-        "name" : "OTHER",
-        "displayName" : "Other",
-        "description" : "Denotes a user-specific scheme or taxonomy or other external sources not listed here."
-      } ]
-    },
-    "description" : "The source of the taxonomy that defines the rules for classifying the object. The taxonomy source is taken from a enumerated list of taxonomy names. Optional as the taxonomy source may not be provided.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "TaxonomyValue",
-      "namespace" : "cdm.base.staticdata.asset.common",
-      "description" : "Defines a taxonomy value as either a simple string or a more granular expression with class names and values for each class."
-    },
-    "description" : "The value according to that taxonomy. Optional as it may not be possible to classify the object in that taxonomy.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.AssetDeliveryProfileBlock" : [ {
     "name" : "startTime",
     "type" : "time",
@@ -647,18 +587,63 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.product.common.settlement.ShapingProvision" : [ {
-    "name" : "shapeSchedule",
+  "cdm.base.staticdata.asset.common.Taxonomy" : [ {
+    "name" : "source",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "TaxonomySourceEnum",
+      "values" : [ {
+        "name" : "CFI",
+        "displayName" : "CFI",
+        "description" : "Represents the ISO 10962 Classification of Financial Instruments code."
+      }, {
+        "name" : "ISDA",
+        "displayName" : "ISDA",
+        "description" : "Represents the ISDA product taxonomy."
+      }, {
+        "name" : "ICAD",
+        "displayName" : "ICAD",
+        "description" : "Represents the ISDA Collateral Asset Definition Idenifier code."
+      }, {
+        "name" : "EMIR",
+        "displayName" : "EMIR",
+        "description" : "Represents the EMIR Article 9 Asset Definition Identifier code."
+      }, {
+        "name" : "EU_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS",
+        "displayName" : "EU_EMIR_EligibleCollateralAssetClass",
+        "description" : "Identifies European Union Eligible Collateral Assets classification categories based on EMIR Uncleared Margin Rules."
+      }, {
+        "name" : "UK_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS",
+        "displayName" : "UK_EMIR_EligibleCollateralAssetClass",
+        "description" : "Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities.Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM."
+      }, {
+        "name" : "US_CFTC_PR_ELIGIBLE_COLLATERAL_ASSET_CLASS",
+        "displayName" : "US_CFTC_PR_EligibleCollateralAssetClass",
+        "description" : "Identifies US Eligible Collateral Assets classification categories based on Uncleared Margin Rules published by the CFTC and the US Prudential Regulator. Note: While the same basic categories exist in the CFTC and US Prudential Regulators margin rules, the precise definitions or application of those rules could differ between the two rules."
+      }, {
+        "name" : "OTHER",
+        "displayName" : "Other",
+        "description" : "Denotes a user-specific scheme or taxonomy or other external sources not listed here."
+      } ]
+    },
+    "description" : "The source of the taxonomy that defines the rules for classifying the object. The taxonomy source is taken from a enumerated list of taxonomy names. Optional as the taxonomy source may not be provided.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Money",
-      "namespace" : "cdm.observable.asset",
-      "description" : "Defines a monetary amount in a specified currency."
+      "name" : "TaxonomyValue",
+      "namespace" : "cdm.base.staticdata.asset.common",
+      "description" : "Defines a taxonomy value as either a simple string or a more granular expression with class names and values for each class."
     },
-    "description" : "Defines applicable settlement limits in each currency.",
+    "description" : "The value according to that taxonomy. Optional as it may not be possible to classify the object in that taxonomy.",
     "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
+      "upperBound" : "1",
+      "lowerBound" : "0"
     },
     "metaField" : false
   } ],
@@ -706,6 +691,21 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.common.settlement.ShapingProvision" : [ {
+    "name" : "shapeSchedule",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Money",
+      "namespace" : "cdm.observable.asset",
+      "description" : "Defines a monetary amount in a specified currency."
+    },
+    "description" : "Defines applicable settlement limits in each currency.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -4177,42 +4177,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.product.collateral.AverageTradingVolume" : [ {
-    "name" : "period",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Period",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class to define recurring periods or time offsets."
-    },
-    "description" : "Represents the period of the equities average trading volume on the exchange/s.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "methodology",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "AverageTradingVolumeMethodologyEnum",
-      "values" : [ {
-        "name" : "SINGLE",
-        "displayName" : "Single",
-        "description" : "Single, the highest amount on one exchange."
-      }, {
-        "name" : "CONSOLIDATED",
-        "displayName" : "Consolidated",
-        "description" : "Consolidated volume across more than one exchange."
-      } ]
-    },
-    "description" : "Indicates the type of equity average trading volume being stated (single) the highest amount on one exchange, or (consolidated) volumes across multiple exchanges.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.ReturnTermsBase" : [ {
     "name" : "valuationTerms",
     "type" : {
@@ -4382,6 +4346,42 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.collateral.AverageTradingVolume" : [ {
+    "name" : "period",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Period",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class to define recurring periods or time offsets."
+    },
+    "description" : "Represents the period of the equities average trading volume on the exchange/s.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "methodology",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AverageTradingVolumeMethodologyEnum",
+      "values" : [ {
+        "name" : "SINGLE",
+        "displayName" : "Single",
+        "description" : "Single, the highest amount on one exchange."
+      }, {
+        "name" : "CONSOLIDATED",
+        "displayName" : "Consolidated",
+        "description" : "Consolidated volume across more than one exchange."
+      } ]
+    },
+    "description" : "Indicates the type of equity average trading volume being stated (single) the highest amount on one exchange, or (consolidated) volumes across multiple exchanges.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -7702,6 +7702,25 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.asset.FloatingAmountProvisions" : [ {
+    "name" : "wacCapInterestProvision",
+    "type" : "boolean",
+    "description" : "As specified by the ISDA Supplement for use with trades on mortgage-backed securities, 'WAC Cap' means a weighted average coupon or weighted average rate cap provision (however defined in the Underlying Instruments) of the Underlying Instruments that limits, increases or decreases the interest rate or interest entitlement, as set out in the Underlying Instruments on the Effective Date without regard to any subsequent amendment The presence of the element with value set to 'true' signifies that the provision is applicable. From a usage standpoint, this provision is typically applicable in the case of CMBS and not applicable in case of RMBS trades.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "stepUpProvision",
+    "type" : "boolean",
+    "description" : "As specified by the ISDA Standard Terms Supplement for use with trades on mortgage-backed securities. The presence of the element with value set to 'true' signifies that the provision is applicable. If applicable, the applicable step-up terms are specified as part of that ISDA Standard Terms Supplement. From a usage standpoint, this provision is typically applicable in the case of RMBS and not applicable in case of CMBS trades.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.observable.asset.CleanPrice" : [ {
     "name" : "cleanPrice",
     "type" : "number",
@@ -7736,25 +7755,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.asset.FloatingAmountProvisions" : [ {
-    "name" : "wacCapInterestProvision",
-    "type" : "boolean",
-    "description" : "As specified by the ISDA Supplement for use with trades on mortgage-backed securities, 'WAC Cap' means a weighted average coupon or weighted average rate cap provision (however defined in the Underlying Instruments) of the Underlying Instruments that limits, increases or decreases the interest rate or interest entitlement, as set out in the Underlying Instruments on the Effective Date without regard to any subsequent amendment The presence of the element with value set to 'true' signifies that the provision is applicable. From a usage standpoint, this provision is typically applicable in the case of CMBS and not applicable in case of RMBS trades.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "stepUpProvision",
-    "type" : "boolean",
-    "description" : "As specified by the ISDA Standard Terms Supplement for use with trades on mortgage-backed securities. The presence of the element with value set to 'true' signifies that the provision is applicable. If applicable, the applicable step-up terms are specified as part of that ISDA Standard Terms Supplement. From a usage standpoint, this provision is typically applicable in the case of RMBS and not applicable in case of CMBS trades.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
     },
     "metaField" : false
   } ],
@@ -7922,6 +7922,108 @@ export const attributesJson = {
     "name" : "spreadExclusiveCalculatedAMount",
     "type" : "number",
     "description" : "The amount of the cash flow excluding any spread, for subsequent processing.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.legaldocumentation.master.EquitySwapMasterConfirmation2018" : [ {
+    "name" : "typeOfSwapElection",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "ReturnTypeEnum",
+      "values" : [ {
+        "name" : "PRICE",
+        "displayName" : "Price",
+        "description" : "Price return, i.e. excluding dividends."
+      }, {
+        "name" : "TOTAL",
+        "displayName" : "Total",
+        "description" : "Total return, i.e. including dividend and price components."
+      } ]
+    },
+    "description" : "Per Part 1 Section 4, 'Dividend Obligations', of the 2018 ISDA CDM Equity Confirmation, Para 4.2 'Dividend Returns'",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "pricingMethodElection",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "PriceReturnTerms",
+      "namespace" : "cdm.product.asset"
+    },
+    "description" : "Per Part 1 Section 5, 'Pricing', of the 2018 ISDA CDM Equity Confirmation, Para 5.1",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "linearInterpolationElection",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "InterpolationMethodEnum",
+      "values" : [ {
+        "name" : "LINEAR",
+        "displayName" : "Linear",
+        "description" : "Linear Interpolation applicable."
+      }, {
+        "name" : "LINEAR_ZERO_YIELD",
+        "displayName" : "LinearZeroYield",
+        "description" : "Linear Interpolation applicable."
+      }, {
+        "name" : "NONE",
+        "displayName" : "None",
+        "description" : "No Interpolation applicable."
+      } ]
+    },
+    "description" : "Per Part 1 Section 3, 'Floating Obligations', of the 2018 ISDA CDM Equity Confirmation. Para 3.3",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "settlementTerms",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "SettlementTerms",
+      "namespace" : "cdm.product.common.settlement",
+      "description" : "Specifies the settlement terms, which can either be cash, physical, or fx-based cash-settlement. This class can be used for the settlement of options and forwards, cash transactions (e.g. securities or foreign exchange), or in case of credit event."
+    },
+    "description" : "Per Part 1 Section 8, 'Settlement', of the 2018 ISDA CDM Equity Confirmation for Security Equity Swap",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "valuationDates",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "ValuationDates",
+      "namespace" : "cdm.observable.asset",
+      "description" : "Defines how and when a performance type option or performance type swap is to be valued, including initial, interim and final valuation dates."
+    },
+    "description" : "The parameters used to generate the 'Equity Valuation Dates' schedule, including the Effective Date and Termination Date for the Swap.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "equityCashSettlementDates",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "PaymentDates",
+      "namespace" : "cdm.product.common.schedule",
+      "description" : "Specifies the parameters to generate the payment date schedule, either through a parametric representation or by reference to specified dates."
+    },
+    "description" : "The parameters used to generate the payment date schedule, relative to the equityCalculationPeriod. Per Part 1 Section 12, 'Definitions', of the 2018 ISDA CDM Equity Confirmation. Para 73",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
@@ -10855,108 +10957,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.legaldocumentation.master.EquitySwapMasterConfirmation2018" : [ {
-    "name" : "typeOfSwapElection",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "ReturnTypeEnum",
-      "values" : [ {
-        "name" : "PRICE",
-        "displayName" : "Price",
-        "description" : "Price return, i.e. excluding dividends."
-      }, {
-        "name" : "TOTAL",
-        "displayName" : "Total",
-        "description" : "Total return, i.e. including dividend and price components."
-      } ]
-    },
-    "description" : "Per Part 1 Section 4, 'Dividend Obligations', of the 2018 ISDA CDM Equity Confirmation, Para 4.2 'Dividend Returns'",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "pricingMethodElection",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "PriceReturnTerms",
-      "namespace" : "cdm.product.asset"
-    },
-    "description" : "Per Part 1 Section 5, 'Pricing', of the 2018 ISDA CDM Equity Confirmation, Para 5.1",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "linearInterpolationElection",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "InterpolationMethodEnum",
-      "values" : [ {
-        "name" : "LINEAR",
-        "displayName" : "Linear",
-        "description" : "Linear Interpolation applicable."
-      }, {
-        "name" : "LINEAR_ZERO_YIELD",
-        "displayName" : "LinearZeroYield",
-        "description" : "Linear Interpolation applicable."
-      }, {
-        "name" : "NONE",
-        "displayName" : "None",
-        "description" : "No Interpolation applicable."
-      } ]
-    },
-    "description" : "Per Part 1 Section 3, 'Floating Obligations', of the 2018 ISDA CDM Equity Confirmation. Para 3.3",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "settlementTerms",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "SettlementTerms",
-      "namespace" : "cdm.product.common.settlement",
-      "description" : "Specifies the settlement terms, which can either be cash, physical, or fx-based cash-settlement. This class can be used for the settlement of options and forwards, cash transactions (e.g. securities or foreign exchange), or in case of credit event."
-    },
-    "description" : "Per Part 1 Section 8, 'Settlement', of the 2018 ISDA CDM Equity Confirmation for Security Equity Swap",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "valuationDates",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "ValuationDates",
-      "namespace" : "cdm.observable.asset",
-      "description" : "Defines how and when a performance type option or performance type swap is to be valued, including initial, interim and final valuation dates."
-    },
-    "description" : "The parameters used to generate the 'Equity Valuation Dates' schedule, including the Effective Date and Termination Date for the Swap.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "equityCashSettlementDates",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "PaymentDates",
-      "namespace" : "cdm.product.common.schedule",
-      "description" : "Specifies the parameters to generate the payment date schedule, either through a parametric representation or by reference to specified dates."
-    },
-    "description" : "The parameters used to generate the payment date schedule, relative to the equityCalculationPeriod. Per Part 1 Section 12, 'Definitions', of the 2018 ISDA CDM Equity Confirmation. Para 73",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.CalculationScheduleDeliveryPeriods" : [ {
     "name" : "deliveryCapacity",
     "type" : {
@@ -12940,30 +12940,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.observable.event.GracePeriodExtension" : [ {
-    "name" : "applicable",
-    "type" : "boolean",
-    "description" : "Indicates whether the grace period extension provision is applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "gracePeriod",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Offset",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class defining an offset used in calculating a new date relative to a reference date, e.g. calendar days, business days, commodity Business days, etc."
-    },
-    "description" : "The number of calendar or business days after any due date that the reference entity has to fulfil its obligations before a failure to pay credit event is deemed to have occurred. ISDA 2003 Term: Grace Period.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.base.datetime.PeriodRange" : [ {
     "name" : "lowerBound",
     "type" : {
@@ -12987,6 +12963,30 @@ export const attributesJson = {
       "description" : "Indicator to specify if the period bound is defined as a period and whether the bound is inclusive."
     },
     "description" : "Specifies the upper bound of a period range, e.g. less than to 10Y.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.observable.event.GracePeriodExtension" : [ {
+    "name" : "applicable",
+    "type" : "boolean",
+    "description" : "Indicates whether the grace period extension provision is applicable.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "gracePeriod",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Offset",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class defining an offset used in calculating a new date relative to a reference date, e.g. calendar days, business days, commodity Business days, etc."
+    },
+    "description" : "The number of calendar or business days after any due date that the reference entity has to fulfil its obligations before a failure to pay credit event is deemed to have occurred. ISDA 2003 Term: Grace Period.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -16757,96 +16757,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.base.datetime.PeriodicDates" : [ {
-    "name" : "startDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AdjustableOrRelativeDate",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
-    },
-    "description" : "The start date of the calculation period. FpML specifies that for interest rate swaps this date must only be specified if it is not equal to the effective date. It is always specified in the case of equity swaps and credit default swaps with periodic payments. This date may be subject to adjustment in accordance with a business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "endDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AdjustableOrRelativeDate",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
-    },
-    "description" : "The end date of the calculation period. FpML specifies that for interest rate swaps this date must only be specified if it is not equal to the termination date. It is always specified in the case of equity swaps with periodic payments. This date may be subject to adjustment in accordance with a business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "periodFrequency",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "CalculationPeriodFrequency",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class to specify the frequency at which calculation period end dates occur within the regular part of the calculation period schedule and their roll date convention."
-    },
-    "description" : "The frequency at which calculation period end dates occur with the regular part of the calculation period schedule and their roll date convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "periodDatesAdjustments",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "BusinessDayAdjustments",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class defining the business day convention and financial business centers used for adjusting any relevant date if it would otherwise fall on a day that is not a business day in the specified business center."
-    },
-    "description" : "The specification of the business day convention and financial business centers used for adjusting any calculation period date if it would otherwise fall on a day that is not a business day in the specified business center.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "dayType",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "DayTypeEnum",
-      "values" : [ {
-        "name" : "BUSINESS",
-        "displayName" : "Business",
-        "description" : "Applies when calculating the number of days between two dates the count includes only business days."
-      }, {
-        "name" : "CALENDAR",
-        "displayName" : "Calendar",
-        "description" : "Applies when calculating the number of days between two dates the count includes all calendar days."
-      }, {
-        "name" : "CURRENCY_BUSINESS",
-        "displayName" : "CurrencyBusiness",
-        "description" : "Applies when calculating the number of days between two dates the count includes only currency business days."
-      }, {
-        "name" : "EXCHANGE_BUSINESS",
-        "displayName" : "ExchangeBusiness",
-        "description" : "Applies when calculating the number of days between two dates the count includes only stock exchange business days."
-      }, {
-        "name" : "SCHEDULED_TRADING_DAY",
-        "displayName" : "ScheduledTradingDay",
-        "description" : "Applies when calculating the number of days between two dates the count includes only scheduled trading days."
-      } ]
-    },
-    "description" : "Denotes the enumerated values to specify the day type classification used in counting the number of days between two dates.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.template.ForwardPayout" : [ {
     "name" : "underlier",
     "type" : {
@@ -16955,6 +16865,96 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.base.datetime.PeriodicDates" : [ {
+    "name" : "startDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdjustableOrRelativeDate",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
+    },
+    "description" : "The start date of the calculation period. FpML specifies that for interest rate swaps this date must only be specified if it is not equal to the effective date. It is always specified in the case of equity swaps and credit default swaps with periodic payments. This date may be subject to adjustment in accordance with a business day convention.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "endDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdjustableOrRelativeDate",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
+    },
+    "description" : "The end date of the calculation period. FpML specifies that for interest rate swaps this date must only be specified if it is not equal to the termination date. It is always specified in the case of equity swaps with periodic payments. This date may be subject to adjustment in accordance with a business day convention.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "periodFrequency",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CalculationPeriodFrequency",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class to specify the frequency at which calculation period end dates occur within the regular part of the calculation period schedule and their roll date convention."
+    },
+    "description" : "The frequency at which calculation period end dates occur with the regular part of the calculation period schedule and their roll date convention.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "periodDatesAdjustments",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "BusinessDayAdjustments",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class defining the business day convention and financial business centers used for adjusting any relevant date if it would otherwise fall on a day that is not a business day in the specified business center."
+    },
+    "description" : "The specification of the business day convention and financial business centers used for adjusting any calculation period date if it would otherwise fall on a day that is not a business day in the specified business center.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "dayType",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "DayTypeEnum",
+      "values" : [ {
+        "name" : "BUSINESS",
+        "displayName" : "Business",
+        "description" : "Applies when calculating the number of days between two dates the count includes only business days."
+      }, {
+        "name" : "CALENDAR",
+        "displayName" : "Calendar",
+        "description" : "Applies when calculating the number of days between two dates the count includes all calendar days."
+      }, {
+        "name" : "CURRENCY_BUSINESS",
+        "displayName" : "CurrencyBusiness",
+        "description" : "Applies when calculating the number of days between two dates the count includes only currency business days."
+      }, {
+        "name" : "EXCHANGE_BUSINESS",
+        "displayName" : "ExchangeBusiness",
+        "description" : "Applies when calculating the number of days between two dates the count includes only stock exchange business days."
+      }, {
+        "name" : "SCHEDULED_TRADING_DAY",
+        "displayName" : "ScheduledTradingDay",
+        "description" : "Applies when calculating the number of days between two dates the count includes only scheduled trading days."
+      } ]
+    },
+    "description" : "Denotes the enumerated values to specify the day type classification used in counting the number of days between two dates.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.product.common.settlement.PercentageRule" : [ {
     "name" : "paymentPercent",
     "type" : "number",
@@ -17004,25 +17004,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.base.datetime.DateRange" : [ {
-    "name" : "startDate",
-    "type" : "date",
-    "description" : "The first date of a date range.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "endDate",
-    "type" : "date",
-    "description" : "The last date of a date range.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -17088,6 +17069,25 @@ export const attributesJson = {
       "name" : "Indx",
       "namespace" : "cdm.regulation"
     },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.datetime.DateRange" : [ {
+    "name" : "startDate",
+    "type" : "date",
+    "description" : "The first date of a date range.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "endDate",
+    "type" : "date",
+    "description" : "The last date of a date range.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
@@ -17441,35 +17441,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.event.position.PortfolioState" : [ {
-    "name" : "positions",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Position",
-      "namespace" : "cdm.event.position",
-      "description" : "A Position describes how much of a given Product is being held and constitutes the atomic element of a Portfolio."
-    },
-    "description" : "The list of positions, each containing a Quantity and a Product.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "lineage",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Lineage",
-      "namespace" : "cdm.event.common",
-      "description" : "A class to provide lineage information across lifecycle events through a pointer or set of pointers into the event(s), contract(s) and, possibly, payout components that the event is dependent on or relates to. As an example, if an contractFormation event is corrected, the correction event will have a lineage into the initial event, which takes the form of a globalKey into that initial contract formation event. Two referencing mechanisms are provided as part of the CDM: either the globalKey, which corresponds to the hash value of the CDM class which is referred to, or a reference qualifier which is meant to provide support for the ingestion of xml documents with id/href mechanisms. The CDM recommends the use of the globalKey and provides a default implementation which is accessible in the generated code through org.isda.cdm.globalKey.GlobalKeyHashCalculator. If implementers want to use an alternative hashing mechanism, the API in which they need to plug it is com.rosetta.model.lib.HashFunction."
-    },
-    "description" : "Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.FloatingAmountEvents" : [ {
     "name" : "failureToPayPrincipal",
     "type" : "boolean",
@@ -17536,6 +17507,35 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.event.position.PortfolioState" : [ {
+    "name" : "positions",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Position",
+      "namespace" : "cdm.event.position",
+      "description" : "A Position describes how much of a given Product is being held and constitutes the atomic element of a Portfolio."
+    },
+    "description" : "The list of positions, each containing a Quantity and a Product.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "lineage",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Lineage",
+      "namespace" : "cdm.event.common",
+      "description" : "A class to provide lineage information across lifecycle events through a pointer or set of pointers into the event(s), contract(s) and, possibly, payout components that the event is dependent on or relates to. As an example, if an contractFormation event is corrected, the correction event will have a lineage into the initial event, which takes the form of a globalKey into that initial contract formation event. Two referencing mechanisms are provided as part of the CDM: either the globalKey, which corresponds to the hash value of the CDM class which is referred to, or a reference qualifier which is meant to provide support for the ingestion of xml documents with id/href mechanisms. The CDM recommends the use of the globalKey and provides a default implementation which is accessible in the generated code through org.isda.cdm.globalKey.GlobalKeyHashCalculator. If implementers want to use an alternative hashing mechanism, the API in which they need to plug it is com.rosetta.model.lib.HashFunction."
+    },
+    "description" : "Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -17615,6 +17615,47 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.asset.floatingrate.FloatingRateProcessingDetails" : [ {
+    "name" : "rawRate",
+    "type" : "number",
+    "description" : "The raw or untreated rate, prior to any of the rate treatments.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "processingParameters",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "FloatingRateProcessingParameters",
+      "namespace" : "cdm.product.asset.floatingrate",
+      "description" : "Type to hold the processing parameters that should be or were used to calculate a floating amount.  These parameters can vary over a schedule so this type holds the acutal values applicable to this calculation."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "processedRate",
+    "type" : "number",
+    "description" : "The value of the rate after processing.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "spreadExclusiveRate",
+    "type" : "number",
+    "description" : "The value of the processed rate without the spread applied, for subsequent compounding, etc.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "cdm.event.position.AvailableInventory" : [ {
     "name" : "messageInformation",
     "type" : {
@@ -17669,47 +17710,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "*",
       "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.asset.floatingrate.FloatingRateProcessingDetails" : [ {
-    "name" : "rawRate",
-    "type" : "number",
-    "description" : "The raw or untreated rate, prior to any of the rate treatments.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "processingParameters",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "FloatingRateProcessingParameters",
-      "namespace" : "cdm.product.asset.floatingrate",
-      "description" : "Type to hold the processing parameters that should be or were used to calculate a floating amount.  These parameters can vary over a schedule so this type holds the acutal values applicable to this calculation."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "processedRate",
-    "type" : "number",
-    "description" : "The value of the rate after processing.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "spreadExclusiveRate",
-    "type" : "number",
-    "description" : "The value of the processed rate without the spread applied, for subsequent compounding, etc.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -26767,25 +26767,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.base.staticdata.asset.credit.NotDomesticCurrency" : [ {
-    "name" : "applicable",
-    "type" : "boolean",
-    "description" : "Indicates whether the Not Domestic Currency provision is applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "currency",
-    "type" : "string",
-    "description" : "An explicit specification of the domestic currency. The list of valid currencies is not presently positioned as an enumeration as part of the CDM because that scope is limited to the values specified by ISDA and FpML. As a result, implementers have to make reference to the relevant standard, such as the ISO 4217 standard for currency codes.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : true
-  } ],
   "cdm.product.asset.DividendPayoutRatio" : [ {
     "name" : "totalRatio",
     "type" : "number",
@@ -26828,6 +26809,25 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.base.staticdata.asset.credit.NotDomesticCurrency" : [ {
+    "name" : "applicable",
+    "type" : "boolean",
+    "description" : "Indicates whether the Not Domestic Currency provision is applicable.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "currency",
+    "type" : "string",
+    "description" : "An explicit specification of the domestic currency. The list of valid currencies is not presently positioned as an enumeration as part of the CDM because that scope is limited to the values specified by ISDA and FpML. As a result, implementers have to make reference to the relevant standard, such as the ISO 4217 standard for currency codes.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : true
+  } ],
   "cdm.product.template.InitialMarginCalculation" : [ {
     "name" : "marginRatio",
     "type" : "number",
@@ -26861,6 +26861,35 @@ export const attributesJson = {
     "description" : "An element defining a haircut percentage threshold which is the value above (when it's lower than initial haircut) or below (when it's higher than initial haircut) which parties agree they will not call a margin from each other.",
     "cardinality" : {
       "upperBound" : "2",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.template.StrategyFeature" : [ {
+    "name" : "strikeSpread",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "StrikeSpread",
+      "namespace" : "cdm.product.template",
+      "description" : "A class for defining a strike spread feature."
+    },
+    "description" : "Definition of the upper strike in a strike spread.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "calendarSpread",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CalendarSpread",
+      "namespace" : "cdm.product.template",
+      "description" : "A type for defining a calendar spread feature."
+    },
+    "description" : "Definition of the later expiration date in a calendar spread.",
+    "cardinality" : {
+      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -26992,35 +27021,6 @@ export const attributesJson = {
     "description" : "A human readable document, for example a confirmation.",
     "cardinality" : {
       "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.template.StrategyFeature" : [ {
-    "name" : "strikeSpread",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "StrikeSpread",
-      "namespace" : "cdm.product.template",
-      "description" : "A class for defining a strike spread feature."
-    },
-    "description" : "Definition of the upper strike in a strike spread.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "calendarSpread",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "CalendarSpread",
-      "namespace" : "cdm.product.template",
-      "description" : "A type for defining a calendar spread feature."
-    },
-    "description" : "Definition of the later expiration date in a calendar spread.",
-    "cardinality" : {
-      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -27266,28 +27266,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.base.datetime.CustomisableOffset" : [ {
-    "name" : "offset",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Offset",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class defining an offset used in calculating a new date relative to a reference date, e.g. calendar days, business days, commodity Business days, etc."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "customProvision",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.base.staticdata.party.AncillaryEntity" : [ {
     "name" : "ancillaryParty",
     "type" : {
@@ -27353,6 +27331,28 @@ export const attributesJson = {
       "namespace" : "cdm.base.staticdata.party",
       "description" : "A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI)."
     },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.datetime.CustomisableOffset" : [ {
+    "name" : "offset",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Offset",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class defining an offset used in calculating a new date relative to a reference date, e.g. calendar days, business days, commodity Business days, etc."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "customProvision",
+    "type" : "string",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -27555,6 +27555,21 @@ export const attributesJson = {
     "description" : "An array holding the list of inventory being described. Each element in the inventoryRecord array represents an individual piece of inventory i.e. a security.",
     "cardinality" : {
       "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.asset.FixedRateSpecification" : [ {
+    "name" : "rateSchedule",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "RateSchedule",
+      "namespace" : "cdm.product.common.schedule",
+      "description" : "A class defining a schedule of rates or amounts in terms of an initial value and then a series of step date and value pairs. On each step date the rate or amount changes to the new step value. The series of step date and value pairs are optional. If not specified, this implies that the initial value remains unchanged over time."
+    },
+    "description" : "The fixed rate or fixed rate schedule expressed as explicit fixed rates and dates. In the case of a schedule, the step dates may be subject to adjustment in accordance with any adjustments specified in calculationPeriodDatesAdjustments.",
+    "cardinality" : {
+      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -28491,21 +28506,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.product.asset.FixedRateSpecification" : [ {
-    "name" : "rateSchedule",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "RateSchedule",
-      "namespace" : "cdm.product.common.schedule",
-      "description" : "A class defining a schedule of rates or amounts in terms of an initial value and then a series of step date and value pairs. On each step date the rate or amount changes to the new step value. The series of step date and value pairs are optional. If not specified, this implies that the initial value remains unchanged over time."
-    },
-    "description" : "The fixed rate or fixed rate schedule expressed as explicit fixed rates and dates. In the case of a schedule, the step dates may be subject to adjustment in accordance with any adjustments specified in calculationPeriodDatesAdjustments.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.PriceReturnTerms" : [ {
     "name" : "valuationPriceInitial",
     "type" : {
@@ -28842,57 +28842,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.base.datetime.Frequency" : [ {
-    "name" : "periodMultiplier",
-    "type" : "number",
-    "description" : "A time period multiplier, e.g. 1, 2, or 3. If the period value is T (Term) then period multiplier must contain the value 1.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "period",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "PeriodExtendedEnum",
-      "values" : [ {
-        "name" : "H",
-        "displayName" : "H",
-        "description" : "Hour"
-      }, {
-        "name" : "D",
-        "displayName" : "D",
-        "description" : "Day"
-      }, {
-        "name" : "W",
-        "displayName" : "W",
-        "description" : "Week"
-      }, {
-        "name" : "M",
-        "displayName" : "M",
-        "description" : "Month"
-      }, {
-        "name" : "Y",
-        "displayName" : "Y",
-        "description" : "Year"
-      }, {
-        "name" : "T",
-        "displayName" : "T",
-        "description" : "Term. The period commencing on the effective date and ending on the termination date. The T period always appears in association with periodMultiplier = 1, and the notation is intended for use in contexts where the interval thus qualified (e.g. accrual period, payment period, reset period, ...) spans the entire term of the trade."
-      }, {
-        "name" : "C",
-        "displayName" : "C",
-        "description" : "CalculationPeriod - the period corresponds to the calculation period   For example, used in the Commodity Markets to indicate that a reference contract is the one that corresponds to the period of the calculation period."
-      } ]
-    },
-    "description" : "A time period, e.g. a day, week, month, year or term of the stream.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.event.common.PartyChangeInstruction" : [ {
     "name" : "counterparty",
     "type" : {
@@ -28946,6 +28895,57 @@ export const attributesJson = {
     "description" : "The identifier to be assigned to the new trade post change of party.",
     "cardinality" : {
       "upperBound" : "*",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.datetime.Frequency" : [ {
+    "name" : "periodMultiplier",
+    "type" : "number",
+    "description" : "A time period multiplier, e.g. 1, 2, or 3. If the period value is T (Term) then period multiplier must contain the value 1.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "period",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "PeriodExtendedEnum",
+      "values" : [ {
+        "name" : "H",
+        "displayName" : "H",
+        "description" : "Hour"
+      }, {
+        "name" : "D",
+        "displayName" : "D",
+        "description" : "Day"
+      }, {
+        "name" : "W",
+        "displayName" : "W",
+        "description" : "Week"
+      }, {
+        "name" : "M",
+        "displayName" : "M",
+        "description" : "Month"
+      }, {
+        "name" : "Y",
+        "displayName" : "Y",
+        "description" : "Year"
+      }, {
+        "name" : "T",
+        "displayName" : "T",
+        "description" : "Term. The period commencing on the effective date and ending on the termination date. The T period always appears in association with periodMultiplier = 1, and the notation is intended for use in contexts where the interval thus qualified (e.g. accrual period, payment period, reset period, ...) spans the entire term of the trade."
+      }, {
+        "name" : "C",
+        "displayName" : "C",
+        "description" : "CalculationPeriod - the period corresponds to the calculation period   For example, used in the Commodity Markets to indicate that a reference contract is the one that corresponds to the period of the calculation period."
+      } ]
+    },
+    "description" : "A time period, e.g. a day, week, month, year or term of the stream.",
+    "cardinality" : {
+      "upperBound" : "1",
       "lowerBound" : "1"
     },
     "metaField" : false
@@ -29129,6 +29129,91 @@ export const attributesJson = {
     "description" : "Represents a party's granular account information, which may be used in subsequent internal processing.",
     "cardinality" : {
       "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.asset.DividendPeriod" : [ {
+    "name" : "startDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DividendPaymentDate",
+      "namespace" : "cdm.product.asset",
+      "description" : "A class describing the date on which the dividend will be paid/received. This class is also used to specify the date on which the FX rate will be determined, when applicable."
+    },
+    "description" : "Dividend period start date.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "endDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DividendPaymentDate",
+      "namespace" : "cdm.product.asset",
+      "description" : "A class describing the date on which the dividend will be paid/received. This class is also used to specify the date on which the FX rate will be determined, when applicable."
+    },
+    "description" : "Dividend period end date.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "dateAdjustments",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "BusinessDayAdjustments",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class defining the business day convention and financial business centers used for adjusting any relevant date if it would otherwise fall on a day that is not a business day in the specified business center."
+    },
+    "description" : "Date adjustments for all unadjusted dates in this dividend period.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "basketConstituent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Product",
+      "namespace" : "cdm.product.template",
+      "description" : "Defines the product that is the subject of a tradable product definition, an underlying product definition, a physical exercise, a position, or other purposes."
+    },
+    "description" : "For basket undeliers, reference to the basket component which is paying dividends in the specified period.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "dividendPaymentDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DividendPaymentDate",
+      "namespace" : "cdm.product.asset",
+      "description" : "A class describing the date on which the dividend will be paid/received. This class is also used to specify the date on which the FX rate will be determined, when applicable."
+    },
+    "description" : "Specifies when the dividend will be paid to the receiver of the equity return. Has the meaning as defined in the ISDA 2002 Equity Derivatives Definitions. Is not applicable in the case of a dividend reinvestment election.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "dividendValuationDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdjustableOrRelativeDate",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
+    },
+    "description" : "Specifies the dividend valuation dates of the swap.",
+    "cardinality" : {
+      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -29465,91 +29550,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.product.asset.DividendPeriod" : [ {
-    "name" : "startDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DividendPaymentDate",
-      "namespace" : "cdm.product.asset",
-      "description" : "A class describing the date on which the dividend will be paid/received. This class is also used to specify the date on which the FX rate will be determined, when applicable."
-    },
-    "description" : "Dividend period start date.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "endDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DividendPaymentDate",
-      "namespace" : "cdm.product.asset",
-      "description" : "A class describing the date on which the dividend will be paid/received. This class is also used to specify the date on which the FX rate will be determined, when applicable."
-    },
-    "description" : "Dividend period end date.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "dateAdjustments",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "BusinessDayAdjustments",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class defining the business day convention and financial business centers used for adjusting any relevant date if it would otherwise fall on a day that is not a business day in the specified business center."
-    },
-    "description" : "Date adjustments for all unadjusted dates in this dividend period.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "basketConstituent",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Product",
-      "namespace" : "cdm.product.template",
-      "description" : "Defines the product that is the subject of a tradable product definition, an underlying product definition, a physical exercise, a position, or other purposes."
-    },
-    "description" : "For basket undeliers, reference to the basket component which is paying dividends in the specified period.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "dividendPaymentDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DividendPaymentDate",
-      "namespace" : "cdm.product.asset",
-      "description" : "A class describing the date on which the dividend will be paid/received. This class is also used to specify the date on which the FX rate will be determined, when applicable."
-    },
-    "description" : "Specifies when the dividend will be paid to the receiver of the equity return. Has the meaning as defined in the ISDA 2002 Equity Derivatives Definitions. Is not applicable in the case of a dividend reinvestment election.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "dividendValuationDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AdjustableOrRelativeDate",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
-    },
-    "description" : "Specifies the dividend valuation dates of the swap.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.event.common.BillingRecord" : [ {
     "name" : "tradeState",
     "type" : {
@@ -29732,75 +29732,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.legaldocumentation.common.ClosedState" : [ {
-    "name" : "state",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "ClosedStateEnum",
-      "values" : [ {
-        "name" : "ALLOCATED",
-        "displayName" : "Allocated",
-        "description" : "The execution or contract has been allocated."
-      }, {
-        "name" : "CANCELLED",
-        "displayName" : "Cancelled",
-        "description" : "The execution or contract has been cancelled."
-      }, {
-        "name" : "EXERCISED",
-        "displayName" : "Exercised",
-        "description" : "The (option) contract has been exercised."
-      }, {
-        "name" : "EXPIRED",
-        "displayName" : "Expired",
-        "description" : "The (option) contract has expired without being exercised."
-      }, {
-        "name" : "MATURED",
-        "displayName" : "Matured",
-        "description" : "The contract has reached its contractual termination date."
-      }, {
-        "name" : "NOVATED",
-        "displayName" : "Novated",
-        "description" : "The contract has been novated. This state applies to the stepped-out contract component of the novation event."
-      }, {
-        "name" : "TERMINATED",
-        "displayName" : "Terminated",
-        "description" : "The contract has been subject of an early termination event."
-      } ]
-    },
-    "description" : "The qualification of what gave way to the contract or execution closure, e.g. allocation, termination, ...",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "activityDate",
-    "type" : "date",
-    "description" : "The activity date on which the closing state took place, i.e. either the event date of the closing event (e.g. option exercise, contract early termination) or the contractual termination date.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "effectiveDate",
-    "type" : "date",
-    "description" : "The date on which the closing event contractually takes effect, when different from the activity date. When an explicit event effective date attribute is associated with the closing event, it will be that date. In the case of a cancellation event, it will be the date on which the cancelled event took place.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "lastPaymentDate",
-    "type" : "date",
-    "description" : "The date associated with the last payment in relation to the artefact (e.g. contract) to which this closed state applies. As an example, in the case of an early termination event, it would be the settlement date of the associated fee, if applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.DividendDateReference" : [ {
     "name" : "dateReference",
     "type" : {
@@ -29939,6 +29870,75 @@ export const attributesJson = {
       "description" : "A class defining an offset used in calculating a new date relative to a reference date, e.g. calendar days, business days, commodity Business days, etc."
     },
     "description" : "Only to be used when SharePayment has been specified in the dividendDateReference element. The number of Currency Business Days following the day on which the Issuer of the Shares pays the relevant dividend to holders of record of the Shares.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.legaldocumentation.common.ClosedState" : [ {
+    "name" : "state",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "ClosedStateEnum",
+      "values" : [ {
+        "name" : "ALLOCATED",
+        "displayName" : "Allocated",
+        "description" : "The execution or contract has been allocated."
+      }, {
+        "name" : "CANCELLED",
+        "displayName" : "Cancelled",
+        "description" : "The execution or contract has been cancelled."
+      }, {
+        "name" : "EXERCISED",
+        "displayName" : "Exercised",
+        "description" : "The (option) contract has been exercised."
+      }, {
+        "name" : "EXPIRED",
+        "displayName" : "Expired",
+        "description" : "The (option) contract has expired without being exercised."
+      }, {
+        "name" : "MATURED",
+        "displayName" : "Matured",
+        "description" : "The contract has reached its contractual termination date."
+      }, {
+        "name" : "NOVATED",
+        "displayName" : "Novated",
+        "description" : "The contract has been novated. This state applies to the stepped-out contract component of the novation event."
+      }, {
+        "name" : "TERMINATED",
+        "displayName" : "Terminated",
+        "description" : "The contract has been subject of an early termination event."
+      } ]
+    },
+    "description" : "The qualification of what gave way to the contract or execution closure, e.g. allocation, termination, ...",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "activityDate",
+    "type" : "date",
+    "description" : "The activity date on which the closing state took place, i.e. either the event date of the closing event (e.g. option exercise, contract early termination) or the contractual termination date.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "effectiveDate",
+    "type" : "date",
+    "description" : "The date on which the closing event contractually takes effect, when different from the activity date. When an explicit event effective date attribute is associated with the closing event, it will be that date. In the case of a cancellation event, it will be the date on which the cancelled event took place.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "lastPaymentDate",
+    "type" : "date",
+    "description" : "The date associated with the last payment in relation to the artefact (e.g. contract) to which this closed state applies. As an example, in the case of an early termination event, it would be the settlement date of the associated fee, if applicable.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -31239,6 +31239,83 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.asset.Tranche" : [ {
+    "name" : "attachmentPoint",
+    "type" : "number",
+    "description" : "Lower bound percentage of the loss that the Tranche can endure, expressed as a decimal. An attachment point of 5% would be represented as 0.05. The difference between Attachment and Exhaustion points is called the width of the Tranche.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "exhaustionPoint",
+    "type" : "number",
+    "description" : "Upper bound percentage of the loss that the Tranche can endure, expressed as a decimal. An exhaustion point of 5% would be represented as 0.05. The difference between Attachment and Exhaustion points is call the width of the Tranche.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "incurredRecoveryApplicable",
+    "type" : "boolean",
+    "description" : "Outstanding Swap Notional Amount is defined at any time on any day, as the greater of: (a) Zero; If Incurred Recovery Amount Applicable: (b) The Original Swap Notional Amount minus the sum of all Incurred Loss Amounts and all Incurred Recovery Amounts (if any) determined under this Confirmation at or prior to such time.Incurred Recovery Amount not populated: (b) The Original Swap Notional Amount minus the sum of all Incurred Loss Amounts determined under this Confirmation at or prior to such time.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.common.schedule.CalculationPeriodData" : [ {
+    "name" : "startDate",
+    "type" : "date",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "endDate",
+    "type" : "date",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "daysInPeriod",
+    "type" : "number",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "daysInLeapYearPeriod",
+    "type" : "number",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "isFirstPeriod",
+    "type" : "boolean",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "isLastPeriod",
+    "type" : "boolean",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "cdm.observable.event.CreditEventNotice" : [ {
     "name" : "notifyingParty",
     "type" : {
@@ -32111,83 +32188,6 @@ export const attributesJson = {
       "namespace" : "cdm.observable.event"
     },
     "description" : "A specified condition to settlement. Publicly available information means information that reasonably confirms any of the facts relevant to determining that a credit event or potential repudiation/moratorium, as applicable, has occurred. The ISDA defined list (2003) is the market standard and is considered comprehensive, and a minimum of two differing public sources must have published the relevant information, to declare a Credit Event. ISDA 2003 Term: Notice of Publicly Available Information Applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.common.schedule.CalculationPeriodData" : [ {
-    "name" : "startDate",
-    "type" : "date",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "endDate",
-    "type" : "date",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "daysInPeriod",
-    "type" : "number",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "daysInLeapYearPeriod",
-    "type" : "number",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "isFirstPeriod",
-    "type" : "boolean",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "isLastPeriod",
-    "type" : "boolean",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.asset.Tranche" : [ {
-    "name" : "attachmentPoint",
-    "type" : "number",
-    "description" : "Lower bound percentage of the loss that the Tranche can endure, expressed as a decimal. An attachment point of 5% would be represented as 0.05. The difference between Attachment and Exhaustion points is called the width of the Tranche.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "exhaustionPoint",
-    "type" : "number",
-    "description" : "Upper bound percentage of the loss that the Tranche can endure, expressed as a decimal. An exhaustion point of 5% would be represented as 0.05. The difference between Attachment and Exhaustion points is call the width of the Tranche.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "incurredRecoveryApplicable",
-    "type" : "boolean",
-    "description" : "Outstanding Swap Notional Amount is defined at any time on any day, as the greater of: (a) Zero; If Incurred Recovery Amount Applicable: (b) The Original Swap Notional Amount minus the sum of all Incurred Loss Amounts and all Incurred Recovery Amounts (if any) determined under this Confirmation at or prior to such time.Incurred Recovery Amount not populated: (b) The Original Swap Notional Amount minus the sum of all Incurred Loss Amounts determined under this Confirmation at or prior to such time.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -38452,20 +38452,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.product.template.CalendarSpread" : [ {
-    "name" : "expirationDateTwo",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AdjustableOrRelativeDate",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.DividendCurrency" : [ {
     "name" : "currency",
     "type" : "string",
@@ -38598,6 +38584,20 @@ export const attributesJson = {
       "lowerBound" : "0"
     },
     "metaField" : true
+  } ],
+  "cdm.product.template.CalendarSpread" : [ {
+    "name" : "expirationDateTwo",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdjustableOrRelativeDate",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
   } ],
   "cdm.event.workflow.CreditLimitUtilisation" : [ {
     "name" : "executed",
@@ -40263,6 +40263,67 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
+  "cdm.event.common.Reset" : [ {
+    "name" : "resetValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Price",
+      "namespace" : "cdm.observable.asset",
+      "description" : "Specifies a price as a single value to be associated to a financial product. This data type extends PriceSchedule and requires that only the amount value exists."
+    },
+    "description" : "Specifies the reset or fixing value. The fixing value could be a cash price, interest rate, or other value.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "resetDate",
+    "type" : "date",
+    "description" : "Specifies the date on which the reset occurred.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "rateRecordDate",
+    "type" : "date",
+    "description" : "Specifies the 'Rate Record Day' for a Fallback rate.  Fallback rate fixing processes typically set the fixing rate in arrears, i.e., the Fallback Rate corresponding to a Rate Record Date is set at the end of the interest accural period.  When this applies, Reset->resetDate occurs at the end of the interest period, and the Reset->rateRecordDate occurs near the start of the interest period.  The Reset->rateRecordDate and Reset->observations->observationIdentifier->observationDate will differ if a Fallback rate is unavailable on the Rate Record Date, and the latest previous available rate is used as the observation.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "observations",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Observation",
+      "namespace" : "cdm.observable.event",
+      "description" : "Defines a single, numerical value that was observed in the marketplace. Observations of market data are made independently to business events or trade life-cycle events, so data instances of Observation can be created independently of any other model type, hence it is annotated as a root type. Observations will be broadly reused in many situations, so references to Observation are supported via the 'key' annotation."
+    },
+    "description" : "Represents an audit of the observations used to produce the reset value. If multiple observations were necessary to produce the reset value, the aggregation method should be defined on the payout.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
+    },
+    "metaField" : true
+  }, {
+    "name" : "averagingMethodology",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AveragingCalculation",
+      "namespace" : "cdm.product.template",
+      "description" : "Defines parameters for use in cases when a valuation or other term is based on an average of market observations."
+    },
+    "description" : "Identifies the aggregation method to use in the case where multiple observations are used to compute the reset value and the method is not defined in a payout.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.observable.event.CreditEvents" : [ {
     "name" : "bankruptcy",
     "type" : "boolean",
@@ -40416,104 +40477,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.event.common.Reset" : [ {
-    "name" : "resetValue",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Price",
-      "namespace" : "cdm.observable.asset",
-      "description" : "Specifies a price as a single value to be associated to a financial product. This data type extends PriceSchedule and requires that only the amount value exists."
-    },
-    "description" : "Specifies the reset or fixing value. The fixing value could be a cash price, interest rate, or other value.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "resetDate",
-    "type" : "date",
-    "description" : "Specifies the date on which the reset occurred.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "rateRecordDate",
-    "type" : "date",
-    "description" : "Specifies the 'Rate Record Day' for a Fallback rate.  Fallback rate fixing processes typically set the fixing rate in arrears, i.e., the Fallback Rate corresponding to a Rate Record Date is set at the end of the interest accural period.  When this applies, Reset->resetDate occurs at the end of the interest period, and the Reset->rateRecordDate occurs near the start of the interest period.  The Reset->rateRecordDate and Reset->observations->observationIdentifier->observationDate will differ if a Fallback rate is unavailable on the Rate Record Date, and the latest previous available rate is used as the observation.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "observations",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Observation",
-      "namespace" : "cdm.observable.event",
-      "description" : "Defines a single, numerical value that was observed in the marketplace. Observations of market data are made independently to business events or trade life-cycle events, so data instances of Observation can be created independently of any other model type, hence it is annotated as a root type. Observations will be broadly reused in many situations, so references to Observation are supported via the 'key' annotation."
-    },
-    "description" : "Represents an audit of the observations used to produce the reset value. If multiple observations were necessary to produce the reset value, the aggregation method should be defined on the payout.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
-    },
-    "metaField" : true
-  }, {
-    "name" : "averagingMethodology",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AveragingCalculation",
-      "namespace" : "cdm.product.template",
-      "description" : "Defines parameters for use in cases when a valuation or other term is based on an average of market observations."
-    },
-    "description" : "Identifies the aggregation method to use in the case where multiple observations are used to compute the reset value and the method is not defined in a payout.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.observable.event.FailureToPay" : [ {
-    "name" : "applicable",
-    "type" : "boolean",
-    "description" : "Indicates whether the failure to pay provision is applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "gracePeriodExtension",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "GracePeriodExtension",
-      "namespace" : "cdm.observable.event"
-    },
-    "description" : "If this element is specified, indicates whether or not a grace period extension is applicable. ISDA 2003 Term: Grace Period Extension Applicable.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "paymentRequirement",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Money",
-      "namespace" : "cdm.observable.asset",
-      "description" : "Defines a monetary amount in a specified currency."
-    },
-    "description" : "Specifies a threshold for the failure to pay credit event. Market standard is USD 1,000,000 (JPY 100,000,000 for Japanese Yen trades) or its equivalent in the relevant obligation currency. This is applied on an aggregate basis across all Obligations of the Reference Entity. Intended to prevent technical/operational errors from triggering credit events. ISDA 2003 Term: Payment Requirement",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.common.settlement.PhysicalSettlementTerms" : [ {
     "name" : "clearedPhysicalSettlement",
     "type" : "boolean",
@@ -40620,6 +40583,43 @@ export const attributesJson = {
     "name" : "sixtyBusinessDaySettlementCap",
     "type" : "boolean",
     "description" : "If this element is specified and set to 'true', for a transaction documented under the 2003 ISDA Credit Derivatives Definitions, has the effect of incorporating the language set forth below into the confirmation. The section references are to the 2003 ISDA Credit Derivatives Definitions. Notwithstanding Section 1.7 or any provisions of Sections 9.9 or 9.10 to the contrary, but without prejudice to Section 9.3 and (where applicable) Sections 9.4, 9.5 and 9.6, if the Termination Date has not occurred on or prior to the date that is 60 Business Days following the Physical Settlement Date, such 60th Business Day shall be deemed to be the Termination Date with respect to this Transaction except in relation to any portion of the Transaction (an 'Affected Portion') in respect of which: (1) a valid notice of Buy-in Price has been delivered that is effective fewer than three Business Days prior to such 60th Business Day, in which case the Termination Date for that Affected Portion shall be the third Business Day following the date on which such notice is effective; or (2) Buyer has purchased but not Delivered Deliverable Obligations validly specified by Seller pursuant to Section 9.10(b), in which case the Termination Date for that Affected Portion shall be the tenth Business Day following the date on which Seller validly specified such Deliverable Obligations to Buyer.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.observable.event.FailureToPay" : [ {
+    "name" : "applicable",
+    "type" : "boolean",
+    "description" : "Indicates whether the failure to pay provision is applicable.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "gracePeriodExtension",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "GracePeriodExtension",
+      "namespace" : "cdm.observable.event"
+    },
+    "description" : "If this element is specified, indicates whether or not a grace period extension is applicable. ISDA 2003 Term: Grace Period Extension Applicable.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "paymentRequirement",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Money",
+      "namespace" : "cdm.observable.asset",
+      "description" : "Defines a monetary amount in a specified currency."
+    },
+    "description" : "Specifies a threshold for the failure to pay credit event. Market standard is USD 1,000,000 (JPY 100,000,000 for Japanese Yen trades) or its equivalent in the relevant obligation currency. This is applied on an aggregate basis across all Obligations of the Reference Entity. Intended to prevent technical/operational errors from triggering credit events. ISDA 2003 Term: Payment Requirement",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -46002,19 +46002,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.regulation.FinInstrm" : [ {
-    "name" : "othr",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Othr",
-      "namespace" : "cdm.regulation"
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.InflationRateSpecification" : [ {
     "name" : "inflationLag",
     "type" : {
@@ -46347,6 +46334,19 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.regulation.FinInstrm" : [ {
+    "name" : "othr",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Othr",
+      "namespace" : "cdm.regulation"
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -47948,6 +47948,49 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.template.Basket" : [ {
+    "name" : "basketConstituent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Product",
+      "namespace" : "cdm.product.template",
+      "description" : "Defines the product that is the subject of a tradable product definition, an underlying product definition, a physical exercise, a position, or other purposes."
+    },
+    "description" : "Identifies the constituents of the basket",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "productTaxonomy",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "ProductTaxonomy",
+      "namespace" : "cdm.base.staticdata.asset.common",
+      "description" : "Specifies the product taxonomy, which is composed of a taxonomy value and a taxonomy source."
+    },
+    "description" : "Specifies the product taxonomy, which is composed of a taxonomy value and a taxonomy source.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "productIdentifier",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "ProductIdentifier",
+      "namespace" : "cdm.base.staticdata.asset.common",
+      "description" : "Comprises an identifier and a source. The associated metadata key denotes the ability to associate a hash value to the ProductIdentifier instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage."
+    },
+    "description" : "Comprises an identifier and a source. The associated metadata key denotes the ability to associate a hash value to the ProductIdentifier instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : true
+  } ],
   "cdm.observable.asset.calculatedrate.ObservationShiftCalculation" : [ {
     "name" : "offsetDays",
     "type" : "number",
@@ -47996,49 +48039,6 @@ export const attributesJson = {
       "lowerBound" : "0"
     },
     "metaField" : false
-  } ],
-  "cdm.product.template.Basket" : [ {
-    "name" : "basketConstituent",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Product",
-      "namespace" : "cdm.product.template",
-      "description" : "Defines the product that is the subject of a tradable product definition, an underlying product definition, a physical exercise, a position, or other purposes."
-    },
-    "description" : "Identifies the constituents of the basket",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "productTaxonomy",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "ProductTaxonomy",
-      "namespace" : "cdm.base.staticdata.asset.common",
-      "description" : "Specifies the product taxonomy, which is composed of a taxonomy value and a taxonomy source."
-    },
-    "description" : "Specifies the product taxonomy, which is composed of a taxonomy value and a taxonomy source.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "productIdentifier",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "ProductIdentifier",
-      "namespace" : "cdm.base.staticdata.asset.common",
-      "description" : "Comprises an identifier and a source. The associated metadata key denotes the ability to associate a hash value to the ProductIdentifier instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage."
-    },
-    "description" : "Comprises an identifier and a source. The associated metadata key denotes the ability to associate a hash value to the ProductIdentifier instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : true
   } ],
   "cdm.product.asset.floatingrate.FloatingRateProcessingParameters" : [ {
     "name" : "initialRate",
@@ -49440,6 +49440,21 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.template.PassThrough" : [ {
+    "name" : "passThroughItem",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "PassThroughItem",
+      "namespace" : "cdm.product.template",
+      "description" : "Class to represent a single pass through payment."
+    },
+    "description" : "One to many pass through payment items.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "cdm.legaldocumentation.common.ContractualTermsSupplement" : [ {
     "name" : "contractualTermsSupplementType",
     "type" : {
@@ -49752,21 +49767,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.template.PassThrough" : [ {
-    "name" : "passThroughItem",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "PassThroughItem",
-      "namespace" : "cdm.product.template",
-      "description" : "Class to represent a single pass through payment."
-    },
-    "description" : "One to many pass through payment items.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -50717,81 +50717,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.base.staticdata.asset.common.ProductIdentifier" : [ {
-    "name" : "identifier",
-    "type" : "string",
-    "description" : "Provides an identifier associated with a specific product.  The identifier is unique within the public source specified in the source attribute.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : true
-  }, {
-    "name" : "source",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "ProductIdTypeEnum",
-      "values" : [ {
-        "name" : "BBGID",
-        "displayName" : "BBGID",
-        "description" : "Published by Bloomberg, the BBGID is a 12-digit alphanumeric randomly generated ID covering active and non-active securities."
-      }, {
-        "name" : "BBGTICKER",
-        "displayName" : "BBGTICKER",
-        "description" : "Published by Bloomberg as a short code to identify publicly trades shares of a particular stock on a specific exchange."
-      }, {
-        "name" : "CUSIP",
-        "displayName" : "CUSIP",
-        "description" : "Derived from the Committee on Uniform Security Identification Procedures, CUSIPs are 9-character identifiers that capture an issue’s important differentiating characteristics for issuers and their financial instruments in the U.S. and Canada."
-      }, {
-        "name" : "FIGI",
-        "displayName" : "FIGI",
-        "description" : "Issued under the guidelines of the Object Management Group, the Financial Instrument Global Identifier (FIGI) is a 12 character, alphanumeric, randomly generated ID covering hundreds of millions of active and inactive instruments. The identifier acts as a Uniform Resource Identifier (URI) to link to a set of metadata that uniquely and clearly describes the instrument."
-      }, {
-        "name" : "ISDACRP",
-        "displayName" : "ISDACRP",
-        "description" : "Issued by the International Swaps Dealers Association as a string representing a Commodity Reference Price used for purposes of determining a relevant price for an underlying commodity in an OTC derivatives contract."
-      }, {
-        "name" : "ISIN",
-        "displayName" : "ISIN",
-        "description" : "Issued by The International Securities Identification Number (ISIN) Organization, the ISIN is a 12-character alpha-numerical code used to uniformly identify a security for trading and settlement purposes. Securities with which ISINs can be used include debt securities, such as notes or bonds as well shares, such as common stock or shares of a fund, options, derivatives, and futures. The ISIN structure is defined in ISO 6166."
-      }, {
-        "name" : "NAME",
-        "displayName" : "Name",
-        "description" : "The name of the product."
-      }, {
-        "name" : "RIC",
-        "displayName" : "RIC",
-        "description" : "Issued by Refinitiv (formerly Reuters), the Reuters Instrument Codes(RIC) uniquely identifies financial instruments, including where they are traded."
-      }, {
-        "name" : "OTHER",
-        "displayName" : "Other",
-        "description" : "Used when the source is not otherwise in this enumerated list because it is internal or other reasons.  The source can be identified in the scheme which is part of the identifier attribute."
-      }, {
-        "name" : "SICOVAM",
-        "displayName" : "Sicovam",
-        "description" : "Issued by the French Société Interprofessionnelle pour la Compensation des Valeurs Mobilières (SICOVAM) to identify French securities listed on French stock exchanges."
-      }, {
-        "name" : "SEDOL",
-        "displayName" : "SEDOL",
-        "description" : "Assigned by the London Stock Exchange, the Stock Exchange Daily Official List (SEDOL) is a list of security identifiers used in the United Kingdom and Ireland for clearing purposes.  SEDOLs serve as the National Securities Identifying Number for all securities issued in the United Kingdom and are therefore part of the security's ISIN as well."
-      }, {
-        "name" : "UPI",
-        "displayName" : "UPI",
-        "description" : "Assigned by the Derivatives Service Bureau Ltd (DSB), the Unique Product Identifier (UPI) is a unique code to describe an over-the-counter (OTC) derivatives product.  The UPI is used for identifying the product in transaction reporting data."
-      }, {
-        "name" : "WERTPAPIER",
-        "displayName" : "Wertpapier",
-        "description" : "Issued by the Institute for the Issuance and Administration of Securities in Germany (Securities Information), the Wertpapierkennnummer (WKN, WPKN, WPK or simply Wert) consists of six digits or capital letters (excluding I and O), and no check digit. It is used to identify German securities."
-      } ]
-    },
-    "description" : "Defines the source of the identifier.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.VarianceReturnTerms" : [ {
     "name" : "varianceStrikePrice",
     "type" : {
@@ -51043,6 +50968,81 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.staticdata.asset.common.ProductIdentifier" : [ {
+    "name" : "identifier",
+    "type" : "string",
+    "description" : "Provides an identifier associated with a specific product.  The identifier is unique within the public source specified in the source attribute.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : true
+  }, {
+    "name" : "source",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "ProductIdTypeEnum",
+      "values" : [ {
+        "name" : "BBGID",
+        "displayName" : "BBGID",
+        "description" : "Published by Bloomberg, the BBGID is a 12-digit alphanumeric randomly generated ID covering active and non-active securities."
+      }, {
+        "name" : "BBGTICKER",
+        "displayName" : "BBGTICKER",
+        "description" : "Published by Bloomberg as a short code to identify publicly trades shares of a particular stock on a specific exchange."
+      }, {
+        "name" : "CUSIP",
+        "displayName" : "CUSIP",
+        "description" : "Derived from the Committee on Uniform Security Identification Procedures, CUSIPs are 9-character identifiers that capture an issue’s important differentiating characteristics for issuers and their financial instruments in the U.S. and Canada."
+      }, {
+        "name" : "FIGI",
+        "displayName" : "FIGI",
+        "description" : "Issued under the guidelines of the Object Management Group, the Financial Instrument Global Identifier (FIGI) is a 12 character, alphanumeric, randomly generated ID covering hundreds of millions of active and inactive instruments. The identifier acts as a Uniform Resource Identifier (URI) to link to a set of metadata that uniquely and clearly describes the instrument."
+      }, {
+        "name" : "ISDACRP",
+        "displayName" : "ISDACRP",
+        "description" : "Issued by the International Swaps Dealers Association as a string representing a Commodity Reference Price used for purposes of determining a relevant price for an underlying commodity in an OTC derivatives contract."
+      }, {
+        "name" : "ISIN",
+        "displayName" : "ISIN",
+        "description" : "Issued by The International Securities Identification Number (ISIN) Organization, the ISIN is a 12-character alpha-numerical code used to uniformly identify a security for trading and settlement purposes. Securities with which ISINs can be used include debt securities, such as notes or bonds as well shares, such as common stock or shares of a fund, options, derivatives, and futures. The ISIN structure is defined in ISO 6166."
+      }, {
+        "name" : "NAME",
+        "displayName" : "Name",
+        "description" : "The name of the product."
+      }, {
+        "name" : "RIC",
+        "displayName" : "RIC",
+        "description" : "Issued by Refinitiv (formerly Reuters), the Reuters Instrument Codes(RIC) uniquely identifies financial instruments, including where they are traded."
+      }, {
+        "name" : "OTHER",
+        "displayName" : "Other",
+        "description" : "Used when the source is not otherwise in this enumerated list because it is internal or other reasons.  The source can be identified in the scheme which is part of the identifier attribute."
+      }, {
+        "name" : "SICOVAM",
+        "displayName" : "Sicovam",
+        "description" : "Issued by the French Société Interprofessionnelle pour la Compensation des Valeurs Mobilières (SICOVAM) to identify French securities listed on French stock exchanges."
+      }, {
+        "name" : "SEDOL",
+        "displayName" : "SEDOL",
+        "description" : "Assigned by the London Stock Exchange, the Stock Exchange Daily Official List (SEDOL) is a list of security identifiers used in the United Kingdom and Ireland for clearing purposes.  SEDOLs serve as the National Securities Identifying Number for all securities issued in the United Kingdom and are therefore part of the security's ISIN as well."
+      }, {
+        "name" : "UPI",
+        "displayName" : "UPI",
+        "description" : "Assigned by the Derivatives Service Bureau Ltd (DSB), the Unique Product Identifier (UPI) is a unique code to describe an over-the-counter (OTC) derivatives product.  The UPI is used for identifying the product in transaction reporting data."
+      }, {
+        "name" : "WERTPAPIER",
+        "displayName" : "Wertpapier",
+        "description" : "Issued by the Institute for the Issuance and Administration of Securities in Germany (Securities Information), the Wertpapierkennnummer (WKN, WPKN, WPK or simply Wert) consists of six digits or capital letters (excluding I and O), and no check digit. It is used to identify German securities."
+      } ]
+    },
+    "description" : "Defines the source of the identifier.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -51305,23 +51305,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.regulation.RefRate" : [ {
-    "name" : "indx",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "nm",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.FixedAmountCalculationDetails" : [ {
     "name" : "calculationPeriod",
     "type" : {
@@ -51372,6 +51355,23 @@ export const attributesJson = {
     "name" : "calculatedAmount",
     "type" : "number",
     "description" : "The amount of the cash flow that was computed, including any spreads and other processing.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.regulation.RefRate" : [ {
+    "name" : "indx",
+    "type" : "string",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "nm",
+    "type" : "string",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
@@ -51620,35 +51620,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.observable.asset.BondEquityModel" : [ {
-    "name" : "bondchoiceModel",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "BondChoiceModel",
-      "namespace" : "cdm.observable.asset",
-      "description" : " Either a bond or convertible bond."
-    },
-    "description" : "Either the bond or convertible bond.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "equity",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Equity",
-      "namespace" : "cdm.base.staticdata.asset.common",
-      "description" : "A class to specify an equity as having a product identifier. As a difference versus the FpML standard, the CDM structure of this class only includes the productIdentifier class, which consists of an identifier, productTaxonomy, and source of the identifier. The reason for this approach is to avoid the potential for conflicting information between the information associated with the contractual product and the reference information maintained by the relevant service provider."
-    },
-    "description" : "The equity.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.event.common.CounterpartyPositionState" : [ {
     "name" : "counterpartyPosition",
     "type" : {
@@ -51793,6 +51764,35 @@ export const attributesJson = {
     "name" : "isOpenOffer",
     "type" : "boolean",
     "description" : "Open Offer",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.observable.asset.BondEquityModel" : [ {
+    "name" : "bondchoiceModel",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "BondChoiceModel",
+      "namespace" : "cdm.observable.asset",
+      "description" : " Either a bond or convertible bond."
+    },
+    "description" : "Either the bond or convertible bond.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "equity",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Equity",
+      "namespace" : "cdm.base.staticdata.asset.common",
+      "description" : "A class to specify an equity as having a product identifier. As a difference versus the FpML standard, the CDM structure of this class only includes the productIdentifier class, which consists of an identifier, productTaxonomy, and source of the identifier. The reason for this approach is to avoid the potential for conflicting information between the information associated with the contractual product and the reference information maintained by the relevant service provider."
+    },
+    "description" : "The equity.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -52799,20 +52799,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.event.workflow.Workflow" : [ {
-    "name" : "steps",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "WorkflowStep",
-      "namespace" : "cdm.event.workflow",
-      "description" : "A workflow step represents the state of a business event. The workflow step contains a reference to a previous WorkflowStep in order to preserve lineage. A workflow step is accepted if it contains a business event, proposed if proposedEvent is present and is rejected if the rejected flag is set."
-    },
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.legaldocumentation.master.AdditionalDisruptionEvents" : [ {
     "name" : "changeInLaw",
     "type" : "boolean",
@@ -52972,6 +52958,20 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "*",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.event.workflow.Workflow" : [ {
+    "name" : "steps",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "WorkflowStep",
+      "namespace" : "cdm.event.workflow",
+      "description" : "A workflow step represents the state of a business event. The workflow step contains a reference to a previous WorkflowStep in order to preserve lineage. A workflow step is accepted if it contains a business event, proposed if proposedEvent is present and is rejected if the rejected flag is set."
+    },
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -54166,6 +54166,43 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.regulation.DerivInstrmAttrbts" : [ {
+    "name" : "xpryDt",
+    "type" : "string",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "pricMltplr",
+    "type" : "string",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "undrlygInstrm",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UndrlygInstrm",
+      "namespace" : "cdm.regulation"
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "dlvryTp",
+    "type" : "string",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "cdm.base.staticdata.asset.common.DeliveryDateParameters" : [ {
     "name" : "deliveryNearby",
     "type" : {
@@ -54223,40 +54260,36 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.regulation.DerivInstrmAttrbts" : [ {
-    "name" : "xpryDt",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "pricMltplr",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "undrlygInstrm",
+  "cdm.legaldocumentation.master.MasterAgreementVariableSet" : [ {
+    "name" : "variableSet",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "UndrlygInstrm",
-      "namespace" : "cdm.regulation"
+      "name" : "MasterAgreementVariableSet",
+      "namespace" : "cdm.legaldocumentation.master",
+      "description" : "Defines a type where additional variables associated to clauses and their variants can be described."
     },
+    "description" : "For some variants a table of variables is required. To support this use case we need to be able to specify variables within variables. Including a variable set here gives us infinite nesting opportunities - realistically we are only ever expecting that a table would need to be defined for any particular clause, so we would expect two levels of nesting as a maximum i.e. variableSet->variableSet->name/value.",
     "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
+      "upperBound" : "*",
+      "lowerBound" : "0"
     },
     "metaField" : false
   }, {
-    "name" : "dlvryTp",
+    "name" : "name",
     "type" : "string",
+    "description" : "The name of the variable",
     "cardinality" : {
       "upperBound" : "1",
-      "lowerBound" : "1"
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "string",
+    "description" : "The value for this variable",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
     },
     "metaField" : false
   } ],
@@ -54291,39 +54324,6 @@ export const attributesJson = {
     "name" : "notionalAmount",
     "type" : "number",
     "description" : "The calculation period notional amount.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.legaldocumentation.master.MasterAgreementVariableSet" : [ {
-    "name" : "variableSet",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "MasterAgreementVariableSet",
-      "namespace" : "cdm.legaldocumentation.master",
-      "description" : "Defines a type where additional variables associated to clauses and their variants can be described."
-    },
-    "description" : "For some variants a table of variables is required. To support this use case we need to be able to specify variables within variables. Including a variable set here gives us infinite nesting opportunities - realistically we are only ever expecting that a table would need to be defined for any particular clause, so we would expect two levels of nesting as a maximum i.e. variableSet->variableSet->name/value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "name",
-    "type" : "string",
-    "description" : "The name of the variable",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "string",
-    "description" : "The value for this variable",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -54429,39 +54429,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.base.datetime.AdjustableDates" : [ {
-    "name" : "unadjustedDate",
-    "type" : "date",
-    "description" : "A date subject to adjustment.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "dateAdjustments",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "BusinessDayAdjustments",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class defining the business day convention and financial business centers used for adjusting any relevant date if it would otherwise fall on a day that is not a business day in the specified business center."
-    },
-    "description" : "The business day convention and financial business centers used for adjusting the date if it would otherwise fall on a day that is not a business date in the specified business centers.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "adjustedDate",
-    "type" : "date",
-    "description" : "The date(s) once the adjustment has been performed. (Note that this date may change if the business center holidays change).",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : true
-  } ],
   "cdm.event.common.QuantityChangeInstruction" : [ {
     "name" : "change",
     "type" : {
@@ -54515,6 +54482,39 @@ export const attributesJson = {
       "lowerBound" : "0"
     },
     "metaField" : false
+  } ],
+  "cdm.base.datetime.AdjustableDates" : [ {
+    "name" : "unadjustedDate",
+    "type" : "date",
+    "description" : "A date subject to adjustment.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "dateAdjustments",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "BusinessDayAdjustments",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class defining the business day convention and financial business centers used for adjusting any relevant date if it would otherwise fall on a day that is not a business day in the specified business center."
+    },
+    "description" : "The business day convention and financial business centers used for adjusting the date if it would otherwise fall on a day that is not a business date in the specified business centers.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "adjustedDate",
+    "type" : "date",
+    "description" : "The date(s) once the adjustment has been performed. (Note that this date may change if the business center holidays change).",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : true
   } ],
   "cdm.observable.asset.ObservationSource" : [ {
     "name" : "curve",
@@ -57994,6 +57994,35 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.template.ExercisePeriod" : [ {
+    "name" : "earliestExerciseDateTenor",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Period",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class to define recurring periods or time offsets."
+    },
+    "description" : "The time interval to the first (and possibly only) exercise date in the exercise period.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "exerciseFrequency",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Period",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class to define recurring periods or time offsets."
+    },
+    "description" : "The frequency of subsequent exercise dates in the exercise period following the earliest exercise date. An interval of 1 day should be used to indicate an American style exercise period.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.event.workflow.LimitApplicableExtended" : [ {
     "name" : "limitLevel",
     "type" : {
@@ -58130,35 +58159,6 @@ export const attributesJson = {
       "name" : "Velocity",
       "namespace" : "cdm.event.workflow"
     },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.template.ExercisePeriod" : [ {
-    "name" : "earliestExerciseDateTenor",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Period",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class to define recurring periods or time offsets."
-    },
-    "description" : "The time interval to the first (and possibly only) exercise date in the exercise period.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "exerciseFrequency",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Period",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class to define recurring periods or time offsets."
-    },
-    "description" : "The frequency of subsequent exercise dates in the exercise period following the earliest exercise date. An interval of 1 day should be used to indicate an American style exercise period.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -60251,6 +60251,46 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.legaldocumentation.master.EquityAdditionalTerms" : [ {
+    "name" : "extraordinaryEvents",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "ExtraordinaryEvents",
+      "namespace" : "cdm.legaldocumentation.master",
+      "description" : "Where the underlying is shares, defines market events affecting the issuer of those shares that may require the terms of the transaction to be adjusted."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "determinationTerms",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DeterminationRolesAndTerms",
+      "namespace" : "cdm.legaldocumentation.master",
+      "description" : "Defines the roles and related terms which document the agreement of parties about any determination requirements ; mostly about Extraordinary Events, without being necessarily restricted to such scope, as further specified in the particular product at stake e.g. for instance when Calculation Agent is mentioned as the Price Determination Method enumarated value, etc."
+    },
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "substitutionProvision",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnderlierSubstitutionProvision",
+      "namespace" : "cdm.legaldocumentation.master",
+      "description" : "Where parties describe any substitution terms."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.event.common.PositionIdentifier" : [ {
     "name" : "identifierType",
     "type" : {
@@ -60305,46 +60345,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "*",
       "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
-  "cdm.legaldocumentation.master.EquityAdditionalTerms" : [ {
-    "name" : "extraordinaryEvents",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "ExtraordinaryEvents",
-      "namespace" : "cdm.legaldocumentation.master",
-      "description" : "Where the underlying is shares, defines market events affecting the issuer of those shares that may require the terms of the transaction to be adjusted."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "determinationTerms",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DeterminationRolesAndTerms",
-      "namespace" : "cdm.legaldocumentation.master",
-      "description" : "Defines the roles and related terms which document the agreement of parties about any determination requirements ; mostly about Extraordinary Events, without being necessarily restricted to such scope, as further specified in the particular product at stake e.g. for instance when Calculation Agent is mentioned as the Price Determination Method enumarated value, etc."
-    },
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "substitutionProvision",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "UnderlierSubstitutionProvision",
-      "namespace" : "cdm.legaldocumentation.master",
-      "description" : "Where parties describe any substitution terms."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
     },
     "metaField" : false
   } ],
@@ -60489,6 +60489,34 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.common.schedule.PaymentDateSchedule" : [ {
+    "name" : "interimPaymentDates",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdjustableRelativeOrPeriodicDates",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class giving the choice between defining a series of dates as an explicit list of dates together with applicable adjustments or as relative to some other series of (anchor) dates, or as a calculation period schedule."
+    },
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "finalPaymentDate",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdjustableOrRelativeDate",
+      "namespace" : "cdm.base.datetime",
+      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
+    },
+    "description" : "The last payment when specified as an adjustable or relative date, as in the FpML total return construct.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.event.workflow.WorkflowState" : [ {
     "name" : "workflowStatus",
     "type" : {
@@ -60579,34 +60607,6 @@ export const attributesJson = {
       } ]
     },
     "description" : "The identity of the warehouse, if any, that is executing that workflow step.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.product.common.schedule.PaymentDateSchedule" : [ {
-    "name" : "interimPaymentDates",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AdjustableRelativeOrPeriodicDates",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class giving the choice between defining a series of dates as an explicit list of dates together with applicable adjustments or as relative to some other series of (anchor) dates, or as a calculation period schedule."
-    },
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "finalPaymentDate",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "AdjustableOrRelativeDate",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class giving the choice between defining a date as an explicit date together with applicable adjustments or as relative to some other (anchor) date."
-    },
-    "description" : "The last payment when specified as an adjustable or relative date, as in the FpML total return construct.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -60942,6 +60942,23 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
+  "cdm.regulation.AddtlAttrbts" : [ {
+    "name" : "rskRdcgTx",
+    "type" : "string",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "sctiesFincgTxInd",
+    "type" : "string",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "cdm.base.staticdata.asset.common.AssetType" : [ {
     "name" : "assetType",
     "type" : {
@@ -61083,23 +61100,6 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "*",
       "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.regulation.AddtlAttrbts" : [ {
-    "name" : "rskRdcgTx",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "sctiesFincgTxInd",
-    "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -65013,31 +65013,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.regulation.Swp" : [ {
-    "name" : "swpIn",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "SwpIn",
-      "namespace" : "cdm.regulation"
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "swpOut",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "SwpOut",
-      "namespace" : "cdm.regulation"
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.FutureValueAmount" : [ {
     "name" : "quantity",
     "type" : {
@@ -65072,6 +65047,31 @@ export const attributesJson = {
     "name" : "valueDate",
     "type" : "date",
     "description" : "Adjusted value date of the future value amount.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.regulation.Swp" : [ {
+    "name" : "swpIn",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "SwpIn",
+      "namespace" : "cdm.regulation"
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "swpOut",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "SwpOut",
+      "namespace" : "cdm.regulation"
+    },
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
@@ -66611,6 +66611,25 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.product.asset.BoundedCorrelation" : [ {
+    "name" : "minimumBoundaryPercent",
+    "type" : "number",
+    "description" : "Minimum Boundary as a percentage of the Strike Price.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "maximumBoundaryPercent",
+    "type" : "number",
+    "description" : "Maximum Boundary as a percentage of the Strike Price.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "cdm.observable.asset.Curve" : [ {
     "name" : "interestRateCurve",
     "type" : {
@@ -66812,25 +66831,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.product.asset.BoundedCorrelation" : [ {
-    "name" : "minimumBoundaryPercent",
-    "type" : "number",
-    "description" : "Minimum Boundary as a percentage of the Strike Price.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "maximumBoundaryPercent",
-    "type" : "number",
-    "description" : "Maximum Boundary as a percentage of the Strike Price.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.DiscountingMethod" : [ {
     "name" : "discountingType",
     "type" : {
@@ -67025,20 +67025,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.base.staticdata.asset.common.Equity" : [ {
-    "name" : "productIdentifier",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "ProductIdentifier",
-      "namespace" : "cdm.base.staticdata.asset.common",
-      "description" : "Comprises an identifier and a source. The associated metadata key denotes the ability to associate a hash value to the ProductIdentifier instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.product.asset.AdditionalFixedPayments" : [ {
     "name" : "interestShortfallReimbursement",
     "type" : "boolean",
@@ -67064,6 +67050,20 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.staticdata.asset.common.Equity" : [ {
+    "name" : "productIdentifier",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "ProductIdentifier",
+      "namespace" : "cdm.base.staticdata.asset.common",
+      "description" : "Comprises an identifier and a source. The associated metadata key denotes the ability to associate a hash value to the ProductIdentifier instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -67639,6 +67639,21 @@ export const attributesJson = {
     "description" : "The method, prioritised by the order it is listed in this element, to get a replacement rate for the disrupted settlement rate option.",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.asset.ReferencePool" : [ {
+    "name" : "referencePoolItem",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "ReferencePoolItem",
+      "namespace" : "cdm.product.asset",
+      "description" : "This type contains all the constituent weight and reference information."
+    },
+    "description" : "This type contains all the constituent weight and reference information.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "1"
     },
     "metaField" : false
@@ -70762,10 +70777,6 @@ export const attributesJson = {
         "displayName" : "SLE",
         "description" : "Leone"
       }, {
-        "name" : "SLL",
-        "displayName" : "SLL",
-        "description" : "Leone"
-      }, {
         "name" : "SOS",
         "displayName" : "SOS",
         "description" : "Somali Shilling"
@@ -70983,21 +70994,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.product.asset.ReferencePool" : [ {
-    "name" : "referencePoolItem",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "ReferencePoolItem",
-      "namespace" : "cdm.product.asset",
-      "description" : "This type contains all the constituent weight and reference information."
-    },
-    "description" : "This type contains all the constituent weight and reference information.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.observable.asset.ValuationMethod" : [ {
     "name" : "valuationSource",
     "type" : {
@@ -71168,105 +71164,6 @@ export const attributesJson = {
     "name" : "businessDays",
     "type" : "number",
     "description" : "A number of business days. Its precise meaning is dependant on the context in which this element is used. ISDA 2003 Term: Business Day.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.observable.event.Trigger" : [ {
-    "name" : "level",
-    "type" : "number",
-    "description" : "The trigger level.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "levelPercentage",
-    "type" : "number",
-    "description" : "The trigger level percentage.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "creditEvents",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "CreditEvents",
-      "namespace" : "cdm.observable.event",
-      "description" : "A class to specify the applicable Credit Events that would trigger a settlement, as specified in the related Confirmation and defined in the ISDA 2014 Credit Definition article IV section 4.1."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "creditEventsReference",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "CreditEvents",
-      "namespace" : "cdm.observable.event",
-      "description" : "A class to specify the applicable Credit Events that would trigger a settlement, as specified in the related Confirmation and defined in the ISDA 2014 Credit Definition article IV section 4.1."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : true
-  }, {
-    "name" : "triggerType",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "TriggerTypeEnum",
-      "values" : [ {
-        "name" : "EQUAL_OR_LESS",
-        "displayName" : "EqualOrLess",
-        "description" : "The underlier price must be equal to or less than the Trigger level."
-      }, {
-        "name" : "EQUAL_OR_GREATER",
-        "displayName" : "EqualOrGreater",
-        "description" : "The underlier price must be equal to or greater than the Trigger level."
-      }, {
-        "name" : "EQUAL",
-        "displayName" : "Equal",
-        "description" : "The underlier price must be equal to the Trigger level."
-      }, {
-        "name" : "LESS",
-        "displayName" : "Less",
-        "description" : "The underlier price must be less than the Trigger level."
-      }, {
-        "name" : "GREATER",
-        "displayName" : "Greater",
-        "description" : "The underlier price must be greater than the Trigger level."
-      } ]
-    },
-    "description" : "The Triggering condition.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "triggerTimeType",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "TriggerTimeTypeEnum",
-      "values" : [ {
-        "name" : "CLOSING",
-        "displayName" : "Closing",
-        "description" : "The close of trading on a day would be considered for valuation."
-      }, {
-        "name" : "ANYTIME",
-        "displayName" : "Anytime",
-        "description" : "At any time during the Knock Determination period (continuous barrier)."
-      } ]
-    },
-    "description" : "The valuation time type of knock condition.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -72220,6 +72117,105 @@ export const attributesJson = {
     "description" : "Specifies the business center for adjustment of calculation period.",
     "cardinality" : {
       "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.observable.event.Trigger" : [ {
+    "name" : "level",
+    "type" : "number",
+    "description" : "The trigger level.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "levelPercentage",
+    "type" : "number",
+    "description" : "The trigger level percentage.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "creditEvents",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditEvents",
+      "namespace" : "cdm.observable.event",
+      "description" : "A class to specify the applicable Credit Events that would trigger a settlement, as specified in the related Confirmation and defined in the ISDA 2014 Credit Definition article IV section 4.1."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "creditEventsReference",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditEvents",
+      "namespace" : "cdm.observable.event",
+      "description" : "A class to specify the applicable Credit Events that would trigger a settlement, as specified in the related Confirmation and defined in the ISDA 2014 Credit Definition article IV section 4.1."
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : true
+  }, {
+    "name" : "triggerType",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "TriggerTypeEnum",
+      "values" : [ {
+        "name" : "EQUAL_OR_LESS",
+        "displayName" : "EqualOrLess",
+        "description" : "The underlier price must be equal to or less than the Trigger level."
+      }, {
+        "name" : "EQUAL_OR_GREATER",
+        "displayName" : "EqualOrGreater",
+        "description" : "The underlier price must be equal to or greater than the Trigger level."
+      }, {
+        "name" : "EQUAL",
+        "displayName" : "Equal",
+        "description" : "The underlier price must be equal to the Trigger level."
+      }, {
+        "name" : "LESS",
+        "displayName" : "Less",
+        "description" : "The underlier price must be less than the Trigger level."
+      }, {
+        "name" : "GREATER",
+        "displayName" : "Greater",
+        "description" : "The underlier price must be greater than the Trigger level."
+      } ]
+    },
+    "description" : "The Triggering condition.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "triggerTimeType",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "TriggerTimeTypeEnum",
+      "values" : [ {
+        "name" : "CLOSING",
+        "displayName" : "Closing",
+        "description" : "The close of trading on a day would be considered for valuation."
+      }, {
+        "name" : "ANYTIME",
+        "displayName" : "Anytime",
+        "description" : "At any time during the Knock Determination period (continuous barrier)."
+      } ]
+    },
+    "description" : "The valuation time type of knock condition.",
+    "cardinality" : {
+      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -74361,6 +74357,63 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.common.CollateralPortfolio" : [ {
+    "name" : "portfolioIdentifier",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "Identifier",
+      "namespace" : "cdm.base.staticdata.identifier",
+      "description" : "A class to specify a generic identifier, applicable to CDM artefacts such as executions, contracts, lifecycle events and legal documents. An issuer can be associated with the actual identifier value as a way to properly qualify it."
+    },
+    "description" : "Specifies a unique identifier for a set of collateral positions in a portfolio.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "collateralPosition",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CollateralPosition",
+      "namespace" : "cdm.event.common",
+      "description" : "Specifies the individual components of collateral positions."
+    },
+    "description" : "Specifies the individual components of the collateral positions in the collateral portfolio.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "collateralBalance",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CollateralBalance",
+      "namespace" : "cdm.event.common",
+      "description" : "Represents common attributes to define a collateral balance recorded by the principal as held or posted."
+    },
+    "description" : "Represents the populated or calculated collateral aggregate balance amount for the collateral portfolio.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "legalAgreement",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "LegalAgreement",
+      "namespace" : "cdm.legaldocumentation.common",
+      "description" : "The specification of a legal agreement between two parties, being negotiated or having been executed. This includes the baseline information and the optional specialised elections"
+    },
+    "description" : " The specification of a legal agreement between two parties governing the collateral relationship such as Credit Support Agreement or Collateral Transfer Agreement etc. (NB: this can be provided by reference to a global key for each LegalAgreement object).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : true
+  } ],
   "cdm.base.datetime.RelativeDateOffset" : [ {
     "name" : "businessDayConvention",
     "type" : {
@@ -74522,63 +74575,6 @@ export const attributesJson = {
       "lowerBound" : "1"
     },
     "metaField" : false
-  } ],
-  "cdm.event.common.CollateralPortfolio" : [ {
-    "name" : "portfolioIdentifier",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Identifier",
-      "namespace" : "cdm.base.staticdata.identifier",
-      "description" : "A class to specify a generic identifier, applicable to CDM artefacts such as executions, contracts, lifecycle events and legal documents. An issuer can be associated with the actual identifier value as a way to properly qualify it."
-    },
-    "description" : "Specifies a unique identifier for a set of collateral positions in a portfolio.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "collateralPosition",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "CollateralPosition",
-      "namespace" : "cdm.event.common",
-      "description" : "Specifies the individual components of collateral positions."
-    },
-    "description" : "Specifies the individual components of the collateral positions in the collateral portfolio.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "collateralBalance",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "CollateralBalance",
-      "namespace" : "cdm.event.common",
-      "description" : "Represents common attributes to define a collateral balance recorded by the principal as held or posted."
-    },
-    "description" : "Represents the populated or calculated collateral aggregate balance amount for the collateral portfolio.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "legalAgreement",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "LegalAgreement",
-      "namespace" : "cdm.legaldocumentation.common",
-      "description" : "The specification of a legal agreement between two parties, being negotiated or having been executed. This includes the baseline information and the optional specialised elections"
-    },
-    "description" : " The specification of a legal agreement between two parties governing the collateral relationship such as Credit Support Agreement or Collateral Transfer Agreement etc. (NB: this can be provided by reference to a global key for each LegalAgreement object).",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : true
   } ],
   "cdm.product.asset.GeneralTerms" : [ {
     "name" : "referenceInformation",
