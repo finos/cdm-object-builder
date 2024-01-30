@@ -131,7 +131,8 @@ public class TypescriptObjectBuilderModelGenerator {
 
             if (rType instanceof REnumType rEnumType) {
                 RosettaEnumeration enumAttributeType = rEnumType.getEnumeration();
-                EList<RosettaEnumValue> enumValues = enumAttributeType.getEnumValues();
+
+                List<RosettaEnumValue> enumValues = getRosettaEnumValues(enumAttributeType);
                 List<EnumTypeValue> values = enumValues.stream()
                         .map(x -> new EnumTypeValue(EnumHelper.formatEnumName(x.getName()), generateDisplayName(x), x.getDefinition()))
                         .collect(Collectors.toList());
@@ -141,6 +142,16 @@ public class TypescriptObjectBuilderModelGenerator {
             }
         }
         return modelAttributes;
+    }
+
+
+    private List<RosettaEnumValue> getRosettaEnumValues(RosettaEnumeration rosettaEnumeration) {
+        RosettaEnumeration superType = rosettaEnumeration.getSuperType();
+        if (superType == null) {
+            return rosettaEnumeration.getEnumValues();
+        }
+        List<RosettaEnumValue> superTypeEnumValues = getRosettaEnumValues(superType);
+        return Streams.concat(rosettaEnumeration.getEnumValues().stream(), superTypeEnumValues.stream()).collect(Collectors.toList());
     }
 
     private String generateDisplayName(RosettaEnumValue x) {
