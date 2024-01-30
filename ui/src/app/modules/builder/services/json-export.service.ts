@@ -24,7 +24,7 @@ export class JsonExportService {
       const isMeta = jsonAttributeNode.definition.metaField || false;
       let isArray = false;
 
-      if (jsonAttributeNode.definition.cardinality.upperBound === '*') {
+      if (isMultiCardinality(jsonAttributeNode.definition)) {
         if (!jsonObject[definitionName]) {
           jsonObject[definitionName] = [];
         }
