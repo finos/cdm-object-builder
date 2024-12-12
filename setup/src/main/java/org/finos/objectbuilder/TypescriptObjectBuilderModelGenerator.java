@@ -15,10 +15,7 @@ import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.simple.AnnotationRef;
 import com.regnosys.rosetta.rosetta.simple.Attribute;
 import com.regnosys.rosetta.rosetta.simple.Data;
-import com.regnosys.rosetta.types.RDataType;
-import com.regnosys.rosetta.types.REnumType;
-import com.regnosys.rosetta.types.RType;
-import com.regnosys.rosetta.types.TypeSystem;
+import com.regnosys.rosetta.types.*;
 import com.regnosys.rosetta.types.builtin.RBasicType;
 import com.regnosys.rosetta.types.builtin.RRecordType;
 import org.eclipse.emf.common.util.EList;
@@ -120,9 +117,15 @@ public class TypescriptObjectBuilderModelGenerator {
                     .map(RosettaNamed::getName)
                     .anyMatch(x -> x.equals("metadata"));
             if (rType instanceof RDataType) {
-                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(((RDataType) rType).getData()), attribute.getDefinition(), cardinality, isMetaField);
+                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(((RDataType) rType).getEObject()), attribute.getDefinition(), cardinality, isMetaField);
                 modelAttributes.add(modelAttribute);
             }
+
+            if (rType instanceof RChoiceType) {
+                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(((RChoiceType) rType).getEObject()), attribute.getDefinition(), cardinality, isMetaField);
+                modelAttributes.add(modelAttribute);
+            }
+
             if (rType instanceof RBasicType || rType instanceof RRecordType) {
                 RosettaBasicType rosettaBasicType = RosettaBasicType.find(rType.getName());
                 ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), rosettaBasicType, attribute.getDefinition(), cardinality, isMetaField);
@@ -130,7 +133,7 @@ public class TypescriptObjectBuilderModelGenerator {
             }
 
             if (rType instanceof REnumType rEnumType) {
-                RosettaEnumeration enumAttributeType = rEnumType.getEnumeration();
+                RosettaEnumeration enumAttributeType = rEnumType.getEObject();
 
                 List<RosettaEnumValue> enumValues = getRosettaEnumValues(enumAttributeType);
                 List<EnumTypeValue> values = enumValues.stream()
@@ -146,7 +149,7 @@ public class TypescriptObjectBuilderModelGenerator {
 
 
     private List<RosettaEnumValue> getRosettaEnumValues(RosettaEnumeration rosettaEnumeration) {
-        RosettaEnumeration superType = rosettaEnumeration.getSuperType();
+        RosettaEnumeration superType = rosettaEnumeration.getParent();
         if (superType == null) {
             return rosettaEnumeration.getEnumValues();
         }
