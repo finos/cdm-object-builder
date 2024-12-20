@@ -18,7 +18,7 @@
         <finos.cdm.version>[5.2.0,6.0.0)</finos.cdm.version>
         <rosetta.dsl.version>9.1.3</rosetta.dsl.version>
         <xtext.version>2.27.0</xtext.version>
-        <logback.version>1.4.14</logback.version>
+        <logback.version>1.5.13</logback.version>
         <guava.version>32.1.3-jre</guava.version>
     </properties>
 
