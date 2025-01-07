@@ -15,8 +15,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <finos.cdm.version>[5.2.0,6.0.0)</finos.cdm.version>
-        <rosetta.dsl.version>9.1.3</rosetta.dsl.version>
+        <finos.cdm.version>[5.2.0,6.0.0-dev.90]</finos.cdm.version>
+        <rosetta.dsl.version>9.25.0</rosetta.dsl.version>
+        <rosetta.bundle.version>11.30.0</rosetta.bundle.version>
         <xtext.version>2.27.0</xtext.version>
         <logback.version>1.4.14</logback.version>
         <guava.version>32.1.3-jre</guava.version>
@@ -43,6 +44,11 @@
             <groupId>com.regnosys.rosetta</groupId>
             <artifactId>com.regnosys.rosetta</artifactId>
             <version>${rosetta.dsl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.regnosys</groupId>
+            <artifactId>rosetta-common</artifactId>
+            <version>${rosetta.bundle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.xtext</groupId>
