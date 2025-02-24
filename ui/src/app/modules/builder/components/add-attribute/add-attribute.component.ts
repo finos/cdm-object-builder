@@ -40,16 +40,12 @@ export class AddAttributeComponent implements OnInit {
   @Input()
   set jsonNode(value: JsonNode) {
     this._jsonNode = value;
-    // this.updateHasAttributesToAdd();
     this.availableAttributesSubject$.next(value);
-    // this.getAttributesForNode(this.jsonNode);
-
   }
 
   get jsonNode() {
     return this._jsonNode;
   }
-  // availableAttributes!: Observable<ModelAttribute[]>;
   faPlus = faPlus;
 
   constructor(
@@ -58,14 +54,6 @@ export class AddAttributeComponent implements OnInit {
     private identityService: IdentityService,
     private nodeSelectionService: NodeSelectionService
   ) {}
-
-  // private updateHasAttributesToAdd() {
-  //   this.getAttributesForNode(this.jsonNode)
-  //     .pipe(first())
-  //     .subscribe((attr) => {
-  //       this.hasAttributesToAdd.next(attr.length > 0);
-  //     });
-  // }
 
   private getAttributesForNode(
     jsonNode: JsonNode
@@ -98,7 +86,6 @@ export class AddAttributeComponent implements OnInit {
       this.jsonNode,
       newJsonAttributeNode
     );
-    // this.updateHasAttributesToAdd();
     this.availableAttributesSubject$.next(this.availableAttributesSubject$.value);
     this.nodeSelectionService.selectAndScrollToNode(updatedNode);
   }

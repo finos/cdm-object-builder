@@ -9,7 +9,6 @@
   </button>
 
   <mat-menu #menu="matMenu" class="add-attribute-menu">
-    {{(availableAttributes | async)?.length}}
     <button
       mat-menu-item
       *ngFor="let attribute of availableAttributes | async"
