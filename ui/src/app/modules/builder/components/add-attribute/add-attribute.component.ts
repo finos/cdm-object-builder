@@ -27,9 +27,9 @@ import {
 })
 export class AddAttributeComponent implements OnInit {
   private _jsonNode!: JsonNode;
-  private availableAttributesSubject$ = new BehaviorSubject<JsonNode|null>(null)
+  private jsonNodeSubject$ = new BehaviorSubject<JsonNode|null>(null)
 
-  availableAttributes = this.availableAttributesSubject$.pipe(
+  availableAttributes = this.jsonNodeSubject$.pipe(
     filter((jsonNode): jsonNode is JsonNode => jsonNode !== null),
     switchMap(jsonNode => {
       return this.getAttributesForNode(jsonNode);
@@ -40,7 +40,7 @@ export class AddAttributeComponent implements OnInit {
   @Input()
   set jsonNode(value: JsonNode) {
     this._jsonNode = value;
-    this.availableAttributesSubject$.next(value);
+    this.jsonNodeSubject$.next(value);
   }
 
   get jsonNode() {
@@ -86,7 +86,7 @@ export class AddAttributeComponent implements OnInit {
       this.jsonNode,
       newJsonAttributeNode
     );
-    this.availableAttributesSubject$.next(this.availableAttributesSubject$.value);
+    this.jsonNodeSubject$.next(this.jsonNodeSubject$.value);
     this.nodeSelectionService.selectAndScrollToNode(updatedNode);
   }
 
