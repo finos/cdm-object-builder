@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { de } from 'date-fns/locale';
-import { BehaviorSubject, first, map, Observable } from 'rxjs';
+import {BehaviorSubject, filter, first, map, Observable, ReplaySubject, switchMap, tap} from 'rxjs';
 import {
   JsonAttributeNode,
   JsonNode,
@@ -26,21 +26,30 @@ import {
   styleUrls: ['./add-attribute.component.scss'],
 })
 export class AddAttributeComponent implements OnInit {
-  _jsonNode!: JsonNode;
+  private _jsonNode!: JsonNode;
+  private availableAttributesSubject$ = new BehaviorSubject<JsonNode|null>(null)
+
+  availableAttributes = this.availableAttributesSubject$.pipe(
+    filter((jsonNode): jsonNode is JsonNode => jsonNode !== null),
+    switchMap(jsonNode => {
+      return this.getAttributesForNode(jsonNode);
+    }))
+
+  hasAttributesToAdd = this.availableAttributes.pipe(map(attributes => attributes?.length > 0));
 
   @Input()
   set jsonNode(value: JsonNode) {
     this._jsonNode = value;
-    this.updateHasAttributesToAdd();
-    this.availableAttributes = this.getAttributesForNode(this.jsonNode);
+    // this.updateHasAttributesToAdd();
+    this.availableAttributesSubject$.next(value);
+    // this.getAttributesForNode(this.jsonNode);
+
   }
 
   get jsonNode() {
     return this._jsonNode;
   }
-
-  hasAttributesToAdd = new BehaviorSubject(false);
-  availableAttributes!: Observable<ModelAttribute[]>;
+  // availableAttributes!: Observable<ModelAttribute[]>;
   faPlus = faPlus;
 
   constructor(
@@ -50,13 +59,13 @@ export class AddAttributeComponent implements OnInit {
     private nodeSelectionService: NodeSelectionService
   ) {}
 
-  private updateHasAttributesToAdd() {
-    this.getAttributesForNode(this.jsonNode)
-      .pipe(first())
-      .subscribe((attr) => {
-        this.hasAttributesToAdd.next(attr.length > 0);
-      });
-  }
+  // private updateHasAttributesToAdd() {
+  //   this.getAttributesForNode(this.jsonNode)
+  //     .pipe(first())
+  //     .subscribe((attr) => {
+  //       this.hasAttributesToAdd.next(attr.length > 0);
+  //     });
+  // }
 
   private getAttributesForNode(
     jsonNode: JsonNode
@@ -89,7 +98,8 @@ export class AddAttributeComponent implements OnInit {
       this.jsonNode,
       newJsonAttributeNode
     );
-    this.updateHasAttributesToAdd();
+    // this.updateHasAttributesToAdd();
+    this.availableAttributesSubject$.next(this.availableAttributesSubject$.value);
     this.nodeSelectionService.selectAndScrollToNode(updatedNode);
   }
 
