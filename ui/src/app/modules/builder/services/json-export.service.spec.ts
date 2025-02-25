@@ -10,7 +10,8 @@ import { isStructuredType } from '../utils/type-guards.util';
 import { JsonExportService } from './json-export.service';
 import { testDataUtil } from './test-data.uti';
 
-//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on. Need to move away from using CDM for these and ideally use the Demo model. Have disabled the failing tests.
+//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on.
+// These need to be fixed see https://github.com/finos/cdm-object-builder/issues/121
 describe('JsonExportService', () => {
   let service: JsonExportService;
 
@@ -293,7 +294,7 @@ describe('JsonExportService', () => {
     const collateralCriteria = testDataUtil.findAttributeInType(
       eligibleCollateralCriteria.type,
       'collateralCriteria'
-    )
+    );
 
     if (!isStructuredType(collateralCriteria.type)) {
       throw Error('Invalid type structure');
@@ -347,11 +348,11 @@ describe('JsonExportService', () => {
         {
           collateralCriteria: {
             AssetType: {
-              equityType: 'ORDINARY'
-            }
-          }
-        }
-      ]
+              equityType: 'ORDINARY',
+            },
+          },
+        },
+      ],
     };
 
     const exported = service.export(inputJsonRootNode);
