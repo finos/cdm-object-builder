@@ -7,7 +7,10 @@ import {
 import { faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { JsonAttributeNode } from '../../models/builder.model';
 import { NodeDatabaseService } from '../../services/node-database.service';
-import { isMultiCardinality } from '../../utils/node.util';
+import {
+  getCardinalityUpperBound,
+  isMultiCardinality,
+} from '../../utils/node.util';
 
 @Component({
   selector: 'app-stacked-node-controls',
@@ -49,6 +52,6 @@ export class StackedNodeControlsComponent implements OnInit {
     this.canAdd =
       this.jsonAttributeNode &&
       this.siblingCount <
-        parseInt(this.jsonAttributeNode.definition.cardinality.upperBound);
+        getCardinalityUpperBound(this.jsonAttributeNode.definition);
   }
 }
