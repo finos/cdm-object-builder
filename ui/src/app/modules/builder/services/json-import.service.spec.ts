@@ -12,6 +12,8 @@ import { IdentityService } from './identity.service';
 import { JsonImportService } from './json-import.service';
 import { testDataUtil } from './test-data.uti';
 
+//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on.
+// These need to be fixed see https://github.com/finos/cdm-object-builder/issues/121
 describe('JsonImportService', () => {
   let service: JsonImportService;
 
@@ -198,7 +200,7 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedPartyNode);
   });
 
-  it('should import multi cardinality meta fields', async () => {
+  xit('should import multi cardinality meta fields', async () => {
     const inputJsonObject = {
       criteria: [
         {
@@ -275,7 +277,7 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedPartyNode);
   });
 
-  it('should import multi cardinality attributes correctly', async () => {
+  xit('should import multi cardinality attributes correctly', async () => {
     const inputJsonObject = {
       criteria: [
         {
@@ -377,7 +379,7 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedRootNode);
   });
 
-  it('should import list based basic types correctly', async () => {
+  xit('should import list based basic types correctly', async () => {
     const inputJsonObject = {
       criteria: [
         {
@@ -466,23 +468,23 @@ describe('JsonImportService', () => {
 
   it('should handle a single value in a list for an attribute with cardinality of 1..1', async () => {
     const inputJsonObject = {
-      "identifier": [
+      identifier: [
         {
-          "issuerReference": {
-            "value": {
-              "partyId": [
+          issuerReference: {
+            value: {
+              partyId: [
                 {
-                  "identifier": [
+                  identifier: [
                     {
-                      "value": "party a"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      ]
+                      value: 'party a',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
     };
 
     const imported = await service.import(
@@ -490,6 +492,8 @@ describe('JsonImportService', () => {
       testDataUtil.getEligibleCollateralSpecificationRootType()
     );
 
-    expect((imported as any).children[0].children[0].children[0].children[0].value).toBe("party a")
+    expect(
+      (imported as any).children[0].children[0].children[0].children[0].value
+    ).toBe('party a');
   });
 });

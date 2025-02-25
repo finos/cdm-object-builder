@@ -13,7 +13,7 @@ export function isAttributeExhausted(
   const upperBound = attr.cardinality.upperBound;
 
   if (!isInfiniteCardinality(attr)) {
-    const matchingChildren = children.filter((child) =>
+    const matchingChildren = children.filter(child =>
       isEqual(child.definition, attr)
     );
 
@@ -31,6 +31,10 @@ export function isMultiCardinality(attr: ModelAttribute): boolean {
   return (
     isInfiniteCardinality(attr) || parseInt(attr.cardinality.upperBound) > 1
   );
+}
+
+export function getCardinalityUpperBound(attr: ModelAttribute): number {
+  return parseInt(attr.cardinality.upperBound);
 }
 
 const listBasedBasicTypes: RosettaBasicType[] = [
