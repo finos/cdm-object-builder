@@ -26,6 +26,7 @@ export class StackedNodeControlsComponent implements OnInit {
   faTrashCan = faTrashCan;
   faPlus = faPlus;
   isMultiCardinality = false;
+  canAdd = false;
 
   constructor(private nodeDatabaseService: NodeDatabaseService) {}
 
@@ -44,5 +45,10 @@ export class StackedNodeControlsComponent implements OnInit {
     this.isMultiCardinality =
       this.jsonAttributeNode &&
       isMultiCardinality(this.jsonAttributeNode.definition);
+
+    this.canAdd =
+      this.jsonAttributeNode &&
+      this.siblingCount <
+        parseInt(this.jsonAttributeNode.definition.cardinality.upperBound);
   }
 }
