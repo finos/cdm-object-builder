@@ -1,7 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { de } from 'date-fns/locale';
-import {BehaviorSubject, filter, first, map, Observable, ReplaySubject, switchMap, tap} from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  first,
+  map,
+  Observable,
+  ReplaySubject,
+  Subscription,
+  switchMap,
+  tap,
+} from 'rxjs';
 import {
   JsonAttributeNode,
   JsonNode,
@@ -25,17 +35,21 @@ import {
   templateUrl: './add-attribute.component.html',
   styleUrls: ['./add-attribute.component.scss'],
 })
-export class AddAttributeComponent implements OnInit {
+export class AddAttributeComponent implements OnInit, OnDestroy {
   private _jsonNode!: JsonNode;
-  private jsonNodeSubject$ = new BehaviorSubject<JsonNode|null>(null)
+  private jsonNodeSubject$ = new BehaviorSubject<JsonNode | null>(null);
+  private subscription: Subscription = new Subscription();
 
   availableAttributes = this.jsonNodeSubject$.pipe(
     filter((jsonNode): jsonNode is JsonNode => jsonNode !== null),
     switchMap(jsonNode => {
       return this.getAttributesForNode(jsonNode);
-    }))
+    })
+  );
 
-  hasAttributesToAdd = this.availableAttributes.pipe(map(attributes => attributes?.length > 0));
+  hasAttributesToAdd = this.availableAttributes.pipe(
+    map(attributes => attributes?.length > 0)
+  );
 
   @Input()
   set jsonNode(value: JsonNode) {
@@ -69,9 +83,7 @@ export class AddAttributeComponent implements OnInit {
     return this.builderApiService
       .getAttributesForType(type)
       .pipe(
-        map((attributes) =>
-          this.removeExhaustedAttributes(attributes, jsonNode)
-        )
+        map(attributes => this.removeExhaustedAttributes(attributes, jsonNode))
       );
   }
 
@@ -86,7 +98,7 @@ export class AddAttributeComponent implements OnInit {
       this.jsonNode,
       newJsonAttributeNode
     );
-    this.jsonNodeSubject$.next(this.jsonNodeSubject$.value);
+    this.refreshNodeSubject();
     this.nodeSelectionService.selectAndScrollToNode(updatedNode);
   }
 
@@ -109,9 +121,23 @@ export class AddAttributeComponent implements OnInit {
     }
 
     return attributes.filter(
-      (attr) => !isAttributeExhausted(attr, jsonNode.children!)
+      attr => !isAttributeExhausted(attr, jsonNode.children!)
     );
   }
 
-  ngOnInit(): void {}
+  private refreshNodeSubject() {
+    this.jsonNodeSubject$.next(this.jsonNodeSubject$.value);
+  }
+
+  ngOnInit(): void {
+    this.subscription.add(
+      this.nodeDatabaseService.nodeDataChange$.subscribe(() => {
+        this.refreshNodeSubject();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 }
