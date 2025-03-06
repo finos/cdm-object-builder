@@ -9,7 +9,7 @@
   </button>
 
   <mat-menu #menu="matMenu" class="add-attribute-menu">
-    <button mat-menu-item [disabled]="((availableMandatoryAttributes$ | async) ?? []).length === 0" (click)="addMandatoryAttributes()" >Add mandatory attributes</button>
+    <button mat-menu-item class="add-mandatory-button" [disabled]="((availableMandatoryAttributes$ | async) ?? []).length === 0" (click)="addMandatoryAttributes()" >Add mandatory attributes</button>
     <button
       mat-menu-item
       *ngFor="let attribute of availableAttributes$ | async"
