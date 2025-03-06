@@ -150,10 +150,13 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
     const newAttributes: ModelAttribute[] = [...attributes];
     attributes.forEach(attribute => {
       let lowerBound = parseInt(attribute.cardinality.lowerBound);
-      if (lowerBound > 1) {
-        for (let i = 0; i < lowerBound - 1; i++) {
-          newAttributes.push({ ...attribute });
-        }
+      const matchingExisting = (this.jsonNode.children ?? []).filter(child =>
+        isEqual(child.definition, attribute)
+      );
+
+      const toDuplicate = lowerBound - matchingExisting.length;
+      for (let i = 0; i < toDuplicate - 1; i++) {
+        newAttributes.push({ ...attribute });
       }
     });
     return newAttributes;
