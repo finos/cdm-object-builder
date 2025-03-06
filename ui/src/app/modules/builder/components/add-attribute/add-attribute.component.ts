@@ -24,7 +24,10 @@ import { BuilderApiService } from '../../services/builder-api.service';
 import { IdentityService } from '../../services/identity.service';
 import { NodeDatabaseService } from '../../services/node-database.service';
 import { NodeSelectionService } from '../../services/node-selection.service';
-import { isAttributeExhausted } from '../../utils/node.util';
+import {
+  getInitialJsonValue,
+  isAttributeExhausted,
+} from '../../utils/node.util';
 import {
   isJsonAttribute,
   isStructuredType,
@@ -91,7 +94,7 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
     const newJsonAttributeNode: JsonAttributeNode = {
       definition,
       id: this.identityService.getId(),
-      value: this.getInitialJsonValue(definition),
+      value: getInitialJsonValue(definition),
     };
 
     const updatedNode = this.nodeDatabaseService.insertNode(
@@ -100,16 +103,6 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
     );
     this.refreshNodeSubject();
     this.nodeSelectionService.selectAndScrollToNode(updatedNode);
-  }
-
-  private getInitialJsonValue(
-    definition: ModelAttribute
-  ): JsonValue | undefined {
-    if (definition.type === RosettaBasicType.STRING) {
-      return '';
-    }
-
-    return undefined;
   }
 
   private removeExhaustedAttributes(
