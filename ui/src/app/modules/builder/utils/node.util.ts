@@ -1,12 +1,10 @@
 import { isEqual } from 'lodash-es';
 import {
   JsonAttributeNode,
-  JsonValue,
   ModelAttribute,
   RosettaBasicType,
 } from '../models/builder.model';
 import { isEnumType, isStructuredType } from './type-guards.util';
-import { IdentityService } from '../services/identity.service';
 
 export function isAttributeExhausted(
   attr: ModelAttribute,
