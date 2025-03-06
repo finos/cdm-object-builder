@@ -38,8 +38,6 @@ import { LocalStorageService } from '../../services/local-storage.service';
 import { NodeDatabaseService } from '../../services/node-database.service';
 import { NodeSelectionService } from '../../services/node-selection.service';
 import { isStructuredType } from '../../utils/type-guards.util';
-import { getRequiredJsonAttributes } from '../../utils/node.util';
-import { IdentityService } from '../../services/identity.service';
 
 interface FlatJsonNode {
   expandable: boolean;

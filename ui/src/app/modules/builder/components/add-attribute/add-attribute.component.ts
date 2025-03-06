@@ -13,18 +13,15 @@ import {
 import {
   JsonAttributeNode,
   JsonNode,
+  JsonValue,
   ModelAttribute,
-  StructuredType,
+  RosettaBasicType,
 } from '../../models/builder.model';
 import { BuilderApiService } from '../../services/builder-api.service';
 import { IdentityService } from '../../services/identity.service';
 import { NodeDatabaseService } from '../../services/node-database.service';
 import { NodeSelectionService } from '../../services/node-selection.service';
-import {
-  getInitialJsonValue,
-  getRequiredJsonAttributes,
-  isAttributeExhausted,
-} from '../../utils/node.util';
+import { isAttributeExhausted } from '../../utils/node.util';
 import {
   isJsonAttribute,
   isStructuredType,
@@ -95,43 +92,36 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
       );
   }
 
-  addAttribute(definition: ModelAttribute) {
+  addAttribute(definition: ModelAttribute, refresh = true) {
     const newJsonAttributeNode: JsonAttributeNode = {
       definition,
       id: this.identityService.getId(),
-      value: getInitialJsonValue(definition),
+      value: this.getInitialJsonValue(definition),
     };
 
     const updatedNode = this.nodeDatabaseService.insertNode(
       this.jsonNode,
       newJsonAttributeNode
     );
-    this.refreshNodeSubject();
-    this.nodeSelectionService.selectAndScrollToNode(updatedNode);
+
+    if (refresh) {
+      this.refreshNodeSubject();
+      this.nodeSelectionService.selectAndScrollToNode(updatedNode);
+    }
   }
 
-  private addStructuredType(definition: ModelAttribute, type: StructuredType) {
-    this.builderApiService
-      .getAttributesForType(type)
+  addMandatoryAttributes() {
+    this.availableMandatoryAttributes$
       .pipe(
         first(),
-        tap(attributes => {
-          const newJsonAttributeNode: JsonAttributeNode = {
-            definition,
-            id: this.identityService.getId(),
-            value: getInitialJsonValue(definition),
-            children: getRequiredJsonAttributes(
-              attributes,
-              this.identityService
-            ),
-          };
-
-          const updatedNode = this.nodeDatabaseService.insertNode(
-            this.jsonNode,
-            newJsonAttributeNode
-          );
+        tap(definitions => {
+          definitions.forEach(definition => {
+            this.addAttribute(definition, false);
+          });
           this.refreshNodeSubject();
-          this.nodeSelectionService.selectAndScrollToNode(updatedNode);
+          if (isJsonAttribute(this.jsonNode)) {
+            this.nodeSelectionService.selectAndScrollToNode(this.jsonNode);
+          }
         })
       )
       .subscribe();
@@ -152,6 +142,16 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
           matchingChildren.length < parseInt(attribute.cardinality.lowerBound)
         );
       });
+  }
+
+  private getInitialJsonValue(
+    definition: ModelAttribute
+  ): JsonValue | undefined {
+    if (definition.type === RosettaBasicType.STRING) {
+      return '';
+    }
+
+    return undefined;
   }
 
   private removeExhaustedAttributes(

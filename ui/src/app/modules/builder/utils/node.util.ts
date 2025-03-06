@@ -62,32 +62,3 @@ export function isListBasedBasicType(
 
   return listBasedBasicTypes.includes(modelType);
 }
-
-export function getRequiredJsonAttributes(
-  modelAttributes: ModelAttribute[],
-  identityService: IdentityService
-): JsonAttributeNode[] {
-  const jsonAttributeNodes: JsonAttributeNode[] = [];
-  modelAttributes.forEach(modelAttribute => {
-    const lowerBound = parseInt(modelAttribute.cardinality.lowerBound);
-    if (lowerBound > 0) {
-      jsonAttributeNodes.push({
-        definition: modelAttribute,
-        id: identityService.getId(),
-        value: getInitialJsonValue(modelAttribute),
-      });
-    }
-  });
-
-  return jsonAttributeNodes;
-}
-
-export function getInitialJsonValue(
-  definition: ModelAttribute
-): JsonValue | undefined {
-  if (definition.type === RosettaBasicType.STRING) {
-    return '';
-  }
-
-  return undefined;
-}
