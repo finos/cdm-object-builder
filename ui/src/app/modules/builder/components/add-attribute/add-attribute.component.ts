@@ -135,9 +135,7 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
         return parseInt(attribute.cardinality.lowerBound) > 0;
       })
       .filter(attribute => {
-        const matchingChildren = (this.jsonNode.children ?? []).filter(child =>
-          isEqual(child.definition, attribute)
-        );
+        const matchingChildren = this.getMatchingChildren(attribute);
         return (
           matchingChildren.length < parseInt(attribute.cardinality.lowerBound)
         );
@@ -150,16 +148,19 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
     const newAttributes: ModelAttribute[] = [...attributes];
     attributes.forEach(attribute => {
       let lowerBound = parseInt(attribute.cardinality.lowerBound);
-      const matchingExisting = (this.jsonNode.children ?? []).filter(child =>
-        isEqual(child.definition, attribute)
-      );
-
+      const matchingExisting = this.getMatchingChildren(attribute);
       const toDuplicate = lowerBound - matchingExisting.length;
       for (let i = 0; i < toDuplicate - 1; i++) {
         newAttributes.push({ ...attribute });
       }
     });
     return newAttributes;
+  }
+
+  private getMatchingChildren(attribute: ModelAttribute) {
+    return (this.jsonNode.children ?? []).filter(child =>
+      isEqual(child.definition, attribute)
+    );
   }
 
   private getInitialJsonValue(
