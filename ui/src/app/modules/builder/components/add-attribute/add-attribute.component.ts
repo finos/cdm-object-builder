@@ -1,13 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { de } from 'date-fns/locale';
 import {
   BehaviorSubject,
   filter,
   first,
   map,
   Observable,
-  ReplaySubject,
   Subscription,
   switchMap,
   tap,
@@ -15,10 +13,8 @@ import {
 import {
   JsonAttributeNode,
   JsonNode,
-  JsonValue,
   ModelAttribute,
-  ModelType,
-  RosettaBasicType,
+  StructuredType,
 } from '../../models/builder.model';
 import { BuilderApiService } from '../../services/builder-api.service';
 import { IdentityService } from '../../services/identity.service';
@@ -26,12 +22,14 @@ import { NodeDatabaseService } from '../../services/node-database.service';
 import { NodeSelectionService } from '../../services/node-selection.service';
 import {
   getInitialJsonValue,
+  getRequiredJsonAttributes,
   isAttributeExhausted,
 } from '../../utils/node.util';
 import {
   isJsonAttribute,
   isStructuredType,
 } from '../../utils/type-guards.util';
+import { tr } from 'date-fns/locale';
 
 @Component({
   selector: 'app-add-attribute',
@@ -63,6 +61,7 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   get jsonNode() {
     return this._jsonNode;
   }
+
   faPlus = faPlus;
 
   constructor(
@@ -91,6 +90,42 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   }
 
   addAttribute(definition: ModelAttribute) {
+    if (isStructuredType(definition.type)) {
+      this.addStructuredType(definition, definition.type);
+    } else {
+      this.addNonStructuredType(definition);
+    }
+  }
+
+  private addStructuredType(definition: ModelAttribute, type: StructuredType) {
+    this.builderApiService
+      .getAttributesForType(type)
+      .pipe(
+        first(),
+        tap(attributes => {
+          const newJsonAttributeNode: JsonAttributeNode = {
+            definition,
+            id: this.identityService.getId(),
+            value: getInitialJsonValue(definition),
+            children: getRequiredJsonAttributes(
+              attributes,
+              this.identityService
+            ),
+          };
+
+          const updatedNode = this.nodeDatabaseService.insertNode(
+            this.jsonNode,
+            newJsonAttributeNode,
+            true
+          );
+          this.refreshNodeSubject();
+          this.nodeSelectionService.selectAndScrollToNode(updatedNode);
+        })
+      )
+      .subscribe();
+  }
+
+  private addNonStructuredType(definition: ModelAttribute) {
     const newJsonAttributeNode: JsonAttributeNode = {
       definition,
       id: this.identityService.getId(),

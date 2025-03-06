@@ -33,7 +33,11 @@ export class NodeDatabaseService {
     this.nodeDataChange$.next({ rootNode: node });
   }
 
-  insertNode(parent: JsonNode, newNode: JsonAttributeNode): JsonAttributeNode {
+  insertNode(
+    parent: JsonNode,
+    newNode: JsonAttributeNode,
+    expandNewNode = false
+  ): JsonAttributeNode {
     if (this.rootNode === null) {
       throw Error('Root node can not be null when calling insertNode');
     }
@@ -56,11 +60,12 @@ export class NodeDatabaseService {
     if (isJsonRootNode(parent)) {
       this.nodeDataChange$.next({
         rootNode: this.rootNode,
+        nodeToExpand: expandNewNode ? newNode : undefined,
       });
     } else {
       this.nodeDataChange$.next({
         rootNode: this.rootNode,
-        nodeToExpand: parent,
+        nodeToExpand: expandNewNode ? newNode : parent,
       });
     }
     return updatedNode;
@@ -101,7 +106,7 @@ export class NodeDatabaseService {
       throw Error('Unable to remove node from empty tree ');
     }
 
-    if (children.find((n) => n === nodeToRemove)) {
+    if (children.find(n => n === nodeToRemove)) {
       children.splice(children.indexOf(nodeToRemove), 1);
       children.sort((a, b) =>
         a.definition.name.localeCompare(b.definition.name)
@@ -110,7 +115,7 @@ export class NodeDatabaseService {
         rootNode: this.rootNode,
       });
     } else {
-      children.forEach((n) => {
+      children.forEach(n => {
         if (n.children) {
           this.deleteNode(nodeToRemove, n.children);
         }
@@ -163,7 +168,7 @@ export class NodeDatabaseService {
         return this.parentLookupMap.get(node.id);
       }),
       filter(Boolean),
-      map((parent) => {
+      map(parent => {
         if (!parent.children) {
           return false;
         }
@@ -213,7 +218,7 @@ export class NodeDatabaseService {
       return undefined;
     }
 
-    return siblings.find((s) => isEqual(s.definition, node.definition));
+    return siblings.find(s => isEqual(s.definition, node.definition));
   }
 
   private addValueToExistingSiblingNode(
@@ -266,7 +271,7 @@ export class NodeDatabaseService {
       return;
     }
     const children = parent.children;
-    children.forEach((child) => {
+    children.forEach(child => {
       this.parentLookupMap.set(child.id, parent);
     });
 
