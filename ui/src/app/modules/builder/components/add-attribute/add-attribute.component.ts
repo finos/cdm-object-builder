@@ -130,7 +130,7 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   private getMandatoryAvailableAttributes(
     attributes: ModelAttribute[]
   ): ModelAttribute[] {
-    return attributes
+    return this.duplicateMultiMinimumAttributes(attributes)
       .filter(attribute => {
         return parseInt(attribute.cardinality.lowerBound) > 0;
       })
@@ -142,6 +142,21 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
           matchingChildren.length < parseInt(attribute.cardinality.lowerBound)
         );
       });
+  }
+
+  private duplicateMultiMinimumAttributes(
+    attributes: ModelAttribute[]
+  ): ModelAttribute[] {
+    const newAttributes: ModelAttribute[] = [...attributes];
+    attributes.forEach(attribute => {
+      let lowerBound = parseInt(attribute.cardinality.lowerBound);
+      if (lowerBound > 1) {
+        for (let i = 0; i < lowerBound - 1; i++) {
+          newAttributes.push({ ...attribute });
+        }
+      }
+    });
+    return newAttributes;
   }
 
   private getInitialJsonValue(
