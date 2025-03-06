@@ -29,7 +29,7 @@ import {
   isJsonAttribute,
   isStructuredType,
 } from '../../utils/type-guards.util';
-import { tr } from 'date-fns/locale';
+import { isEqual } from 'lodash-es';
 
 @Component({
   selector: 'app-add-attribute',
@@ -41,14 +41,20 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   private jsonNodeSubject$ = new BehaviorSubject<JsonNode | null>(null);
   private subscription: Subscription = new Subscription();
 
-  availableAttributes = this.jsonNodeSubject$.pipe(
+  availableAttributes$ = this.jsonNodeSubject$.pipe(
     filter((jsonNode): jsonNode is JsonNode => jsonNode !== null),
     switchMap(jsonNode => {
       return this.getAttributesForNode(jsonNode);
     })
   );
 
-  hasAttributesToAdd = this.availableAttributes.pipe(
+  availableMandatoryAttributes$ = this.availableAttributes$.pipe(
+    map(modelAttributes => {
+      return this.getMandatoryAvailableAttributes(modelAttributes);
+    })
+  );
+
+  hasAttributesToAdd = this.availableAttributes$.pipe(
     map(attributes => attributes?.length > 0)
   );
 
@@ -129,6 +135,23 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+  private getMandatoryAvailableAttributes(
+    attributes: ModelAttribute[]
+  ): ModelAttribute[] {
+    return attributes
+      .filter(attribute => {
+        return parseInt(attribute.cardinality.lowerBound) > 0;
+      })
+      .filter(attribute => {
+        const matchingChildren = (this.jsonNode.children ?? []).filter(child =>
+          isEqual(child.definition, attribute)
+        );
+        return (
+          matchingChildren.length < parseInt(attribute.cardinality.lowerBound)
+        );
+      });
   }
 
   private removeExhaustedAttributes(
