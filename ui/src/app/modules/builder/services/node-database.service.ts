@@ -33,11 +33,7 @@ export class NodeDatabaseService {
     this.nodeDataChange$.next({ rootNode: node });
   }
 
-  insertNode(
-    parent: JsonNode,
-    newNode: JsonAttributeNode,
-    expandNewNode = false
-  ): JsonAttributeNode {
+  insertNode(parent: JsonNode, newNode: JsonAttributeNode): JsonAttributeNode {
     if (this.rootNode === null) {
       throw Error('Root node can not be null when calling insertNode');
     }
@@ -60,12 +56,11 @@ export class NodeDatabaseService {
     if (isJsonRootNode(parent)) {
       this.nodeDataChange$.next({
         rootNode: this.rootNode,
-        nodeToExpand: expandNewNode ? newNode : undefined,
       });
     } else {
       this.nodeDataChange$.next({
         rootNode: this.rootNode,
-        nodeToExpand: expandNewNode ? newNode : parent,
+        nodeToExpand: parent,
       });
     }
     return updatedNode;

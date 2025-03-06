@@ -90,11 +90,18 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   }
 
   addAttribute(definition: ModelAttribute) {
-    if (isStructuredType(definition.type)) {
-      this.addStructuredType(definition, definition.type);
-    } else {
-      this.addNonStructuredType(definition);
-    }
+    const newJsonAttributeNode: JsonAttributeNode = {
+      definition,
+      id: this.identityService.getId(),
+      value: getInitialJsonValue(definition),
+    };
+
+    const updatedNode = this.nodeDatabaseService.insertNode(
+      this.jsonNode,
+      newJsonAttributeNode
+    );
+    this.refreshNodeSubject();
+    this.nodeSelectionService.selectAndScrollToNode(updatedNode);
   }
 
   private addStructuredType(definition: ModelAttribute, type: StructuredType) {
@@ -115,29 +122,13 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
 
           const updatedNode = this.nodeDatabaseService.insertNode(
             this.jsonNode,
-            newJsonAttributeNode,
-            true
+            newJsonAttributeNode
           );
           this.refreshNodeSubject();
           this.nodeSelectionService.selectAndScrollToNode(updatedNode);
         })
       )
       .subscribe();
-  }
-
-  private addNonStructuredType(definition: ModelAttribute) {
-    const newJsonAttributeNode: JsonAttributeNode = {
-      definition,
-      id: this.identityService.getId(),
-      value: getInitialJsonValue(definition),
-    };
-
-    const updatedNode = this.nodeDatabaseService.insertNode(
-      this.jsonNode,
-      newJsonAttributeNode
-    );
-    this.refreshNodeSubject();
-    this.nodeSelectionService.selectAndScrollToNode(updatedNode);
   }
 
   private removeExhaustedAttributes(

@@ -74,26 +74,15 @@ export class BuilderComponent implements OnInit, OnDestroy {
       `rootNode:${value.name}`
     );
 
-    this.builderApiService
-      .getAttributesForType(value)
-      .pipe(
-        first(),
-        tap(attributes => {
-          const rootNode = storedNode
-            ? storedNode
-            : {
-                type: this.selectedRootType,
-                children: getRequiredJsonAttributes(
-                  attributes,
-                  this.identityService
-                ),
-              };
+    const rootNode = storedNode
+      ? storedNode
+      : {
+          type: this.selectedRootType,
+          children: [],
+        };
 
-          this.nodeDatabaseService.updateAllNodes(rootNode);
-          this.nodeSelectionService.deselectNodes();
-        })
-      )
-      .subscribe();
+    this.nodeDatabaseService.updateAllNodes(rootNode);
+    this.nodeSelectionService.deselectNodes();
   }
 
   get selectedRootType(): StructuredType {
@@ -177,24 +166,11 @@ export class BuilderComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    this.builderApiService
-      .getAttributesForType(this._selectedRootType)
-      .pipe(
-        first(),
-        tap(attributes => {
-          const rootNode = {
-            type: this.selectedRootType,
-            children: getRequiredJsonAttributes(
-              attributes,
-              this.identityService
-            ),
-          };
-
-          this.nodeDatabaseService.updateAllNodes(rootNode);
-          this.nodeSelectionService.deselectNodes();
-        })
-      )
-      .subscribe();
+    this.nodeDatabaseService.updateAllNodes({
+      type: this.selectedRootType,
+      children: [],
+    });
+    this.nodeSelectionService.deselectNodes();
   }
 
   export() {
@@ -235,7 +211,6 @@ export class BuilderComponent implements OnInit, OnDestroy {
     private fileImportService: FileImportService,
     private jsonExportService: JsonExportService,
     private localStorage: LocalStorageService,
-    private identityService: IdentityService,
     private nodeSelectionService: NodeSelectionService
   ) {}
 }
