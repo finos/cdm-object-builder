@@ -1,13 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { de } from 'date-fns/locale';
 import {
   BehaviorSubject,
   filter,
   first,
   map,
   Observable,
-  ReplaySubject,
   Subscription,
   switchMap,
   tap,
@@ -17,7 +15,6 @@ import {
   JsonNode,
   JsonValue,
   ModelAttribute,
-  ModelType,
   RosettaBasicType,
 } from '../../models/builder.model';
 import { BuilderApiService } from '../../services/builder-api.service';
@@ -29,6 +26,7 @@ import {
   isJsonAttribute,
   isStructuredType,
 } from '../../utils/type-guards.util';
+import { isEqual } from 'lodash-es';
 
 @Component({
   selector: 'app-add-attribute',
@@ -40,14 +38,20 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   private jsonNodeSubject$ = new BehaviorSubject<JsonNode | null>(null);
   private subscription: Subscription = new Subscription();
 
-  availableAttributes = this.jsonNodeSubject$.pipe(
+  availableAttributes$ = this.jsonNodeSubject$.pipe(
     filter((jsonNode): jsonNode is JsonNode => jsonNode !== null),
     switchMap(jsonNode => {
       return this.getAttributesForNode(jsonNode);
     })
   );
 
-  hasAttributesToAdd = this.availableAttributes.pipe(
+  availableMandatoryAttributes$ = this.availableAttributes$.pipe(
+    map(modelAttributes => {
+      return this.getMandatoryAvailableAttributes(modelAttributes);
+    })
+  );
+
+  hasAttributesToAdd = this.availableAttributes$.pipe(
     map(attributes => attributes?.length > 0)
   );
 
@@ -60,6 +64,7 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
   get jsonNode() {
     return this._jsonNode;
   }
+
   faPlus = faPlus;
 
   constructor(
@@ -87,7 +92,7 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
       );
   }
 
-  addAttribute(definition: ModelAttribute) {
+  addAttribute(definition: ModelAttribute, refresh = true) {
     const newJsonAttributeNode: JsonAttributeNode = {
       definition,
       id: this.identityService.getId(),
@@ -98,8 +103,64 @@ export class AddAttributeComponent implements OnInit, OnDestroy {
       this.jsonNode,
       newJsonAttributeNode
     );
-    this.refreshNodeSubject();
-    this.nodeSelectionService.selectAndScrollToNode(updatedNode);
+
+    if (refresh) {
+      this.refreshNodeSubject();
+      this.nodeSelectionService.selectAndScrollToNode(updatedNode);
+    }
+  }
+
+  addMandatoryAttributes() {
+    this.availableMandatoryAttributes$
+      .pipe(
+        first(),
+        tap(definitions => {
+          definitions.forEach(definition => {
+            this.addAttribute(definition, false);
+          });
+          this.refreshNodeSubject();
+          if (isJsonAttribute(this.jsonNode)) {
+            this.nodeSelectionService.selectAndScrollToNode(this.jsonNode);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  private getMandatoryAvailableAttributes(
+    attributes: ModelAttribute[]
+  ): ModelAttribute[] {
+    return this.duplicateMultiMinimumAttributes(attributes)
+      .filter(attribute => {
+        return parseInt(attribute.cardinality.lowerBound) > 0;
+      })
+      .filter(attribute => {
+        const matchingChildren = this.getMatchingChildren(attribute);
+        return (
+          matchingChildren.length < parseInt(attribute.cardinality.lowerBound)
+        );
+      });
+  }
+
+  private duplicateMultiMinimumAttributes(
+    attributes: ModelAttribute[]
+  ): ModelAttribute[] {
+    const newAttributes: ModelAttribute[] = [...attributes];
+    attributes.forEach(attribute => {
+      let lowerBound = parseInt(attribute.cardinality.lowerBound);
+      const matchingExisting = this.getMatchingChildren(attribute);
+      const toDuplicate = lowerBound - matchingExisting.length;
+      for (let i = 0; i < toDuplicate - 1; i++) {
+        newAttributes.push({ ...attribute });
+      }
+    });
+    return newAttributes;
+  }
+
+  private getMatchingChildren(attribute: ModelAttribute) {
+    return (this.jsonNode.children ?? []).filter(child =>
+      isEqual(child.definition, attribute)
+    );
   }
 
   private getInitialJsonValue(

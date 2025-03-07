@@ -56,7 +56,7 @@ export class BuilderComponent implements OnInit, OnDestroy {
   inputFormControl = new FormControl();
 
   jsonRootNode$ = this.nodeDatabaseService.nodeDataChange$.pipe(
-    map((event) => event.rootNode)
+    map(event => event.rootNode)
   );
 
   faFileImport = faFileImport;
@@ -93,9 +93,9 @@ export class BuilderComponent implements OnInit, OnDestroy {
   isStructuredType = isStructuredType;
 
   treeControl = new FlatTreeControl<FlatJsonNode, number>(
-    (node) => node.level,
-    (node) => node.expandable,
-    { trackBy: (node) => node.jsonNode.id }
+    node => node.level,
+    node => node.expandable,
+    { trackBy: node => node.jsonNode.id }
   );
 
   private _transformer = (jsonNode: JsonAttributeNode, level: number) => {
@@ -108,9 +108,9 @@ export class BuilderComponent implements OnInit, OnDestroy {
 
   treeFlattener = new MatTreeFlattener<JsonAttributeNode, FlatJsonNode, number>(
     this._transformer,
-    (node) => node.level,
-    (node) => node.expandable,
-    (node) => node.children
+    node => node.level,
+    node => node.expandable,
+    node => node.children
   );
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
@@ -123,7 +123,7 @@ export class BuilderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription.add(
       this.nodeDatabaseService.nodeDataChange$.subscribe(
-        (nodeDataChangeEvent) => {
+        nodeDataChangeEvent => {
           this.dataSource.data = nodeDataChangeEvent.rootNode.children;
           if (nodeDataChangeEvent.nodeToExpand) {
             this.expandNode(nodeDataChangeEvent.nodeToExpand);
@@ -140,10 +140,9 @@ export class BuilderComponent implements OnInit, OnDestroy {
     this.rootTypes
       .pipe(
         first(),
-        tap((rootTypes) => {
-             //TODO - parametise the default model root type and use it rather then take the first in the list
-             this.selectedRootType = rootTypes[0];
-
+        tap(rootTypes => {
+          //TODO - parametise the default model root type and use it rather then take the first in the list
+          this.selectedRootType = rootTypes[0];
         })
       )
       .subscribe();
@@ -153,7 +152,7 @@ export class BuilderComponent implements OnInit, OnDestroy {
     this.jsonRootNode$
       .pipe(
         first(),
-        switchMap((jsonRootNode) =>
+        switchMap(jsonRootNode =>
           this.fileImportService.importFile(event, jsonRootNode)
         ),
         finalize(() => {
@@ -176,7 +175,7 @@ export class BuilderComponent implements OnInit, OnDestroy {
     this.jsonRootNode$
       .pipe(
         first(),
-        tap((jsonRootNode) => {
+        tap(jsonRootNode => {
           const jsonContents = this.jsonExportService.export(jsonRootNode);
           const blob = new Blob([JSON.stringify(jsonContents, null, 2)], {
             type: 'application/json',
@@ -193,7 +192,7 @@ export class BuilderComponent implements OnInit, OnDestroy {
 
   expandNode(node: JsonAttributeNode) {
     const flatNode = this.treeControl.dataNodes.find(
-      (flatNode) => flatNode.jsonNode.id === node.id
+      flatNode => flatNode.jsonNode.id === node.id
     );
     if (flatNode) {
       this.treeControl.expand(flatNode);
