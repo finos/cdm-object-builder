@@ -12,6 +12,14 @@ export function isAttributeExhausted(
 ): boolean {
   const upperBound = attr.cardinality.upperBound;
 
+  if (attr.attributeOfChoice) {
+    const matchingChoiceAttributes = children.filter(
+      child => child.definition.attributeOfChoice == attr.attributeOfChoice
+    );
+
+    return matchingChoiceAttributes.length > 0;
+  }
+
   if (!isInfiniteCardinality(attr)) {
     const matchingChildren = children.filter(child =>
       isEqual(child.definition, attr)
