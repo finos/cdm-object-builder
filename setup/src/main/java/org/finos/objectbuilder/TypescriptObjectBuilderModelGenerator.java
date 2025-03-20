@@ -125,9 +125,6 @@ public class TypescriptObjectBuilderModelGenerator {
                 modelAttributes.add(modelAttribute);
             }
             if (rType instanceof RBasicType || rType instanceof RRecordType) {
-                if (isChoiceTypeDescendent(type)) {
-                    throw new RuntimeException("Basic types as attributes of Choice types are not supported");
-                }
                 RosettaBasicType rosettaBasicType = RosettaBasicType.find(rType.getName());
                 ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), rosettaBasicType, attribute.getDefinition(), cardinality, isMetaField);
                 modelAttributes.add(modelAttribute);
