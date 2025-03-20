@@ -60,7 +60,7 @@ describe('NodeUtil', () => {
       expect(result).toBe(true);
     });
 
-    it('should be true for attributes of different choice type', () => {
+    it('should be false for attributes of different choice type', () => {
       const myChoiceType = 'foo.bar.MyChoice';
       const anotherChoiceType = 'foo.bar.AnotherChoice';
 
