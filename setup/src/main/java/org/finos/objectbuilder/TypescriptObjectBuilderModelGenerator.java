@@ -112,8 +112,8 @@ public class TypescriptObjectBuilderModelGenerator {
                     .anyMatch(x -> x.equals("metadata"));
 
             String attributeOfChoice = null;
-            if (type instanceof Choice) {
-                attributeOfChoice = type.getModel().getName() + "." + type.getName();
+            if (isChoiceTypeDescendent(type)) {
+                attributeOfChoice = getAttributeOfChoice(type);
             }
 
             if (rType instanceof RDataType rDataType) {
@@ -125,7 +125,7 @@ public class TypescriptObjectBuilderModelGenerator {
                 modelAttributes.add(modelAttribute);
             }
             if (rType instanceof RBasicType || rType instanceof RRecordType) {
-                if (type instanceof Choice) {
+                if (isChoiceTypeDescendent(type)) {
                     throw new RuntimeException("Basic types as attributes of Choice types are not supported");
                 }
                 RosettaBasicType rosettaBasicType = RosettaBasicType.find(rType.getName());
@@ -146,6 +146,26 @@ public class TypescriptObjectBuilderModelGenerator {
             }
         }
         return modelAttributes;
+    }
+
+    private String getAttributeOfChoice(Data type) {
+        if (type instanceof Choice) {
+            return type.getModel().getName() + "." + type.getName();
+        } else if (type.hasSuperType() && type.getSuperType() != null) {
+            return getAttributeOfChoice(type.getSuperType());
+        }
+        return null;
+    }
+
+    private boolean isChoiceTypeDescendent(Data type) {
+        if (type instanceof Choice) {
+            return true;
+        }
+        if (type.hasSuperType() && type.getSuperType() != null) {
+            return isChoiceTypeDescendent(type.getSuperType());
+        }
+
+        return false;
     }
 
 
