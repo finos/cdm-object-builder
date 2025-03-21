@@ -112,7 +112,7 @@ public class TypescriptObjectBuilderModelGenerator {
                     .anyMatch(x -> x.equals("metadata"));
 
             String attributeOfChoice = null;
-            if (isChoiceTypeDescendent(type)) {
+            if (attribute instanceof ChoiceOption) {
                 attributeOfChoice = getAttributeOfChoice(type);
             }
 
@@ -153,18 +153,6 @@ public class TypescriptObjectBuilderModelGenerator {
         }
         return null;
     }
-
-    private boolean isChoiceTypeDescendent(Data type) {
-        if (type instanceof Choice) {
-            return true;
-        }
-        if (type.hasSuperType() && type.getSuperType() != null) {
-            return isChoiceTypeDescendent(type.getSuperType());
-        }
-
-        return false;
-    }
-
 
     private List<RosettaEnumValue> getRosettaEnumValues(RosettaEnumeration rosettaEnumeration) {
         RosettaEnumeration superType = rosettaEnumeration.getParent();
