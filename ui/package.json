@@ -8,7 +8,8 @@
     "update-model": "cd ../setup && mvn clean install && java -jar target/object-builder-0.0.0.master.jar ../ui/src/app/modules/builder/services/builder-api.model.ts org.finos.cdm cdm-java",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:ci": "CI=true ng test"
   },
   "private": true,
   "dependencies": {
