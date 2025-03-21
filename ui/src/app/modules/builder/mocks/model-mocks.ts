@@ -18,7 +18,8 @@ export function mockJsonAttributeNode(id = 1): JsonAttributeNode {
 
 export function mockStructuredJsonAttributeNode(
   id: number = 2,
-  upperBound: string = '*'
+  upperBound: string = '*',
+  attributeOfChoice: string | undefined = undefined
 ): JsonAttributeNode {
   return {
     id,
@@ -32,6 +33,7 @@ export function mockStructuredJsonAttributeNode(
       },
       description: 'description',
       cardinality: { lowerBound: '1', upperBound },
+      attributeOfChoice,
     },
   };
 }

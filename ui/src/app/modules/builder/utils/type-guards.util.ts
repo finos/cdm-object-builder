@@ -29,7 +29,10 @@ export function isStructuredType(
   if (isBasicType(modelType)) {
     return false;
   }
-  return modelType.typeCategory === RosettaTypeCategory.StructuredType;
+  return (
+    modelType.typeCategory === RosettaTypeCategory.StructuredType ||
+    modelType.typeCategory === RosettaTypeCategory.ChoiceType
+  );
 }
 
 export function isJsonRootNode(node: JsonNode): node is JsonRootNode {

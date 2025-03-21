@@ -43,6 +43,44 @@ describe('NodeUtil', () => {
 
       expect(result).toBe(true);
     });
+
+    it('should be true for attributes of the same choice type', () => {
+      const choiceType = 'foo.bar.MyChoice';
+      const allreadySelectedChoice = mockStructuredJsonAttributeNode(
+        1,
+        '1',
+        choiceType
+      );
+      const choiceToCheck = mockStructuredJsonAttributeNode(2, '1', choiceType);
+
+      const result = isAttributeExhausted(choiceToCheck.definition, [
+        allreadySelectedChoice,
+      ]);
+
+      expect(result).toBe(true);
+    });
+
+    it('should be false for attributes of different choice type', () => {
+      const myChoiceType = 'foo.bar.MyChoice';
+      const anotherChoiceType = 'foo.bar.AnotherChoice';
+
+      const allreadySelectedChoice = mockStructuredJsonAttributeNode(
+        1,
+        '1',
+        myChoiceType
+      );
+      const choiceToCheck = mockStructuredJsonAttributeNode(
+        2,
+        '1',
+        anotherChoiceType
+      );
+
+      const result = isAttributeExhausted(choiceToCheck.definition, [
+        allreadySelectedChoice,
+      ]);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe('isInfiniteCardinality', () => {

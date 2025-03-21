@@ -11,6 +11,7 @@ export enum RosettaBasicType {
 export enum RosettaTypeCategory {
   EnumType = 'EnumType',
   StructuredType = 'StructuredType',
+  ChoiceType = 'ChoiceType',
 }
 
 interface RosettaType {
@@ -40,6 +41,7 @@ export interface ModelAttribute {
   description?: string;
   cardinality: Cardinality;
   metaField?: boolean;
+  attributeOfChoice?: string;
 }
 
 export interface Cardinality {

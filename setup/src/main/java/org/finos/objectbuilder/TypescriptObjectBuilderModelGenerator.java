@@ -8,13 +8,8 @@ import com.regnosys.rosetta.RosettaStandaloneSetup;
 import com.regnosys.rosetta.common.serialisation.RosettaObjectMapper;
 import com.regnosys.rosetta.common.util.ClassPathUtils;
 import com.regnosys.rosetta.generator.java.enums.EnumHelper;
-import com.regnosys.rosetta.rosetta.RosettaEnumValue;
-import com.regnosys.rosetta.rosetta.RosettaEnumeration;
-import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaNamed;
-import com.regnosys.rosetta.rosetta.simple.AnnotationRef;
-import com.regnosys.rosetta.rosetta.simple.Attribute;
-import com.regnosys.rosetta.rosetta.simple.Data;
+import com.regnosys.rosetta.rosetta.*;
+import com.regnosys.rosetta.rosetta.simple.*;
 import com.regnosys.rosetta.types.*;
 import com.regnosys.rosetta.types.builtin.RBasicType;
 import com.regnosys.rosetta.types.builtin.RRecordType;
@@ -66,7 +61,7 @@ public class TypescriptObjectBuilderModelGenerator {
     public List<StructuredType> rootTypes() {
         return allDataTypes().stream()
                 .filter(x -> x.getAnnotations().stream().anyMatch(r -> r.getAnnotation().getName().equals(ROOT_TYPE)))
-                .map(this::createStructuredType)
+                .map(type -> createStructuredType(type, RosettaTypeCategory.StructuredType))
                 .collect(Collectors.toList());
     }
 
@@ -115,12 +110,18 @@ public class TypescriptObjectBuilderModelGenerator {
                     .map(AnnotationRef::getAnnotation)
                     .map(RosettaNamed::getName)
                     .anyMatch(x -> x.equals("metadata"));
-            if (rType instanceof RDataType) {
-                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(((RDataType) rType).getEObject()), attribute.getDefinition(), cardinality, isMetaField);
+
+            String attributeOfChoice = null;
+            if (attribute instanceof ChoiceOption) {
+                attributeOfChoice = getAttributeOfChoice(type);
+            }
+
+            if (rType instanceof RDataType rDataType) {
+                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(rDataType.getEObject(), RosettaTypeCategory.StructuredType), attribute.getDefinition(), cardinality, isMetaField, attributeOfChoice);
                 modelAttributes.add(modelAttribute);
             }
-            if (rType instanceof RChoiceType) {
-                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(((RChoiceType) rType).getEObject()), attribute.getDefinition(), cardinality, isMetaField);
+            if (rType instanceof RChoiceType rChoiceType) {
+                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), createStructuredType(rChoiceType.getEObject(), RosettaTypeCategory.ChoiceType), attribute.getDefinition(), cardinality, isMetaField, attributeOfChoice);
                 modelAttributes.add(modelAttribute);
             }
             if (rType instanceof RBasicType || rType instanceof RRecordType) {
@@ -137,13 +138,21 @@ public class TypescriptObjectBuilderModelGenerator {
                         .map(x -> new EnumTypeValue(EnumHelper.formatEnumName(x.getName()), generateDisplayName(x), x.getDefinition()))
                         .collect(Collectors.toList());
                 EnumType enumType = new EnumType(enumAttributeType.getName(), RosettaTypeCategory.EnumType, values);
-                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), enumType, attribute.getDefinition(), cardinality, isMetaField);
+                ModelAttribute modelAttribute = new ModelAttribute(attribute.getName(), enumType, attribute.getDefinition(), cardinality, isMetaField, attributeOfChoice);
                 modelAttributes.add(modelAttribute);
             }
         }
         return modelAttributes;
     }
 
+    private String getAttributeOfChoice(Data type) {
+        if (type instanceof Choice) {
+            return type.getModel().getName() + "." + type.getName();
+        } else if (type.hasSuperType() && type.getSuperType() != null) {
+            return getAttributeOfChoice(type.getSuperType());
+        }
+        return null;
+    }
 
     private List<RosettaEnumValue> getRosettaEnumValues(RosettaEnumeration rosettaEnumeration) {
         RosettaEnumeration superType = rosettaEnumeration.getParent();
@@ -158,9 +167,9 @@ public class TypescriptObjectBuilderModelGenerator {
         return x.getDisplay() == null || x.getDisplay().isBlank() ? x.getName() : x.getDisplay();
     }
 
-    private StructuredType createStructuredType(com.regnosys.rosetta.rosetta.RosettaType type) {
-        return new StructuredType(RosettaTypeCategory.StructuredType, type.getName(), type.getModel()
-                .getName(), ((Data) type).getDefinition());
+    private StructuredType createStructuredType(com.regnosys.rosetta.rosetta.RosettaType type, RosettaTypeCategory rosettaTypeCategory) {
+        return new StructuredType(rosettaTypeCategory, type.getName(), type.getModel()
+                .getName(), ((RosettaDefinable) type).getDefinition());
     }
 
     static class RosettaType {
@@ -177,7 +186,7 @@ public class TypescriptObjectBuilderModelGenerator {
     }
 
     public enum RosettaTypeCategory {
-        EnumType, StructuredType;
+        EnumType, StructuredType, ChoiceType
     }
 
     public enum RosettaBasicType {
@@ -283,6 +292,7 @@ public class TypescriptObjectBuilderModelGenerator {
         String description;
         Cardinality cardinality;
         boolean isMetaField;
+        String attributeOfChoice;
 
         public ModelAttribute(String name, RosettaBasicType type, String description, Cardinality cardinality, boolean isMetaField) {
             this.name = name;
@@ -290,22 +300,25 @@ public class TypescriptObjectBuilderModelGenerator {
             this.description = description;
             this.cardinality = cardinality;
             this.isMetaField = isMetaField;
+            this.attributeOfChoice = null;
         }
 
-        public ModelAttribute(String name, EnumType type, String description, Cardinality cardinality, boolean isMetaField) {
+        public ModelAttribute(String name, EnumType type, String description, Cardinality cardinality, boolean isMetaField, String attributeOfChoice) {
             this.name = name;
             this.type = type;
             this.description = description;
             this.cardinality = cardinality;
             this.isMetaField = isMetaField;
+            this.attributeOfChoice = attributeOfChoice;
         }
 
-        public ModelAttribute(String name, StructuredType type, String description, Cardinality cardinality, boolean isMetaField) {
+        public ModelAttribute(String name, StructuredType type, String description, Cardinality cardinality, boolean isMetaField, String attributeOfChoice) {
             this.name = name;
             this.type = type;
             this.description = description;
             this.cardinality = cardinality;
             this.isMetaField = isMetaField;
+            this.attributeOfChoice = attributeOfChoice;
         }
 
 
@@ -327,6 +340,10 @@ public class TypescriptObjectBuilderModelGenerator {
 
         public boolean isMetaField() {
             return isMetaField;
+        }
+
+        public String getAttributeOfChoice() {
+            return attributeOfChoice;
         }
     }
 
