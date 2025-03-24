@@ -223,32 +223,21 @@ describe('JsonImportService', () => {
     const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralSpecificationType,
-      'criteria'
-    );
+    const eligibleCollateralCriteriaAttr =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralSpecificationType,
+        'criteria'
+      );
 
-    if (!isStructuredType(eligibleCollateralCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const collateralCriteria = testDataUtil.findAttributeInType(
+    const collateralCriteria = testDataUtil.findStructuredAttributeInType(
       eligibleCollateralCriteriaAttr.type,
       'collateralCriteria'
     );
 
-    if (!isStructuredType(collateralCriteria.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const listingExchange = testDataUtil.findAttributeInType(
+    const listingExchange = testDataUtil.findStructuredAttributeInType(
       collateralCriteria.type,
       'ListingExchange'
     );
-
-    if (!isStructuredType(listingExchange.type)) {
-      throw Error('Invalid type structure');
-    }
 
     const exchange = testDataUtil.findAttributeInType(
       listingExchange.type,
@@ -323,23 +312,16 @@ describe('JsonImportService', () => {
     const eligibleCollateralScheduleType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralScheduleType,
-      'criteria'
-    );
+    const eligibleCollateralCriteriaAttr =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralScheduleType,
+        'criteria'
+      );
 
-    if (!isStructuredType(eligibleCollateralCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const issuerCriteriaAttr = testDataUtil.findAttributeInType(
+    const issuerCriteriaAttr = testDataUtil.findStructuredAttributeInType(
       eligibleCollateralCriteriaAttr.type,
       'issuer'
     );
-
-    if (!isStructuredType(issuerCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
 
     const issuerCountryOfOriginAttr = testDataUtil.findAttributeInType(
       issuerCriteriaAttr.type,
