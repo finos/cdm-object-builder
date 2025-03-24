@@ -8,7 +8,11 @@ import {
   StructuredType,
 } from '../models/builder.model';
 import { isListBasedBasicType } from '../utils/node.util';
-import { isJsonRootNode, isStructuredType } from '../utils/type-guards.util';
+import {
+  isJsonAttribute,
+  isJsonRootNode,
+  isStructuredType,
+} from '../utils/type-guards.util';
 import { BuilderApiService } from './builder-api.service';
 import { IdentityService } from './identity.service';
 
@@ -26,7 +30,7 @@ export class JsonImportService {
   constructor(
     private builderApiService: BuilderApiService,
     private identityService: IdentityService
-  ) { }
+  ) {}
 
   async import(sourceJson: any, nodeType: StructuredType): Promise<JsonNode> {
     const importedJson: JsonNode = {
@@ -40,7 +44,10 @@ export class JsonImportService {
   }
 
   private async generateChildrenForNode(parentNode: JsonNode, sourceJson: any) {
-    const sourceJsonAttributes = this.getJsonAttributesFromSource(sourceJson);
+    const sourceJsonAttributes = this.getJsonAttributesFromSource(
+      sourceJson,
+      parentNode
+    );
 
     const parentNodeType = isJsonRootNode(parentNode)
       ? parentNode.type
@@ -58,7 +65,7 @@ export class JsonImportService {
 
     for (const [attributeName, attributeValue] of sourceJsonAttributes) {
       const modelAttribute = attributesForTypes.find(
-        (attr) => attr.name === attributeName
+        attr => attr.name === attributeName
       );
 
       if (!modelAttribute) {
@@ -102,17 +109,18 @@ export class JsonImportService {
     } else {
       if (Array.isArray(attributeValue)) {
         if (attributeValue.length !== 1) {
-          throw Error(`Attribute [${modelAttribute.name}] has multiple values when only one is expected.`);
+          throw Error(
+            `Attribute [${modelAttribute.name}] has multiple values when only one is expected.`
+          );
         }
         attributeValues.push(...attributeValue);
-      }
-      else {
+      } else {
         attributeValues.push(attributeValue);
       }
     }
 
     if (isListBasedBasicType(modelAttribute)) {
-      const newValues = attributeValues.map((val) =>
+      const newValues = attributeValues.map(val =>
         modelAttribute.metaField ? val.value : val
       );
 
@@ -183,14 +191,24 @@ export class JsonImportService {
     return parseInt(upperBound) > 1;
   }
 
-  //TODO: expanding 'value' fields is not a great solution, it could blow up if we have a genuine field called 'value', need to work out a better way to do this
-  private getJsonAttributesFromSource(json: any): [string, any][] {
+  private getJsonAttributesFromSource(
+    json: any,
+    jsonNode: JsonNode
+  ): [string, any][] {
     return Object.keys(json)
-      .filter((key) => !EXCLUDED_FIELDS.includes(key))
-      .flatMap((key) =>
-        key !== 'value'
-          ? [[key, json[key]]]
-          : this.getJsonAttributesFromSource(json[key])
+      .filter(key => !EXCLUDED_FIELDS.includes(key))
+      .flatMap(key =>
+        this.expandValueNode(key, jsonNode)
+          ? this.getJsonAttributesFromSource(json[key], jsonNode)
+          : [[key, json[key]]]
       );
+  }
+
+  private expandValueNode(currentKey: string, jsonNode: JsonNode): boolean {
+    if (!isJsonAttribute(jsonNode)) {
+      return false;
+    }
+    const isMetaField = !!jsonNode.definition.metaField;
+    return currentKey === 'value' && isMetaField;
   }
 }

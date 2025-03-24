@@ -9,6 +9,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:no-watch": "ng test --no-watch",
     "test:ci": "CI=true ng test"
   },
   "private": true,

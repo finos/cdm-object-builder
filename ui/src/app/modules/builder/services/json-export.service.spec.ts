@@ -10,8 +10,6 @@ import { isStructuredType } from '../utils/type-guards.util';
 import { JsonExportService } from './json-export.service';
 import { testDataUtil } from './test-data.uti';
 
-//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on.
-// These need to be fixed see https://github.com/finos/cdm-object-builder/issues/121
 describe('JsonExportService', () => {
   let service: JsonExportService;
 
