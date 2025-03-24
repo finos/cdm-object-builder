@@ -200,31 +200,31 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedPartyNode);
   });
 
-  xit('should import multi cardinality meta fields', async () => {
+  it('should import multi cardinality meta fields', async () => {
     const inputJsonObject = {
       criteria: [
         {
-          asset: [
-            {
-              assetCountryOfOrigin: [
+          collateralCriteria: {
+            ListingExchange: {
+              exchange: [
                 {
-                  value: 'USA',
+                  value: 'exchange1',
                 },
                 {
-                  value: 'UK',
+                  value: 'exchange2',
                 },
               ],
             },
-          ],
+          },
         },
       ],
     };
 
-    const eligibleCollateralScheduleType: StructuredType =
+    const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
     const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralScheduleType,
+      eligibleCollateralSpecificationType,
       'criteria'
     );
 
@@ -232,22 +232,31 @@ describe('JsonImportService', () => {
       throw Error('Invalid type structure');
     }
 
-    const assertCriteriaAttr = testDataUtil.findAttributeInType(
+    const collateralCriteria = testDataUtil.findAttributeInType(
       eligibleCollateralCriteriaAttr.type,
-      'asset'
+      'collateralCriteria'
     );
 
-    if (!isStructuredType(assertCriteriaAttr.type)) {
+    if (!isStructuredType(collateralCriteria.type)) {
       throw Error('Invalid type structure');
     }
 
-    const assetCountryOfOriginAttr = testDataUtil.findAttributeInType(
-      assertCriteriaAttr.type,
-      'assetCountryOfOrigin'
+    const listingExchange = testDataUtil.findAttributeInType(
+      collateralCriteria.type,
+      'ListingExchange'
+    );
+
+    if (!isStructuredType(listingExchange.type)) {
+      throw Error('Invalid type structure');
+    }
+
+    const exchange = testDataUtil.findAttributeInType(
+      listingExchange.type,
+      'exchange'
     );
 
     const expectedPartyNode: JsonRootNode = {
-      type: eligibleCollateralScheduleType,
+      type: eligibleCollateralSpecificationType,
       children: [
         {
           id: 12345,
@@ -255,12 +264,18 @@ describe('JsonImportService', () => {
           children: [
             {
               id: 12345,
-              definition: assertCriteriaAttr,
+              definition: collateralCriteria,
               children: [
                 {
                   id: 12345,
-                  definition: assetCountryOfOriginAttr,
-                  value: ['USA', 'UK'],
+                  definition: listingExchange,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: exchange,
+                      value: ['exchange1', 'exchange2'],
+                    },
+                  ],
                 },
               ],
             },
@@ -271,7 +286,7 @@ describe('JsonImportService', () => {
 
     const imported = await service.import(
       inputJsonObject,
-      eligibleCollateralScheduleType
+      eligibleCollateralSpecificationType
     );
 
     expect(imported).toEqual(expectedPartyNode);
