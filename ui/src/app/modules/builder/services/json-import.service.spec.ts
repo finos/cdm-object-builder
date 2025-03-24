@@ -6,14 +6,11 @@ import {
   RosettaTypeCategory,
   StructuredType,
 } from '../models/builder.model';
-import { isStructuredType } from '../utils/type-guards.util';
 import { BuilderApiService } from './builder-api.service';
 import { IdentityService } from './identity.service';
 import { JsonImportService } from './json-import.service';
 import { testDataUtil } from './test-data.uti';
 
-//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on.
-// These need to be fixed see https://github.com/finos/cdm-object-builder/issues/121
 describe('JsonImportService', () => {
   let service: JsonImportService;
 
@@ -281,30 +278,22 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedPartyNode);
   });
 
-  xit('should import multi cardinality attributes correctly', async () => {
+  it('should import multi cardinality attributes correctly', async () => {
     const inputJsonObject = {
       criteria: [
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'a',
-                },
-              ],
+          collateralCriteria: {
+            IssuerCountryOfOrigin: {
+              issuerCountryOfOrigin: 'GB',
             },
-          ],
+          },
         },
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'b',
-                },
-              ],
+          collateralCriteria: {
+            IssuerCountryOfOrigin: {
+              issuerCountryOfOrigin: 'CN',
             },
-          ],
+          },
         },
       ],
     };
@@ -312,19 +301,25 @@ describe('JsonImportService', () => {
     const eligibleCollateralScheduleType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr =
+    const eligibleCollateralCriteria =
       testDataUtil.findStructuredAttributeInType(
         eligibleCollateralScheduleType,
         'criteria'
       );
 
-    const issuerCriteriaAttr = testDataUtil.findStructuredAttributeInType(
-      eligibleCollateralCriteriaAttr.type,
-      'issuer'
+    const collateralCriteria = testDataUtil.findStructuredAttributeInType(
+      eligibleCollateralCriteria.type,
+      'collateralCriteria'
     );
 
-    const issuerCountryOfOriginAttr = testDataUtil.findAttributeInType(
-      issuerCriteriaAttr.type,
+    const issuerCountryOfOriginChoice =
+      testDataUtil.findStructuredAttributeInType(
+        collateralCriteria.type,
+        'IssuerCountryOfOrigin'
+      );
+
+    const issuerCountryOfOrigin = testDataUtil.findAttributeInType(
+      issuerCountryOfOriginChoice.type,
       'issuerCountryOfOrigin'
     );
 
@@ -332,34 +327,46 @@ describe('JsonImportService', () => {
       type: eligibleCollateralScheduleType,
       children: [
         {
-          definition: eligibleCollateralCriteriaAttr,
           id: 12345,
+          definition: eligibleCollateralCriteria,
           children: [
             {
-              definition: issuerCriteriaAttr,
               id: 12345,
+              definition: collateralCriteria,
               children: [
                 {
-                  definition: issuerCountryOfOriginAttr,
                   id: 12345,
-                  value: 'a',
+                  definition: issuerCountryOfOriginChoice,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: issuerCountryOfOrigin,
+                      value: 'GB',
+                    },
+                  ],
                 },
               ],
             },
           ],
         },
         {
-          definition: eligibleCollateralCriteriaAttr,
           id: 12345,
+          definition: eligibleCollateralCriteria,
           children: [
             {
-              definition: issuerCriteriaAttr,
               id: 12345,
+              definition: collateralCriteria,
               children: [
                 {
-                  definition: issuerCountryOfOriginAttr,
                   id: 12345,
-                  value: 'b',
+                  definition: issuerCountryOfOriginChoice,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: issuerCountryOfOrigin,
+                      value: 'CN',
+                    },
+                  ],
                 },
               ],
             },
