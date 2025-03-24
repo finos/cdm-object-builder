@@ -383,25 +383,17 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedRootNode);
   });
 
-  xit('should import list based basic types correctly', async () => {
+  it('should import list based basic types correctly', async () => {
     const inputJsonObject = {
-      criteria: [
+      party: [
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'UK',
-                },
-                {
-                  value: 'US',
-                },
-                {
-                  value: 'FR',
-                },
-              ],
-            },
-          ],
+          contactInformation: {
+            address: [
+              {
+                street: ['street1', 'street2'],
+              },
+            ],
+          },
         },
       ],
     };
@@ -409,51 +401,44 @@ describe('JsonImportService', () => {
     const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralSpecificationCriteria: ModelAttribute =
-      testDataUtil.findAttributeInType(
-        eligibleCollateralSpecificationType,
-        'criteria'
-      );
-
-    const eligibleCollateralCriteria: StructuredType = {
-      name: 'EligibleCollateralCriteria',
-      namespace: 'cdm.product.collateral',
-      description:
-        'Represents a set of criteria used to specify eligible collateral.',
-      typeCategory: RosettaTypeCategory.StructuredType,
-    };
-
-    const eligibleCollateralCriteriaIssuer: ModelAttribute =
-      testDataUtil.findAttributeInType(eligibleCollateralCriteria, 'issuer');
-
-    const issuerCriteria: StructuredType = {
-      name: 'IssuerCriteria',
-      namespace: 'cdm.product.collateral',
-      description:
-        'Represents a criteria used to specify eligible collateral issuers.',
-      typeCategory: RosettaTypeCategory.StructuredType,
-    };
-
-    const issuerCriteriaCountryOfOrigin = testDataUtil.findAttributeInType(
-      issuerCriteria,
-      'issuerCountryOfOrigin'
+    const party = testDataUtil.findStructuredAttributeInType(
+      eligibleCollateralSpecificationType,
+      'party'
     );
+
+    const contactInformation = testDataUtil.findStructuredAttributeInType(
+      party.type,
+      'contactInformation'
+    );
+
+    const address = testDataUtil.findStructuredAttributeInType(
+      contactInformation.type,
+      'address'
+    );
+
+    const street = testDataUtil.findAttributeInType(address.type, 'street');
 
     const expectedRootNode: JsonRootNode = {
       type: eligibleCollateralSpecificationType,
       children: [
         {
-          definition: eligibleCollateralSpecificationCriteria,
           id: 12345,
+          definition: party,
           children: [
             {
-              definition: eligibleCollateralCriteriaIssuer,
               id: 12345,
+              definition: contactInformation,
               children: [
                 {
-                  definition: issuerCriteriaCountryOfOrigin,
                   id: 12345,
-                  value: ['UK', 'US', 'FR'],
+                  definition: address,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: street,
+                      value: ['street1', 'street2'],
+                    },
+                  ],
                 },
               ],
             },
