@@ -6,14 +6,11 @@ import {
   RosettaTypeCategory,
   StructuredType,
 } from '../models/builder.model';
-import { isStructuredType } from '../utils/type-guards.util';
 import { BuilderApiService } from './builder-api.service';
 import { IdentityService } from './identity.service';
 import { JsonImportService } from './json-import.service';
 import { testDataUtil } from './test-data.uti';
 
-//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on.
-// These need to be fixed see https://github.com/finos/cdm-object-builder/issues/121
 describe('JsonImportService', () => {
   let service: JsonImportService;
 
@@ -200,54 +197,52 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedPartyNode);
   });
 
-  xit('should import multi cardinality meta fields', async () => {
+  it('should import multi cardinality meta fields', async () => {
     const inputJsonObject = {
       criteria: [
         {
-          asset: [
-            {
-              assetCountryOfOrigin: [
+          collateralCriteria: {
+            ListingExchange: {
+              exchange: [
                 {
-                  value: 'USA',
+                  value: 'exchange1',
                 },
                 {
-                  value: 'UK',
+                  value: 'exchange2',
                 },
               ],
             },
-          ],
+          },
         },
       ],
     };
 
-    const eligibleCollateralScheduleType: StructuredType =
+    const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralScheduleType,
-      'criteria'
-    );
+    const eligibleCollateralCriteriaAttr =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralSpecificationType,
+        'criteria'
+      );
 
-    if (!isStructuredType(eligibleCollateralCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const assertCriteriaAttr = testDataUtil.findAttributeInType(
+    const collateralCriteria = testDataUtil.findStructuredAttributeInType(
       eligibleCollateralCriteriaAttr.type,
-      'asset'
+      'collateralCriteria'
     );
 
-    if (!isStructuredType(assertCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
+    const listingExchange = testDataUtil.findStructuredAttributeInType(
+      collateralCriteria.type,
+      'ListingExchange'
+    );
 
-    const assetCountryOfOriginAttr = testDataUtil.findAttributeInType(
-      assertCriteriaAttr.type,
-      'assetCountryOfOrigin'
+    const exchange = testDataUtil.findAttributeInType(
+      listingExchange.type,
+      'exchange'
     );
 
     const expectedPartyNode: JsonRootNode = {
-      type: eligibleCollateralScheduleType,
+      type: eligibleCollateralSpecificationType,
       children: [
         {
           id: 12345,
@@ -255,12 +250,18 @@ describe('JsonImportService', () => {
           children: [
             {
               id: 12345,
-              definition: assertCriteriaAttr,
+              definition: collateralCriteria,
               children: [
                 {
                   id: 12345,
-                  definition: assetCountryOfOriginAttr,
-                  value: ['USA', 'UK'],
+                  definition: listingExchange,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: exchange,
+                      value: ['exchange1', 'exchange2'],
+                    },
+                  ],
                 },
               ],
             },
@@ -271,36 +272,28 @@ describe('JsonImportService', () => {
 
     const imported = await service.import(
       inputJsonObject,
-      eligibleCollateralScheduleType
+      eligibleCollateralSpecificationType
     );
 
     expect(imported).toEqual(expectedPartyNode);
   });
 
-  xit('should import multi cardinality attributes correctly', async () => {
+  it('should import multi cardinality attributes correctly', async () => {
     const inputJsonObject = {
       criteria: [
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'a',
-                },
-              ],
+          collateralCriteria: {
+            IssuerCountryOfOrigin: {
+              issuerCountryOfOrigin: 'GB',
             },
-          ],
+          },
         },
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'b',
-                },
-              ],
+          collateralCriteria: {
+            IssuerCountryOfOrigin: {
+              issuerCountryOfOrigin: 'CN',
             },
-          ],
+          },
         },
       ],
     };
@@ -308,26 +301,25 @@ describe('JsonImportService', () => {
     const eligibleCollateralScheduleType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralScheduleType,
-      'criteria'
+    const eligibleCollateralCriteria =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralScheduleType,
+        'criteria'
+      );
+
+    const collateralCriteria = testDataUtil.findStructuredAttributeInType(
+      eligibleCollateralCriteria.type,
+      'collateralCriteria'
     );
 
-    if (!isStructuredType(eligibleCollateralCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
+    const issuerCountryOfOriginChoice =
+      testDataUtil.findStructuredAttributeInType(
+        collateralCriteria.type,
+        'IssuerCountryOfOrigin'
+      );
 
-    const issuerCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralCriteriaAttr.type,
-      'issuer'
-    );
-
-    if (!isStructuredType(issuerCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const issuerCountryOfOriginAttr = testDataUtil.findAttributeInType(
-      issuerCriteriaAttr.type,
+    const issuerCountryOfOrigin = testDataUtil.findAttributeInType(
+      issuerCountryOfOriginChoice.type,
       'issuerCountryOfOrigin'
     );
 
@@ -335,34 +327,46 @@ describe('JsonImportService', () => {
       type: eligibleCollateralScheduleType,
       children: [
         {
-          definition: eligibleCollateralCriteriaAttr,
           id: 12345,
+          definition: eligibleCollateralCriteria,
           children: [
             {
-              definition: issuerCriteriaAttr,
               id: 12345,
+              definition: collateralCriteria,
               children: [
                 {
-                  definition: issuerCountryOfOriginAttr,
                   id: 12345,
-                  value: 'a',
+                  definition: issuerCountryOfOriginChoice,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: issuerCountryOfOrigin,
+                      value: 'GB',
+                    },
+                  ],
                 },
               ],
             },
           ],
         },
         {
-          definition: eligibleCollateralCriteriaAttr,
           id: 12345,
+          definition: eligibleCollateralCriteria,
           children: [
             {
-              definition: issuerCriteriaAttr,
               id: 12345,
+              definition: collateralCriteria,
               children: [
                 {
-                  definition: issuerCountryOfOriginAttr,
                   id: 12345,
-                  value: 'b',
+                  definition: issuerCountryOfOriginChoice,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: issuerCountryOfOrigin,
+                      value: 'CN',
+                    },
+                  ],
                 },
               ],
             },
@@ -379,25 +383,17 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedRootNode);
   });
 
-  xit('should import list based basic types correctly', async () => {
+  it('should import list based basic types correctly', async () => {
     const inputJsonObject = {
-      criteria: [
+      party: [
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'UK',
-                },
-                {
-                  value: 'US',
-                },
-                {
-                  value: 'FR',
-                },
-              ],
-            },
-          ],
+          contactInformation: {
+            address: [
+              {
+                street: ['street1', 'street2'],
+              },
+            ],
+          },
         },
       ],
     };
@@ -405,51 +401,44 @@ describe('JsonImportService', () => {
     const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralSpecificationCriteria: ModelAttribute =
-      testDataUtil.findAttributeInType(
-        eligibleCollateralSpecificationType,
-        'criteria'
-      );
-
-    const eligibleCollateralCriteria: StructuredType = {
-      name: 'EligibleCollateralCriteria',
-      namespace: 'cdm.product.collateral',
-      description:
-        'Represents a set of criteria used to specify eligible collateral.',
-      typeCategory: RosettaTypeCategory.StructuredType,
-    };
-
-    const eligibleCollateralCriteriaIssuer: ModelAttribute =
-      testDataUtil.findAttributeInType(eligibleCollateralCriteria, 'issuer');
-
-    const issuerCriteria: StructuredType = {
-      name: 'IssuerCriteria',
-      namespace: 'cdm.product.collateral',
-      description:
-        'Represents a criteria used to specify eligible collateral issuers.',
-      typeCategory: RosettaTypeCategory.StructuredType,
-    };
-
-    const issuerCriteriaCountryOfOrigin = testDataUtil.findAttributeInType(
-      issuerCriteria,
-      'issuerCountryOfOrigin'
+    const party = testDataUtil.findStructuredAttributeInType(
+      eligibleCollateralSpecificationType,
+      'party'
     );
+
+    const contactInformation = testDataUtil.findStructuredAttributeInType(
+      party.type,
+      'contactInformation'
+    );
+
+    const address = testDataUtil.findStructuredAttributeInType(
+      contactInformation.type,
+      'address'
+    );
+
+    const street = testDataUtil.findAttributeInType(address.type, 'street');
 
     const expectedRootNode: JsonRootNode = {
       type: eligibleCollateralSpecificationType,
       children: [
         {
-          definition: eligibleCollateralSpecificationCriteria,
           id: 12345,
+          definition: party,
           children: [
             {
-              definition: eligibleCollateralCriteriaIssuer,
               id: 12345,
+              definition: contactInformation,
               children: [
                 {
-                  definition: issuerCriteriaCountryOfOrigin,
                   id: 12345,
-                  value: ['UK', 'US', 'FR'],
+                  definition: address,
+                  children: [
+                    {
+                      id: 12345,
+                      definition: street,
+                      value: ['street1', 'street2'],
+                    },
+                  ],
                 },
               ],
             },

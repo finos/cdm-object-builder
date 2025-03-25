@@ -10,8 +10,6 @@ import { isStructuredType } from '../utils/type-guards.util';
 import { JsonExportService } from './json-export.service';
 import { testDataUtil } from './test-data.uti';
 
-//TODO: These tests are not being run as part of the build so have gone out of date as the model has moved on.
-// These need to be fixed see https://github.com/finos/cdm-object-builder/issues/121
 describe('JsonExportService', () => {
   let service: JsonExportService;
 
@@ -201,48 +199,48 @@ describe('JsonExportService', () => {
     expect(exported).toEqual(expectedJsonOutput);
   });
 
-  xit('should export primitive arrays correctly', () => {
-    const eligibleCollateralScheduleType: StructuredType =
+  it('should export primitive arrays correctly', () => {
+    const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralScheduleType,
-      'criteria'
+    const party = testDataUtil.findStructuredAttributeInType(
+      eligibleCollateralSpecificationType,
+      'party'
     );
 
-    if (!isStructuredType(eligibleCollateralCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const issuerCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralCriteriaAttr.type,
-      'issuer'
+    const contactInformation = testDataUtil.findStructuredAttributeInType(
+      party.type,
+      'contactInformation'
     );
 
-    if (!isStructuredType(issuerCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const issuerCountryOfOriginAttr = testDataUtil.findAttributeInType(
-      issuerCriteriaAttr.type,
-      'issuerCountryOfOrigin'
+    const address = testDataUtil.findStructuredAttributeInType(
+      contactInformation.type,
+      'address'
     );
+
+    const street = testDataUtil.findAttributeInType(address.type, 'street');
 
     const inputJsonRootNode: JsonRootNode = {
-      type: eligibleCollateralScheduleType,
+      type: eligibleCollateralSpecificationType,
       children: [
         {
-          definition: eligibleCollateralCriteriaAttr,
           id: 1,
+          definition: party,
           children: [
             {
-              definition: issuerCriteriaAttr,
-              id: 3,
+              id: 2,
+              definition: contactInformation,
               children: [
                 {
-                  definition: issuerCountryOfOriginAttr,
-                  id: 4,
-                  value: ['UK', 'US', 'FR'],
+                  id: 3,
+                  definition: address,
+                  children: [
+                    {
+                      id: 4,
+                      definition: street,
+                      value: ['street1', 'street2'],
+                    },
+                  ],
                 },
               ],
             },
@@ -252,23 +250,15 @@ describe('JsonExportService', () => {
     };
 
     const expectedJsonOutput = {
-      criteria: [
+      party: [
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'UK',
-                },
-                {
-                  value: 'US',
-                },
-                {
-                  value: 'FR',
-                },
-              ],
-            },
-          ],
+          contactInformation: {
+            address: [
+              {
+                street: ['street1', 'street2'],
+              },
+            ],
+          },
         },
       ],
     };
@@ -282,32 +272,21 @@ describe('JsonExportService', () => {
     const eligibleCollateralSpecification: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteria = testDataUtil.findAttributeInType(
-      eligibleCollateralSpecification,
-      'criteria'
-    );
+    const eligibleCollateralCriteria =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralSpecification,
+        'criteria'
+      );
 
-    if (!isStructuredType(eligibleCollateralCriteria.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const collateralCriteria = testDataUtil.findAttributeInType(
+    const collateralCriteria = testDataUtil.findStructuredAttributeInType(
       eligibleCollateralCriteria.type,
       'collateralCriteria'
     );
 
-    if (!isStructuredType(collateralCriteria.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const assetCollateralAssetType = testDataUtil.findAttributeInType(
+    const assetCollateralAssetType = testDataUtil.findStructuredAttributeInType(
       collateralCriteria.type,
       'AssetType'
     );
-
-    if (!isStructuredType(assetCollateralAssetType.type)) {
-      throw Error('Invalid type structure');
-    }
 
     const assetTypeEquityType = testDataUtil.findAttributeInType(
       assetCollateralAssetType.type,
