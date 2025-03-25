@@ -196,12 +196,24 @@ export class JsonImportService {
     jsonNode: JsonNode
   ): [string, any][] {
     return Object.keys(json)
-      .filter(key => !EXCLUDED_FIELDS.includes(key))
+      .filter(key => this.preserveJsonField(key, jsonNode))
       .flatMap(key =>
         this.expandValueNode(key, jsonNode)
           ? this.getJsonAttributesFromSource(json[key], jsonNode)
           : [[key, json[key]]]
       );
+  }
+
+  private preserveJsonField(currentKey: string, jsonNode: JsonNode): boolean {
+    if (currentKey === 'meta') {
+      return false;
+    }
+    const isMetaField = isJsonAttribute(jsonNode)
+      ? !!jsonNode.definition.metaField
+      : false;
+    const isReservedName = EXCLUDED_FIELDS.includes(currentKey);
+
+    return !isReservedName || !isMetaField;
   }
 
   private expandValueNode(currentKey: string, jsonNode: JsonNode): boolean {
