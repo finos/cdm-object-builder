@@ -199,41 +199,48 @@ describe('JsonExportService', () => {
     expect(exported).toEqual(expectedJsonOutput);
   });
 
-  xit('should export primitive arrays correctly', () => {
-    const eligibleCollateralScheduleType: StructuredType =
+  it('should export primitive arrays correctly', () => {
+    const eligibleCollateralSpecificationType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr =
-      testDataUtil.findStructuredAttributeInType(
-        eligibleCollateralScheduleType,
-        'criteria'
-      );
-
-    const issuerCriteriaAttr = testDataUtil.findStructuredAttributeInType(
-      eligibleCollateralCriteriaAttr.type,
-      'issuer'
+    const party = testDataUtil.findStructuredAttributeInType(
+      eligibleCollateralSpecificationType,
+      'party'
     );
 
-    const issuerCountryOfOriginAttr = testDataUtil.findAttributeInType(
-      issuerCriteriaAttr.type,
-      'issuerCountryOfOrigin'
+    const contactInformation = testDataUtil.findStructuredAttributeInType(
+      party.type,
+      'contactInformation'
     );
+
+    const address = testDataUtil.findStructuredAttributeInType(
+      contactInformation.type,
+      'address'
+    );
+
+    const street = testDataUtil.findAttributeInType(address.type, 'street');
 
     const inputJsonRootNode: JsonRootNode = {
-      type: eligibleCollateralScheduleType,
+      type: eligibleCollateralSpecificationType,
       children: [
         {
-          definition: eligibleCollateralCriteriaAttr,
           id: 1,
+          definition: party,
           children: [
             {
-              definition: issuerCriteriaAttr,
-              id: 3,
+              id: 2,
+              definition: contactInformation,
               children: [
                 {
-                  definition: issuerCountryOfOriginAttr,
-                  id: 4,
-                  value: ['UK', 'US', 'FR'],
+                  id: 3,
+                  definition: address,
+                  children: [
+                    {
+                      id: 4,
+                      definition: street,
+                      value: ['street1', 'street2'],
+                    },
+                  ],
                 },
               ],
             },
@@ -243,23 +250,15 @@ describe('JsonExportService', () => {
     };
 
     const expectedJsonOutput = {
-      criteria: [
+      party: [
         {
-          issuer: [
-            {
-              issuerCountryOfOrigin: [
-                {
-                  value: 'UK',
-                },
-                {
-                  value: 'US',
-                },
-                {
-                  value: 'FR',
-                },
-              ],
-            },
-          ],
+          contactInformation: {
+            address: [
+              {
+                street: ['street1', 'street2'],
+              },
+            ],
+          },
         },
       ],
     };
