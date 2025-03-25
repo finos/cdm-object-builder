@@ -203,23 +203,16 @@ describe('JsonExportService', () => {
     const eligibleCollateralScheduleType: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteriaAttr = testDataUtil.findAttributeInType(
-      eligibleCollateralScheduleType,
-      'criteria'
-    );
+    const eligibleCollateralCriteriaAttr =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralScheduleType,
+        'criteria'
+      );
 
-    if (!isStructuredType(eligibleCollateralCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const issuerCriteriaAttr = testDataUtil.findAttributeInType(
+    const issuerCriteriaAttr = testDataUtil.findStructuredAttributeInType(
       eligibleCollateralCriteriaAttr.type,
       'issuer'
     );
-
-    if (!isStructuredType(issuerCriteriaAttr.type)) {
-      throw Error('Invalid type structure');
-    }
 
     const issuerCountryOfOriginAttr = testDataUtil.findAttributeInType(
       issuerCriteriaAttr.type,
@@ -280,32 +273,21 @@ describe('JsonExportService', () => {
     const eligibleCollateralSpecification: StructuredType =
       testDataUtil.getEligibleCollateralSpecificationRootType();
 
-    const eligibleCollateralCriteria = testDataUtil.findAttributeInType(
-      eligibleCollateralSpecification,
-      'criteria'
-    );
+    const eligibleCollateralCriteria =
+      testDataUtil.findStructuredAttributeInType(
+        eligibleCollateralSpecification,
+        'criteria'
+      );
 
-    if (!isStructuredType(eligibleCollateralCriteria.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const collateralCriteria = testDataUtil.findAttributeInType(
+    const collateralCriteria = testDataUtil.findStructuredAttributeInType(
       eligibleCollateralCriteria.type,
       'collateralCriteria'
     );
 
-    if (!isStructuredType(collateralCriteria.type)) {
-      throw Error('Invalid type structure');
-    }
-
-    const assetCollateralAssetType = testDataUtil.findAttributeInType(
+    const assetCollateralAssetType = testDataUtil.findStructuredAttributeInType(
       collateralCriteria.type,
       'AssetType'
     );
-
-    if (!isStructuredType(assetCollateralAssetType.type)) {
-      throw Error('Invalid type structure');
-    }
 
     const assetTypeEquityType = testDataUtil.findAttributeInType(
       assetCollateralAssetType.type,
