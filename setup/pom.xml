@@ -15,9 +15,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <finos.cdm.version>[7.0.0-dev.13,8.0.0)</finos.cdm.version>
-        <rosetta.dsl.version>9.47.0</rosetta.dsl.version>
-        <xtext.version>2.27.0</xtext.version>
+        <finos.cdm.version>[7.0.0-dev.37,8.0.0)</finos.cdm.version>
+        <rosetta.dsl.version>9.64.0</rosetta.dsl.version>
+        <xtext.version>2.38.0</xtext.version>
         <logback.version>1.4.14</logback.version>
         <guava.version>32.1.3-jre</guava.version>
     </properties>
@@ -158,7 +158,33 @@
                             </configuration>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin> <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>${java.enforced.version}</version>
+                                </requireJavaVersion>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>log4j:log4j</exclude>
+                                        <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                                        <exclude>ch.qos.reload4j:reload4j</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             </plugins>
         </pluginManagement>
          <plugins>
