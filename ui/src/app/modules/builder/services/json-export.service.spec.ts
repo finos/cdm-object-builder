@@ -311,7 +311,7 @@ describe('JsonExportService', () => {
                     {
                       definition: assetTypeEquityType,
                       id: 4,
-                      value: ['ORDINARY'],
+                      value: 'ORDINARY',
                     },
                   ],
                 },
