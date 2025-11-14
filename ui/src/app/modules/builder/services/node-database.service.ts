@@ -1,14 +1,9 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep, isEqual } from 'lodash-es';
 import { filter, map, Observable, ReplaySubject } from 'rxjs';
-import {
-  JsonAttributeNode,
-  JsonNode,
-  JsonRootNode,
-  RosettaBasicType,
-} from '../models/builder.model';
+import { JsonAttributeNode, JsonNode, JsonRootNode, RosettaBasicType, } from '../models/builder.model';
 import { isAttributeExhausted, isListBasedBasicType } from '../utils/node.util';
-import { isJsonRootNode, isStringArray } from '../utils/type-guards.util';
+import { isEnumType, isJsonRootNode, isNumberArray, isStringArray, } from '../utils/type-guards.util';
 import { IdentityService } from './identity.service';
 
 export interface NodeDataChangeEvent {
@@ -224,20 +219,36 @@ export class NodeDatabaseService {
       throw new Error('Attempt to add undefined value to sibling');
     }
 
-    switch (newJsonAttribute.definition.type) {
-      case RosettaBasicType.STRING:
-        const newValue = (newJsonAttribute.value || '') as string;
-        if (isStringArray(matchingSiblingAttributeNode.value)) {
-          matchingSiblingAttributeNode.value.push(newValue);
-        } else if (typeof matchingSiblingAttributeNode.value === 'string') {
-          const newValues = [newValue, matchingSiblingAttributeNode.value];
-          matchingSiblingAttributeNode.value = newValues;
-        }
-        break;
-      default:
-        throw new Error(
-          `Adding value ${newJsonAttribute.value} to matchingSiblingAttributeNode.value ${matchingSiblingAttributeNode.value} is not supported`
-        );
+    if (isEnumType(newJsonAttribute.definition.type)) {
+      const newValue = (newJsonAttribute.value || '') as string;
+      if (isStringArray(matchingSiblingAttributeNode.value)) {
+        matchingSiblingAttributeNode.value.push(newValue)
+      } else {
+        matchingSiblingAttributeNode.value = [newValue, matchingSiblingAttributeNode.value as string];
+      }
+    } else {
+      switch (newJsonAttribute.definition.type) {
+        case RosettaBasicType.STRING:
+          const newStringValue = (newJsonAttribute.value || '') as string;
+          if (isStringArray(matchingSiblingAttributeNode.value)) {
+            matchingSiblingAttributeNode.value.push(newStringValue);
+          } else {
+            matchingSiblingAttributeNode.value = [newStringValue, matchingSiblingAttributeNode.value as string];
+          }
+          break;
+        case RosettaBasicType.NUMBER:
+          const newNumberValue = (newJsonAttribute.value || 0) as number;
+          if (isNumberArray(matchingSiblingAttributeNode.value)) {
+            matchingSiblingAttributeNode.value.push(newNumberValue);
+          } else {
+            matchingSiblingAttributeNode.value = [newNumberValue, matchingSiblingAttributeNode.value as number];
+          }
+          break;
+        default:
+          throw new Error(
+            `Adding value ${newJsonAttribute.value} to matchingSiblingAttributeNode.value ${matchingSiblingAttributeNode.value} is not supported`
+          );
+      }
     }
   }
 

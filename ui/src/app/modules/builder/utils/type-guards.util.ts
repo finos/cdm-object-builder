@@ -52,7 +52,7 @@ export function isStringArray(value: JsonValue | undefined): value is string[] {
     throw new Error('Can not determine type of empty array');
   }
 
-  return typeof value[0] === 'string';
+  return typeof value[0] === 'string' || value[0] === undefined;
 }
 
 export function isNumberArray(value: JsonValue | undefined): value is number[] {
