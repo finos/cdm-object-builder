@@ -15,7 +15,7 @@ _What is being released?_
 
 - Fixes the UI rendering so Time fields display the correct input control and accept values as expected.
 - Ensures the `hourMinuteTime` node is recognized and handled by the builder.
-- Adds/updates component logic and template bindings to properly render and validate Time inputs.
+- Adds/updates component logic and template bindings to properly render and validate `time` inputs.
 - Improves test coverage around Time node rendering and interactions.
 
 _Files/areas touched_
