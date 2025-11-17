@@ -15,6 +15,7 @@ import { IntNodeComponent } from './int-node/int-node.component';
 import { MainComponent } from './main/main.component';
 import { NodeDetailsComponent } from './node-details/node-details.component';
 import { NumberNodeComponent } from './number-node/number-node.component';
+import { TimeNodeComponent } from './time-node/time-node.component';
 import { StackedNodeControlsComponent } from './stacked-node-controls/stacked-node-controls.component';
 import { StringNodeComponent } from './string-node/string-node.component';
 import { StructuredTypeNodeComponent } from './structured-type-node/structured-type-node.component';
@@ -36,6 +37,7 @@ export const components = [
   ZonedDateTimeNodeComponent,
   IntNodeComponent,
   NumberNodeComponent,
+  TimeNodeComponent,
   DeleteComponent,
   DeleteDialogueComponent,
   AddAttributeComponent,

@@ -4,6 +4,7 @@ import { DateNodeComponent } from '../components/date-node/date-node.component';
 import { EnumNodeComponent } from '../components/enum-node/enum-node.component';
 import { IntNodeComponent } from '../components/int-node/int-node.component';
 import { NumberNodeComponent } from '../components/number-node/number-node.component';
+import { TimeNodeComponent } from '../components/time-node/time-node.component';
 import { StringNodeComponent } from '../components/string-node/string-node.component';
 import { StructuredTypeNodeComponent } from '../components/structured-type-node/structured-type-node.component';
 import { ZonedDateTimeNodeComponent } from '../components/zoned-date-time-node/zoned-date-time-node.component';
@@ -21,6 +22,8 @@ export class NodeTypeSwitchPipe implements PipeTransform {
       return IntNodeComponent;
     } else if (value === RosettaBasicType.NUMBER) {
       return NumberNodeComponent;
+    } else if (value === RosettaBasicType.TIME) {
+      return TimeNodeComponent;
     } else if (value === RosettaBasicType.DATE) {
       return DateNodeComponent;
     } else if (value === RosettaBasicType.ZONED_DATE_TIME) {
