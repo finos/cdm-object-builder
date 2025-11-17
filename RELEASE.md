@@ -31,7 +31,3 @@ _Verification_
 1) Follow the steps above to navigate to `hourMinuteTime`.
 2) Confirm a time input renders, allowing entry/selection of a time value.
 3) Ensure the value is persisted and correctly reflected in the node details.
-
-_Breaking changes_
-
-None. This is a UI bug fix; no changes to public APIs or data formats.
