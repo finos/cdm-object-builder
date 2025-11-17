@@ -1,13 +1,37 @@
-# _Fix - Allow adding of multiple cardinality enumerations_
+# _Fix — Correct Time type rendering on the Builder screen_
 
 _Background_
 
-As outlined in issue [#131](https://github.com/finos/cdm-object-builder/issues/131) there is a bug where we are not able to add more than one enum even when it's upper bound is greater than 1.
+As outlined in issue [#132](https://github.com/finos/cdm-object-builder/issues/132), the Time type (e.g. `hourMinuteTime`) was rendering incorrectly on the Object Builder screen. Users navigating to a Time field saw an empty box without the ability to add a time value.
+
+Steps to reproduce (summary):
+
+- Add a `LegalAgreement` as a root type, then navigate via:
+  `agreementTerms → agreement → creditSupportAgreementElections → calculationAndTiming → notificationTime → partyElections → notificationTime → hourMinuteTime`.
+- Expected: an empty time input with the ability to add a time value.
+- Actual: a blank square with no option to enter time.
 
 _What is being released?_
 
-Fixed the following TypeScript files to respect multiple cardinality enums:
+- Fixes the UI rendering so Time fields display the correct input control and accept values as expected.
+- Ensures the `hourMinuteTime` node is recognized and handled by the builder.
+- Adds/updates component logic and template bindings to properly render and validate Time inputs.
+- Improves test coverage around Time node rendering and interactions.
 
-- `ui/src/app/modules/builder/services/node-database.service.ts`
-- `ui/src/app/modules/builder/utils/node.util.ts`
-- `ui/src/app/modules/builder/utils/type-guards.util.ts`
+_Files/areas touched_
+
+- `ui/src/app/modules/builder/components/time-node/time-node.component.ts`
+- `ui/src/app/modules/builder/components/time-node/time-node.component.html`
+- `ui/src/app/modules/builder/components/time-node/time-node.component.spec.ts`
+- `ui/src/app/modules/builder/components/node-details/node-details.component.ts`
+- `ui/src/app/modules/builder/components/node-details/node-details.component.html`
+
+_Verification_
+
+1) Follow the steps above to navigate to `hourMinuteTime`.
+2) Confirm a time input renders, allowing entry/selection of a time value.
+3) Ensure the value is persisted and correctly reflected in the node details.
+
+_Breaking changes_
+
+None. This is a UI bug fix; no changes to public APIs or data formats.
