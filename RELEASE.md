@@ -1,4 +1,4 @@
-# Fix: Allow multiple selections for multi‑cardinality enums in Object Builder
+# _Fix: Allow multiple selections for multi‑cardinality enums in Object Builder_
 
 ## Background
 
