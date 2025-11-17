@@ -1,4 +1,4 @@
-# _Fix - Add multiple cardinality enums_
+# _Fix - Allow adding of multiple cardinality enumerations_
 
 _Background_
 
