@@ -1,4 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnInit,
+} from '@angular/core';
 import { JsonAttributeNode } from '../../models/builder.model';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 
@@ -6,6 +11,7 @@ import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
   selector: 'app-time-node',
   templateUrl: './time-node.component.html',
   styleUrls: ['./time-node.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeNodeComponent implements OnInit {
   constructor(
