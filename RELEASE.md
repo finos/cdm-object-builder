@@ -1,7 +1,5 @@
 # Fix: Allow multiple selections for multi‑cardinality enums in Object Builder
 
-Release date: 2025-11-17
-
 ## Background
 
 As outlined in issue [#131](https://github.com/finos/cdm-object-builder/issues/131), the Object Builder UI did not allow selecting more than one value for enumeration fields whose upper bound is greater than 1. This prevented users from correctly modelling CDM objects that require multiple enum values.
