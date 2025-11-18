@@ -29,4 +29,42 @@ describe('StringNodeComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('normalizes scalar value to array on init', () => {
+    const provided = mockJsonAttributeNode();
+    provided.value = 'hello' as any;
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      declarations: [StringNodeComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: JSON_ATTRIBUTE_NODE_TOKEN, useValue: provided },
+      ],
+    }).compileComponents();
+
+    const fix = TestBed.createComponent(StringNodeComponent);
+    const cmp = fix.componentInstance;
+    fix.detectChanges();
+    expect(Array.isArray(cmp.jsonAttributeNode.value)).toBeTrue();
+    expect(cmp.jsonAttributeNode.value).toEqual(['hello']);
+    expect(cmp.values).toEqual(['hello']);
+  });
+
+  it('keeps array values as-is on init', () => {
+    const provided = mockJsonAttributeNode();
+    provided.value = ['a', 'b'] as any;
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      declarations: [StringNodeComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: JSON_ATTRIBUTE_NODE_TOKEN, useValue: provided },
+      ],
+    }).compileComponents();
+
+    const fix = TestBed.createComponent(StringNodeComponent);
+    const cmp = fix.componentInstance;
+    fix.detectChanges();
+    expect(cmp.values).toEqual(['a', 'b']);
+  });
 });
