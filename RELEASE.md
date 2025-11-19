@@ -8,7 +8,7 @@ As outlined in issue [#131](https://github.com/finos/cdm-object-builder/issues/1
 
 - Affected area: Object Builder UI → enum fields with upper bound > 1.
 - Symptom: Only a single value can be chosen from the dropdown; there is no mechanism to add additional values.
-- Effect: Users can not construct valid objects when the model expects multiple enum values.
+- Effect: Users cannot construct valid objects when the model expects multiple enum values.
 
 ## Reproduction
 
