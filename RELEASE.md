@@ -20,7 +20,7 @@ Expected: A mechanism exists to add multiple values (e.g., an Add button or repe
 
 Actual: Only one value can be selected from the dropdown.
 
-## What’s changed
+## What is being released
 
 Added handlers in the node data services to make them aware of multi cardinality enum nodes, and updated the UI to support multiple values.
 
