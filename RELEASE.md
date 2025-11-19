@@ -2,7 +2,7 @@
 
 _Background_
 
-As outlined in issue [#132](https://github.com/finos/cdm-object-builder/issues/132), the `time` type (e.g. `hourMinuteTime`) was rendering incorrectly on the Object Builder screen. Users navigating to a Time field saw an empty box without the ability to add a time value.
+As outlined in issue [#132](https://github.com/finos/cdm-object-builder/issues/132), the `time` type (e.g. `hourMinuteTime`) was renders incorrectly on the Object Builder screen. Users navigating to a Time field see an empty box without the ability to add a time value.
 
 Steps to reproduce (summary):
 
