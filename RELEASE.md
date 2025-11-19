@@ -1,17 +1,31 @@
-# 2023-07-28 This release contains the following changes:
+# _Fix: Allow multiple selections for Multi‑Cardinality Enums_
 
-- Updated CDM<sup>TM</sup> to `5.0.0-dev.7`
-- Updated DSL `8.3.1`
-- Update UI tooling dependencies to latest
-- Fixed the model generator so that alias types such as `int` are now recognised
+## Background
 
-# 2023-07-27 This release contains the following changes:
+As outlined in issue [#131](https://github.com/finos/cdm-object-builder/issues/131), the Object Builder UI does not allow selecting more than one value for enumeration fields whose upper bound is greater than 1. This prevents users from correctly modelling CDM objects that require multiple enum values.
 
-- Fixed the json-import-service.ts issue where single cardinality nodes would fail to import when the source JSON contained a single element list.
+## User impact
 
-# 2023-06-09 This release contains the following changes:
+- Affected area: Object Builder UI → enum fields with upper bound > 1.
+- Symptom: Only a single value can be chosen from the dropdown; there is no mechanism to add additional values.
+- Effect: Users cannot construct valid objects when the model expects multiple enum values.
 
-- Updated CDM<sup>TM</sup> to dev.50
-- Updated DSL 7.8.0
-- Updated logging dependencies
-- Fixed the TypescriptObjectBuilderModelGenerator so that it loads models in a way that is compatible with the latest DSL
+## Reproduction
+
+1. Navigate to an enum with multiple cardinality in the Object Builder, e.g.:
+   `LegalAgreement -> agreementTerms -> agreement -> creditSupportAgreementElections -> conditionsPrecedent -> specifiedCondition -> partyElection -> specifiedCondition`
+2. Attempt to add more than one value.
+
+Expected: A mechanism exists to add multiple values (e.g., an Add button or repeatable tiles).
+
+Actual: Only one value can be selected from the dropdown.
+
+## What is being released
+
+Handlers added in the node data services to make them aware of multi cardinality enum nodes, and updated the UI to support multiple values.
+
+Files modified:
+
+- `ui/src/app/modules/builder/services/node-database.service.ts`
+- `ui/src/app/modules/builder/utils/node.util.ts`
+- `ui/src/app/modules/builder/utils/type-guards.util.ts`

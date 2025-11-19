@@ -42,6 +42,9 @@ export function isMultiCardinality(attr: ModelAttribute): boolean {
 }
 
 export function getCardinalityUpperBound(attr: ModelAttribute): number {
+  if (isInfiniteCardinality(attr)) {
+    return Infinity;
+  }
   return parseInt(attr.cardinality.upperBound);
 }
 
