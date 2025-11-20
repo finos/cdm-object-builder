@@ -18,8 +18,6 @@ interface GridData {
   style: object;
 }
 
-const SKIPPED_NODES = ['value'];
-
 const EXCLUDED_NODES = [
   'meta',
   'externalReference',
@@ -152,7 +150,7 @@ export class TabularViewComponent implements OnInit {
 
     const xSpan =
       1 + this.directChildColumnDepthDiff(childGridItems, currentDepth);
-    const ySpan = childGridItems.filter((c) => c.leaf).length;
+    const ySpan = childGridItems.filter(c => c.leaf).length;
     let columnIndex = currentDepth;
 
     let gridDataItems = [
@@ -197,11 +195,11 @@ export class TabularViewComponent implements OnInit {
     currentDepth: number
   ) {
     const directChildGridItems = childGridItems.filter(
-      (c) => c.depth === currentDepth + 1
+      c => c.depth === currentDepth + 1
     );
 
     const directChildColumnDepthDiffs = directChildGridItems.map(
-      (c) => c.columnIndex - c.depth
+      c => c.columnIndex - c.depth
     );
     const directChildColumnDepthDiff = Math.max(...directChildColumnDepthDiffs);
     return directChildColumnDepthDiff;
@@ -237,17 +235,11 @@ export class TabularViewComponent implements OnInit {
   ) {
     const childGridItems: GridDataItem[] = [];
     Object.entries(childValue).forEach(([nestedKey, nestedValue]) => {
-      if (SKIPPED_NODES.includes(nestedKey)) {
-        childGridItems.push(
-          ...this.createGridItemsForAny(maxColumn, currentDepth, nestedValue)
-        );
-      } else {
-        childGridItems.push(
-          ...this.createGridItemsForAny(maxColumn, currentDepth, {
-            [nestedKey]: nestedValue,
-          })
-        );
-      }
+      childGridItems.push(
+        ...this.createGridItemsForAny(maxColumn, currentDepth, {
+          [nestedKey]: nestedValue,
+        })
+      );
     });
     return childGridItems;
   }

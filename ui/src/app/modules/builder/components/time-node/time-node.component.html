@@ -1,0 +1,16 @@
+<div class="node-container">
+  <app-node-details [jsonAttributeNode]="jsonAttributeNode">
+    <div class="input-field">
+      <input
+        type="time"
+        [value]="timeValue"
+        step="1"
+        (input)="onTimeChange($event)"
+      />
+    </div>
+  </app-node-details>
+  <div class="controls">
+    <div class="spacer"></div>
+    <app-delete [jsonAttributeNode]="jsonAttributeNode"></app-delete>
+  </div>
+</div>

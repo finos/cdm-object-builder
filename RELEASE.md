@@ -1,31 +1,26 @@
-# _Fix: Allow multiple selections for Multi‑Cardinality Enums_
+# _Fix — Rendering of Time Fields in Builder_
 
-## Background
+_Background_
 
-As outlined in issue [#131](https://github.com/finos/cdm-object-builder/issues/131), the Object Builder UI does not allow selecting more than one value for enumeration fields whose upper bound is greater than 1. This prevents users from correctly modelling CDM objects that require multiple enum values.
+As outlined in issue [#132](https://github.com/finos/cdm-object-builder/issues/132), the `time` type (e.g. `hourMinuteTime`) was renders incorrectly on the Object Builder screen. Users navigating to a Time field see an empty box without the ability to add a time value.
 
-## User impact
+_What is being released?_
 
-- Affected area: Object Builder UI → enum fields with upper bound > 1.
-- Symptom: Only a single value can be chosen from the dropdown; there is no mechanism to add additional values.
-- Effect: Users cannot construct valid objects when the model expects multiple enum values.
+- Fixes the UI rendering so Time fields display the correct input control and accept values as expected.
+- Ensures the `hourMinuteTime` node is recognized and handled by the builder.
+- Adds/updates component logic and template bindings to properly render and validate `time` inputs.
+- Improves test coverage around Time node rendering and interactions.
 
-## Reproduction
+_Affected files_
 
-1. Navigate to an enum with multiple cardinality in the Object Builder, e.g.:
-   `LegalAgreement -> agreementTerms -> agreement -> creditSupportAgreementElections -> conditionsPrecedent -> specifiedCondition -> partyElection -> specifiedCondition`
-2. Attempt to add more than one value.
+- `ui/src/app/modules/builder/components/time-node/time-node.component.ts`
+- `ui/src/app/modules/builder/components/time-node/time-node.component.html`
+- `ui/src/app/modules/builder/components/time-node/time-node.component.spec.ts`
+- `ui/src/app/modules/builder/components/node-details/node-details.component.ts`
+- `ui/src/app/modules/builder/components/node-details/node-details.component.html`
 
-Expected: A mechanism exists to add multiple values (e.g., an Add button or repeatable tiles).
+_Review Directions_
 
-Actual: Only one value can be selected from the dropdown.
-
-## What is being released
-
-Handlers added in the node data services to make them aware of multi cardinality enum nodes, and updated the UI to support multiple values.
-
-Files modified:
-
-- `ui/src/app/modules/builder/services/node-database.service.ts`
-- `ui/src/app/modules/builder/utils/node.util.ts`
-- `ui/src/app/modules/builder/utils/type-guards.util.ts`
+1) Follow the steps above to navigate to `hourMinuteTime`.
+2) Confirm a time input renders, allowing entry/selection of a time value.
+3) Ensure the value is persisted and correctly reflected in the node details.

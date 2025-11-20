@@ -61,6 +61,7 @@ public class TypescriptObjectBuilderModelGenerator {
     public List<StructuredType> rootTypes() {
         return allDataTypes().stream()
                 .filter(x -> x.getAnnotations().stream().anyMatch(r -> r.getAnnotation().getName().equals(ROOT_TYPE)))
+                .filter(x -> !x.getModel().getName().startsWith("fpml."))
                 .map(type -> createStructuredType(type, RosettaTypeCategory.StructuredType))
                 .collect(Collectors.toList());
     }
