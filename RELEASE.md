@@ -1,4 +1,4 @@
-# _Fix — Correct Time type rendering on the Builder screen_
+# _Fix — Rendering of Time Fields in Builder_
 
 _Background_
 
