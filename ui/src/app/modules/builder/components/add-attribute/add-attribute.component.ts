@@ -29,9 +29,10 @@ import {
 import { isEqual } from 'lodash-es';
 
 @Component({
-  selector: 'app-add-attribute',
-  templateUrl: './add-attribute.component.html',
-  styleUrls: ['./add-attribute.component.scss'],
+    selector: 'app-add-attribute',
+    templateUrl: './add-attribute.component.html',
+    styleUrls: ['./add-attribute.component.scss'],
+    standalone: false
 })
 export class AddAttributeComponent implements OnInit, OnDestroy {
   private _jsonNode!: JsonNode;

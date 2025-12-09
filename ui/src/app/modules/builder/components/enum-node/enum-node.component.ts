@@ -3,9 +3,10 @@ import { EnumType, JsonAttributeNode } from '../../models/builder.model';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 
 @Component({
-  selector: 'app-enum-node',
-  templateUrl: './enum-node.component.html',
-  styleUrls: ['./enum-node.component.scss'],
+    selector: 'app-enum-node',
+    templateUrl: './enum-node.component.html',
+    styleUrls: ['./enum-node.component.scss'],
+    standalone: false
 })
 export class EnumNodeComponent implements OnInit {
   values: string[] = [];

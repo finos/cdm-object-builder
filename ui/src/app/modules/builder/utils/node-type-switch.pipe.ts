@@ -11,7 +11,10 @@ import { ZonedDateTimeNodeComponent } from '../components/zoned-date-time-node/z
 import { ModelType, RosettaBasicType } from '../models/builder.model';
 import { isEnumType, isStructuredType } from './type-guards.util';
 
-@Pipe({ name: 'nodeTypeSwitch' })
+@Pipe({
+    name: 'nodeTypeSwitch',
+    standalone: false
+})
 export class NodeTypeSwitchPipe implements PipeTransform {
   transform(value: ModelType): Type<any> {
     if (value === RosettaBasicType.STRING) {

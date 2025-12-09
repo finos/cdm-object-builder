@@ -18,10 +18,11 @@ export const MY_FORMATS = {
 };
 
 @Component({
-  selector: 'app-date-node',
-  templateUrl: './date-node.component.html',
-  styleUrls: ['./date-node.component.scss'],
-  providers: [{ provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }],
+    selector: 'app-date-node',
+    templateUrl: './date-node.component.html',
+    styleUrls: ['./date-node.component.scss'],
+    providers: [{ provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }],
+    standalone: false
 })
 export class DateNodeComponent implements OnInit {
   constructor(
