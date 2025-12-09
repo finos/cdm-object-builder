@@ -1,4 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideZoneChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
@@ -19,6 +20,7 @@ describe('DateNodeComponent', () => {
           provide: JSON_ATTRIBUTE_NODE_TOKEN,
           useValue: mockJsonAttributeNode(),
         },
+        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 

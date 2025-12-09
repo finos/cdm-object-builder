@@ -1,4 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideZoneChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 import { mockJsonAttributeNode } from '../../mocks/model-mocks';
@@ -42,6 +43,7 @@ describe('StructuredTypeNodeComponent', () => {
         { provide: NodeDatabaseService, useValue: nodeDbSpy },
         { provide: FileImportService, useValue: fileImportSpy },
         { provide: NodeSelectionService, useValue: nodeSelectionSpy },
+        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 
