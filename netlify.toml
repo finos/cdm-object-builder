@@ -1,0 +1,9 @@
+[build]
+base = "cdm-object-builder/ui"
+command = "npm run build"
+publish = "dist/ui/browser"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
