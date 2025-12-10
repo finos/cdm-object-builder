@@ -1,5 +1,4 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideZoneChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 import { mockJsonAttributeNode } from '../../mocks/model-mocks';
@@ -19,7 +18,6 @@ describe('ZonedDateTimeNodeComponent', () => {
           provide: JSON_ATTRIBUTE_NODE_TOKEN,
           useValue: mockJsonAttributeNode(),
         },
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 
@@ -42,7 +40,6 @@ describe('ZonedDateTimeNodeComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: JSON_ATTRIBUTE_NODE_TOKEN, useValue: provided },
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 

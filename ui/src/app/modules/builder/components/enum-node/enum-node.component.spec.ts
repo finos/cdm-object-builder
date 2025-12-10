@@ -1,5 +1,4 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideZoneChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 import { mockJsonAttributeNode } from '../../mocks/model-mocks';
@@ -20,7 +19,6 @@ describe('EnumNodeComponent', () => {
           provide: JSON_ATTRIBUTE_NODE_TOKEN,
           useValue: mockJsonAttributeNode(),
         },
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 
@@ -48,7 +46,6 @@ describe('EnumNodeComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: JSON_ATTRIBUTE_NODE_TOKEN, useValue: provided },
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 
@@ -74,7 +71,6 @@ describe('EnumNodeComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: JSON_ATTRIBUTE_NODE_TOKEN, useValue: provided },
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     }).compileComponents();
 

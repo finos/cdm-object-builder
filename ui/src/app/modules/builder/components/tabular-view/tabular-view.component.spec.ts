@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideZoneChangeDetection } from '@angular/core';
 
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TabularViewComponent } from './tabular-view.component';
@@ -12,9 +11,6 @@ describe('TabularViewComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [TabularViewComponent],
       schemas:[NO_ERRORS_SCHEMA],
-      providers: [
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
-      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TabularViewComponent);

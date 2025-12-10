@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { provideZoneChangeDetection } from '@angular/core';
 import { IdentityServiceMock } from '../mocks/identity.service.mock';
 import {
   JsonRootNode,
@@ -21,7 +20,6 @@ describe('JsonImportService', () => {
         JsonImportService,
         BuilderApiService,
         { provide: IdentityService, useClass: IdentityServiceMock },
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
       ],
     });
 

@@ -1,5 +1,4 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { provideZoneChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
@@ -14,9 +13,6 @@ describe('ViewerComponent', () => {
       imports: [MatButtonToggleModule],
       declarations: [ViewerComponent],
       schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        provideZoneChangeDetection({ ignoreChangesOutsideZone: true }),
-      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ViewerComponent);
