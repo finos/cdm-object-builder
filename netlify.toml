@@ -1,9 +1,4 @@
 [build]
-base = "dist/ui"
+base = "ui/"
 command = "npm run build"
 publish = "dist/ui/browser"
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200
