@@ -1,5 +1,5 @@
 [build]
-base = "cdm-object-builder/ui"
+base = "dist/ui"
 command = "npm run build"
 publish = "dist/ui/browser"
 
