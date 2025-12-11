@@ -26,10 +26,11 @@ const EXCLUDED_NODES = [
 ];
 
 @Component({
-  selector: 'app-tabular-view',
-  templateUrl: './tabular-view.component.html',
-  styleUrls: ['./tabular-view.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-tabular-view',
+    templateUrl: './tabular-view.component.html',
+    styleUrls: ['./tabular-view.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TabularViewComponent implements OnInit {
   private _jsonStructure: any;

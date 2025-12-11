@@ -6,9 +6,10 @@ import { NodeDatabaseService } from '../../services/node-database.service';
 import { NodeSelectionService } from '../../services/node-selection.service';
 
 @Component({
-  selector: 'app-delete',
-  templateUrl: './delete.component.html',
-  styleUrls: ['./delete.component.scss'],
+    selector: 'app-delete',
+    templateUrl: './delete.component.html',
+    styleUrls: ['./delete.component.scss'],
+    standalone: false
 })
 export class DeleteComponent implements OnInit {
   @Input()
@@ -39,8 +40,8 @@ export class DeleteComponent implements OnInit {
 }
 
 @Component({
-  selector: 'app-delete-dialogue',
-  template: `<div mat-dialog-content>
+    selector: 'app-delete-dialogue',
+    template: `<div mat-dialog-content>
       <p>
         Are you sure you want to delete
         <span class="name">{{ data.name }}</span
@@ -53,7 +54,8 @@ export class DeleteComponent implements OnInit {
         Cancel
       </button>
     </div>`,
-  styles: ['.name {font-weight: bold; color: var(--primary-color)}'],
+    styles: ['.name {font-weight: bold; color: var(--primary-color)}'],
+    standalone: false
 })
 export class DeleteDialogueComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { name: string }) {}

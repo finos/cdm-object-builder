@@ -7,10 +7,11 @@ import { isJsonAttribute } from '../../utils/type-guards.util';
 import { BuilderComponent } from '../builder/builder.component';
 
 @Component({
-  selector: 'app-breadcrumb',
-  templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-breadcrumb',
+    templateUrl: './breadcrumb.component.html',
+    styleUrls: ['./breadcrumb.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BreadcrumbComponent implements OnInit {
   breadcrumbs$: Observable<JsonNode[]> = this.nodeSelectionService

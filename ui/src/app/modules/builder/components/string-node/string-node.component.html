@@ -1,7 +1,7 @@
 <div class="node-container">
   <app-node-details [jsonAttributeNode]="jsonAttributeNode">
     <div *ngFor="let value of values; index as i; trackBy: trackBy">
-      <mat-form-field appearance="standard" class="input-field">
+      <mat-form-field appearance="fill" class="input-field">
         <input matInput [(ngModel)]="values[i]" />
       </mat-form-field>
       <app-stacked-node-controls

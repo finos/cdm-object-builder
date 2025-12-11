@@ -14,9 +14,10 @@ import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 import { isMultiCardinality } from '../../utils/node.util';
 
 @Component({
-  selector: 'app-structured-type-node',
-  templateUrl: './structured-type-node.component.html',
-  styleUrls: ['./structured-type-node.component.scss'],
+    selector: 'app-structured-type-node',
+    templateUrl: './structured-type-node.component.html',
+    styleUrls: ['./structured-type-node.component.scss'],
+    standalone: false
 })
 export class StructuredTypeNodeComponent {
   constructor(

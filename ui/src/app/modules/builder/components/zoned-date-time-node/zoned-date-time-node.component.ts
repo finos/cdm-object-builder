@@ -26,10 +26,11 @@ export const MY_FORMATS = {
 
 // TODO: this should use a real date time picker and format the date nicely for the user.
 @Component({
-  selector: 'app-zoned-date-time-node',
-  templateUrl: './zoned-date-time-node.component.html',
-  styleUrls: ['./zoned-date-time-node.component.scss'],
-  providers: [{ provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }],
+    selector: 'app-zoned-date-time-node',
+    templateUrl: './zoned-date-time-node.component.html',
+    styleUrls: ['./zoned-date-time-node.component.scss'],
+    providers: [{ provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }],
+    standalone: false
 })
 export class ZonedDateTimeNodeComponent implements OnInit, OnDestroy {
   constructor(

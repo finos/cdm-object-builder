@@ -13,10 +13,11 @@ import {
 } from '../../utils/node.util';
 
 @Component({
-  selector: 'app-stacked-node-controls',
-  templateUrl: './stacked-node-controls.component.html',
-  styleUrls: ['./stacked-node-controls.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-stacked-node-controls',
+    templateUrl: './stacked-node-controls.component.html',
+    styleUrls: ['./stacked-node-controls.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StackedNodeControlsComponent implements OnInit {
   @Input()

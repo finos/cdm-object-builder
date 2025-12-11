@@ -7,9 +7,10 @@ import {
 } from '../../utils/type-guards.util';
 
 @Component({
-  selector: 'app-node-details',
-  templateUrl: './node-details.component.html',
-  styleUrls: ['./node-details.component.scss'],
+    selector: 'app-node-details',
+    templateUrl: './node-details.component.html',
+    styleUrls: ['./node-details.component.scss'],
+    standalone: false
 })
 export class NodeDetailsComponent implements OnInit {
   private _jsonAttributeNode!: JsonAttributeNode;
