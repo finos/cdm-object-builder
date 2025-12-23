@@ -6,10 +6,11 @@ import {
 import { BuilderApiService } from '../../services/builder-api.service';
 
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-main',
+    templateUrl: './main.component.html',
+    styleUrls: ['./main.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MainComponent {
   $modelName = this.builderApiService.getModelName();

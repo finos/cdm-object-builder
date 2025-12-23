@@ -8,10 +8,11 @@ import { JsonAttributeNode } from '../../models/builder.model';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 
 @Component({
-  selector: 'app-time-node',
-  templateUrl: './time-node.component.html',
-  styleUrls: ['./time-node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-time-node',
+    templateUrl: './time-node.component.html',
+    styleUrls: ['./time-node.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TimeNodeComponent implements OnInit {
   constructor(

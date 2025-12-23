@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "./app/modules/builder/styles/variables.scss";
+@use "./app/modules/builder/styles/variables.scss";
 
 html,
 body {

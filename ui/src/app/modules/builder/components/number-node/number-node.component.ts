@@ -3,9 +3,10 @@ import { JsonAttributeNode } from '../../models/builder.model';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 
 @Component({
-  selector: 'app-number-node',
-  templateUrl: './number-node.component.html',
-  styleUrls: ['./number-node.component.scss'],
+    selector: 'app-number-node',
+    templateUrl: './number-node.component.html',
+    styleUrls: ['./number-node.component.scss'],
+    standalone: false
 })
 export class NumberNodeComponent implements OnInit {
   values: number[] = [];

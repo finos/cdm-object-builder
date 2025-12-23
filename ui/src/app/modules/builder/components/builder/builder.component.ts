@@ -46,10 +46,11 @@ interface FlatJsonNode {
 }
 
 @Component({
-  selector: 'app-builder',
-  templateUrl: './builder.component.html',
-  styleUrls: ['./builder.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-builder',
+    templateUrl: './builder.component.html',
+    styleUrls: ['./builder.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BuilderComponent implements OnInit, OnDestroy {
   private subscription = new Subscription();

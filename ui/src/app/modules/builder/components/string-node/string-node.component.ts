@@ -8,10 +8,11 @@ import { JsonAttributeNode } from '../../models/builder.model';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 
 @Component({
-  selector: 'app-string-node',
-  templateUrl: './string-node.component.html',
-  styleUrls: ['./string-node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-string-node',
+    templateUrl: './string-node.component.html',
+    styleUrls: ['./string-node.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StringNodeComponent implements OnInit {
   values: string[] = [];

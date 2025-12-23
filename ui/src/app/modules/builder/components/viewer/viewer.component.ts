@@ -4,9 +4,10 @@ import { JsonExportService } from '../../services/json-export.service';
 import { NodeDatabaseService } from '../../services/node-database.service';
 
 @Component({
-  selector: 'app-viewer',
-  templateUrl: './viewer.component.html',
-  styleUrls: ['./viewer.component.scss'],
+    selector: 'app-viewer',
+    templateUrl: './viewer.component.html',
+    styleUrls: ['./viewer.component.scss'],
+    standalone: false
 })
 export class ViewerComponent {
   cdmJson: any = {};

@@ -3,9 +3,10 @@ import { JsonAttributeNode } from '../../models/builder.model';
 import { JSON_ATTRIBUTE_NODE_TOKEN } from '../../tokens';
 
 @Component({
-  selector: 'app-boolean-node',
-  templateUrl: './boolean-node.component.html',
-  styleUrls: ['./boolean-node.component.scss'],
+    selector: 'app-boolean-node',
+    templateUrl: './boolean-node.component.html',
+    styleUrls: ['./boolean-node.component.scss'],
+    standalone: false
 })
 export class BooleanNodeComponent implements OnInit {
   constructor(

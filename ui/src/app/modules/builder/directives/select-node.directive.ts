@@ -11,7 +11,8 @@ import { JsonAttributeNode } from '../models/builder.model';
 import { NodeSelectionService } from '../services/node-selection.service';
 
 @Directive({
-  selector: '[appSelectNode]',
+    selector: '[appSelectNode]',
+    standalone: false
 })
 export class SelectNodeDirective implements OnInit, OnDestroy {
   @Input('appSelectNode')
