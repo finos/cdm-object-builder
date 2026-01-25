@@ -19,7 +19,7 @@
         <rosetta.dsl.version>9.71.0</rosetta.dsl.version>
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
-        <logback.version>1.4.14</logback.version>
+        <logback.version>1.5.26</logback.version>
         <guava.version>33.3.1-jre</guava.version>
     </properties>
 
