@@ -1,5 +1,5 @@
 export const modelName = "cdm-java";
-export const modelVersion = "7.0.0-dev.120";
+export const modelVersion = "7.0.0-dev.132";
 export const rootTypesJson = [ {
   "typeCategory" : "StructuredType",
   "name" : "Instruction",
@@ -10,6 +10,16 @@ export const rootTypesJson = [ {
   "name" : "BusinessEvent",
   "namespace" : "cdm.event.common",
   "description" : "A business event represents a life cycle event of a trade. The combination of the state changes results in a qualifiable life cycle event. An example of a Business Event is a PartialTermination which is a defined by a quantity change primitive event."
+}, {
+  "typeCategory" : "StructuredType",
+  "name" : "AgreementEvent",
+  "namespace" : "cdm.event.common",
+  "description" : "An agreement event represents a life cycle event of a legal document. The combination of legal term amendments, contracting party changes or agreement status changes that are represented by an amendment agreement that includes a change to the overall Legal agreement representation through a change in contractual parties or terms."
+}, {
+  "typeCategory" : "StructuredType",
+  "name" : "AgreementInstruction",
+  "namespace" : "cdm.event.common",
+  "description" : "Instruction to a function that will be used to perform an agreement event"
 }, {
   "typeCategory" : "StructuredType",
   "name" : "TradeState",
@@ -90,7 +100,7 @@ export const attributesJson = {
     "name" : "feeAmountSchedule",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "AmountSchedule",
+      "name" : "AmountScheduleWithInitialValue",
       "namespace" : "cdm.product.common.schedule",
       "description" : "A class to specify a currency amount or a currency amount schedule."
     },
@@ -104,7 +114,7 @@ export const attributesJson = {
     "name" : "feeRateSchedule",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Schedule",
+      "name" : "ScheduleWithInitialValue",
       "namespace" : "cdm.base.math",
       "description" : "A class defining a schedule of rates or amounts in terms of an initial value and then a series of step date and value pairs. On each step date the rate or amount changes to the new step value. The series of step date and value pairs are optional. If not specified, this implies that the initial value remains unchanged over time."
     },
@@ -164,6 +174,48 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
+  "cdm.product.common.schedule.AmountScheduleWithInitialValue" : [ {
+    "name" : "currency",
+    "type" : "string",
+    "description" : "The currency in which the amount schedule is denominated. The currency is specified outside of the actual schedule in order to be applied uniformly to it. The list of valid currencies is not presently positioned as an enumeration as part of the CDM because that scope is limited to the values specified by ISDA and FpML. As a result, implementers have to make reference to the relevant standard, such as the ISO 4217 standard for currency codes.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "1"
+    },
+    "metaField" : true
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount must be specified, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
     },
     "metaField" : false
   } ],
@@ -233,6 +285,15 @@ export const attributesJson = {
       "description" : "Defines a taxonomy value as either a simple string or a more granular expression with class names and values for each class."
     },
     "description" : "The value according to that taxonomy. Optional as it may not be possible to classify the object in that taxonomy.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "calculated",
+    "type" : "boolean",
+    "description" : "Specifies whether the taxonomy has been derived from the model features using a CDM qualification function that determines the product type based on the model features.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -3390,6 +3451,76 @@ export const attributesJson = {
     "description" : "Specification of amendments to the calculation of Exposure in terms of the Transactions covered.",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.math.NonNegativeMeasure" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The value attribute must be present in a concrete measure and non-negative.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The value attribute must be present in a concrete measure.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs must be absent.",
+    "cardinality" : {
+      "upperBound" : "0",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "unit",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnitType",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines the unit to be used for price, quantity, or other purposes"
+    },
+    "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -10223,6 +10354,35 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.common.AgreementInstruction" : [ {
+    "name" : "primitiveInstruction",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AgreementPrimitiveInstruction",
+      "namespace" : "cdm.event.common",
+      "description" : "Instruction to a function that will be used to capture terms or Party changes to an agreement triggered by an amendment."
+    },
+    "description" : "A Primitive Instruction set for an Agreement Event triggered by an Amendment",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "before",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "LegalAgreement",
+      "namespace" : "cdm.legaldocumentation.common",
+      "description" : "The specification of a legal agreement between two parties, being negotiated or having been executed. This includes the baseline information and the optional specialised elections"
+    },
+    "description" : "Specifies the Legal Agreement that will be acted upon by the primitive event function.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : true
+  } ],
   "fpml.consolidated.mktenv.ParametricAdjustment" : [ {
     "name" : "name",
     "type" : "string",
@@ -13296,2672 +13456,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.observable.asset.InterestRateCurve" : [ {
-    "name" : "floatingRateIndex",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "FloatingRateIndexEnum",
-      "values" : [ {
-        "name" : "AED_EBOR_REUTERS",
-        "displayName" : "AED-EBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AED_EIBOR",
-        "displayName" : "AED-EIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_AONIA",
-        "displayName" : "AUD-AONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_AONIA_OIS_COMPOUND_1",
-        "displayName" : "AUD-AONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_AONIA_OIS_COMPOUND",
-        "displayName" : "AUD-AONIA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_AONIA_OIS_COMPOUND_SWAP_MARKER",
-        "displayName" : "AUD-AONIA-OIS-COMPOUND-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBR_AUBBSW",
-        "displayName" : "AUD-BBR-AUBBSW",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBR_BBSW",
-        "displayName" : "AUD-BBR-BBSW",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBR_BBSW_BLOOMBERG",
-        "displayName" : "AUD-BBR-BBSW-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBR_BBSY__BID_",
-        "displayName" : "AUD-BBR-BBSY (BID)",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBR_ISDC",
-        "displayName" : "AUD-BBR-ISDC",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBSW",
-        "displayName" : "AUD-BBSW",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBSW_QUARTERLY_SWAP_RATE_ICAP",
-        "displayName" : "AUD-BBSW Quarterly Swap Rate ICAP",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBSW_SEMI_ANNUAL_SWAP_RATE_ICAP",
-        "displayName" : "AUD-BBSW Semi Annual Swap Rate ICAP",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_BBSY_BID",
-        "displayName" : "AUD-BBSY Bid",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_LIBOR_BBA",
-        "displayName" : "AUD-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "AUD-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_LIBOR_REFERENCE_BANKS",
-        "displayName" : "AUD-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_QUARTERLY_SWAP_RATE_ICAP",
-        "displayName" : "AUD-Quarterly Swap Rate-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_QUARTERLY_SWAP_RATE_ICAP_REFERENCE_BANKS",
-        "displayName" : "AUD-Quarterly Swap Rate-ICAP-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "AUD-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_BGCANTOR_REFERENCE_BANKS",
-        "displayName" : "AUD-Semi-Annual Swap Rate-BGCANTOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_ICAP",
-        "displayName" : "AUD-Semi-annual Swap Rate-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_ICAP_REFERENCE_BANKS",
-        "displayName" : "AUD-Semi-Annual Swap Rate-ICAP-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "AUD_SWAP_RATE_REUTERS",
-        "displayName" : "AUD-Swap Rate-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "BRL_CDI",
-        "displayName" : "BRL-CDI",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_BA_CDOR",
-        "displayName" : "CAD-BA-CDOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_BA_CDOR_BLOOMBERG",
-        "displayName" : "CAD-BA-CDOR-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_BA_ISDD",
-        "displayName" : "CAD-BA-ISDD",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_BA_REFERENCE_BANKS",
-        "displayName" : "CAD-BA-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_BA_REUTERS",
-        "displayName" : "CAD-BA-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_BA_TELERATE",
-        "displayName" : "CAD-BA-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_CDOR",
-        "displayName" : "CAD-CDOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_CORRA",
-        "displayName" : "CAD-CORRA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_CORRA_CAN_DEAL_TMX_TERM",
-        "displayName" : "CAD-CORRA CanDeal TMX Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_CORRA_COMPOUNDED_INDEX",
-        "displayName" : "CAD-CORRA Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_CORRA_OIS_COMPOUND_1",
-        "displayName" : "CAD-CORRA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_CORRA_OIS_COMPOUND",
-        "displayName" : "CAD-CORRA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_ISDA_SWAP_RATE",
-        "displayName" : "CAD-ISDA-Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_LIBOR_BBA",
-        "displayName" : "CAD-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "CAD-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_LIBOR_BBA_SWAP_MARKER",
-        "displayName" : "CAD-LIBOR-BBA-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_LIBOR_REFERENCE_BANKS",
-        "displayName" : "CAD-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_REPO_CORRA",
-        "displayName" : "CAD-REPO-CORRA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_TBILL_ISDD",
-        "displayName" : "CAD-TBILL-ISDD",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_TBILL_REFERENCE_BANKS",
-        "displayName" : "CAD-TBILL-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_TBILL_REUTERS",
-        "displayName" : "CAD-TBILL-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CAD_TBILL_TELERATE",
-        "displayName" : "CAD-TBILL-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "CHF-3M LIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "CHF-3M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_3_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
-        "displayName" : "CHF-3M LIBOR SWAP-EUREX vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_3_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "CHF-3M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "CHF-6M LIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_6_M_LIBORSWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "CHF-6M LIBORSWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
-        "displayName" : "CHF-6M LIBOR SWAP-EUREX vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "CHF-6M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_ANNUAL_SWAP_RATE",
-        "displayName" : "CHF-Annual Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_ANNUAL_SWAP_RATE_11_00_ICAP",
-        "displayName" : "CHF-Annual Swap Rate-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "CHF-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_BASIS_SWAP_3_M_VS_6_M_LIBOR_11_00_ICAP",
-        "displayName" : "CHF-Basis Swap-3m vs 6m-LIBOR-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_ISDAFIX_SWAP_RATE",
-        "displayName" : "CHF-ISDAFIX-Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_LIBOR",
-        "displayName" : "CHF-LIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_LIBOR_BBA",
-        "displayName" : "CHF-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "CHF-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_LIBOR_ISDA",
-        "displayName" : "CHF-LIBOR-ISDA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_LIBOR_REFERENCE_BANKS",
-        "displayName" : "CHF-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_OIS_11_00_ICAP",
-        "displayName" : "CHF-OIS-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON",
-        "displayName" : "CHF-SARON",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_12_M",
-        "displayName" : "CHF-SARON Average 12M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_1_M",
-        "displayName" : "CHF-SARON Average 1M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_1_W",
-        "displayName" : "CHF-SARON Average 1W",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_2_M",
-        "displayName" : "CHF-SARON Average 2M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_3_M",
-        "displayName" : "CHF-SARON Average 3M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_6_M",
-        "displayName" : "CHF-SARON Average 6M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_AVERAGE_9_M",
-        "displayName" : "CHF-SARON Average 9M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_COMPOUNDED_INDEX",
-        "displayName" : "CHF-SARON Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_OIS_COMPOUND_1",
-        "displayName" : "CHF-SARON-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_SARON_OIS_COMPOUND",
-        "displayName" : "CHF-SARON-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_TOIS_OIS_COMPOUND",
-        "displayName" : "CHF-TOIS-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CHF_USD_BASIS_SWAPS_11_00_ICAP",
-        "displayName" : "CHF USD-Basis Swaps-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CL_CLICP_BLOOMBERG",
-        "displayName" : "CL-CLICP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CLP_ICP",
-        "displayName" : "CLP-ICP",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CLP_TNA",
-        "displayName" : "CLP-TNA",
-        "description" : "Refers to the Indice Camara Promedio ('ICP') rate for Chilean Pesos which, for a Reset Date, is determined and published by the Asociacion de Bancos e Instituciones Financieras de Chile A.G. ('ABIF') in accordance with the 'Reglamento Indice de Camara Promedio' of the ABIF as published in the Diario Oficial de la Republica de Chile (the 'ICP Rules') and which is reported on the ABIF website by not later than 10:00 a.m., Santiago time, on that Reset Date."
-      }, {
-        "name" : "CNH_HIBOR",
-        "displayName" : "CNH-HIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNH_HIBOR_REFERENCE_BANKS",
-        "displayName" : "CNH-HIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNH_HIBOR_TMA",
-        "displayName" : "CNH-HIBOR-TMA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_7_REPO_COMPOUNDING_DATE",
-        "displayName" : "CNY 7-Repo Compounding Date",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_CNREPOFIX_CFXS_REUTERS",
-        "displayName" : "CNY-CNREPOFIX=CFXS-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_DEPOSIT_RATE",
-        "displayName" : "CNY-Deposit Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_FIXING_REPO_RATE",
-        "displayName" : "CNY-Fixing Repo Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_LPR",
-        "displayName" : "CNY-LPR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_PBOCB_REUTERS",
-        "displayName" : "CNY-PBOCB-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_QUARTERLY_7_DAY_REPO_NON_DELIVERABLE_SWAP_RATE_TRADITION",
-        "displayName" : "CNY-Quarterly 7 day Repo Non Deliverable Swap Rate-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_QUARTERLY_7_DAY_REPO_NON_DELIVERABLE_SWAP_RATE_TRADITION_REFERENCE_BANKS",
-        "displayName" : "CNY-Quarterly 7 day Repo Non Deliverable Swap Rate-TRADITION-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_QUARTERLY_7_D_REPO_NDS_RATE_TRADITION",
-        "displayName" : "CNY-Quarterly 7D Repo NDS Rate Tradition",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "CNY-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "CNY-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_SHIBOR",
-        "displayName" : "CNY-SHIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_SHIBOR_OIS_COMPOUND",
-        "displayName" : "CNY-SHIBOR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_SHIBOR_OIS_COMPOUNDING",
-        "displayName" : "CNY-Shibor-OIS-Compounding",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CNY_SHIBOR_REUTERS",
-        "displayName" : "CNY-SHIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction.."
-      }, {
-        "name" : "COP_IBR_OIS_COMPOUND_1",
-        "displayName" : "COP-IBR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "COP_IBR_OIS_COMPOUND",
-        "displayName" : "COP-IBR-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "CZK-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "CZK-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_CZEONIA",
-        "displayName" : "CZK-CZEONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_CZEONIA_OIS_COMPOUND",
-        "displayName" : "CZK-CZEONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_PRIBOR",
-        "displayName" : "CZK-PRIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_PRIBOR_PRBO",
-        "displayName" : "CZK-PRIBOR-PRBO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "CZK_PRIBOR_REFERENCE_BANKS",
-        "displayName" : "CZK-PRIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR",
-        "displayName" : "DKK-CIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR2",
-        "displayName" : "DKK-CIBOR2",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR_2_BLOOMBERG",
-        "displayName" : "DKK-CIBOR2-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR2_DKNA13",
-        "displayName" : "DKK-CIBOR2-DKNA13",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR_DKNA13",
-        "displayName" : "DKK-CIBOR-DKNA13",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR_DKNA_13_BLOOMBERG",
-        "displayName" : "DKK-CIBOR-DKNA13-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CIBOR_REFERENCE_BANKS",
-        "displayName" : "DKK-CIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CITA",
-        "displayName" : "DKK-CITA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_CITA_DKNA14_COMPOUND",
-        "displayName" : "DKK-CITA-DKNA14-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_DESTR",
-        "displayName" : "DKK-DESTR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_DESTR_COMPOUNDED_INDEX",
-        "displayName" : "DKK-DESTR Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_DESTR_OIS_COMPOUND",
-        "displayName" : "DKK-DESTR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_DKKOIS_OIS_COMPOUND",
-        "displayName" : "DKK-DKKOIS-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "DKK_TOM_NEXT_OIS_COMPOUND",
-        "displayName" : "DKK-Tom Next-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_3_M_EURIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "EUR-3M EURIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_3_M_EURIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "EUR-3M EURIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_3_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP",
-        "displayName" : "EUR-3M EURIBOR SWAP-EUREX vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_3_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "EUR-3M EURIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_6_M_EURIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "EUR-6M EURIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_6_M_EURIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "EUR-6M EURIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_6_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP",
-        "displayName" : "EUR-6M EURIBOR SWAP-EUREX vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_6_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "EUR-6M EURIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_10_00",
-        "displayName" : "EUR-Annual Swap Rate-10:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_BGCANTOR",
-        "displayName" : "EUR-Annual Swap Rate-10:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_BLOOMBERG",
-        "displayName" : "EUR-Annual Swap Rate-10:00-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_ICAP",
-        "displayName" : "EUR-Annual Swap Rate-10:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_SWAP_MARKER",
-        "displayName" : "EUR-Annual Swap Rate-10:00-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_TRADITION",
-        "displayName" : "EUR-Annual Swap Rate-10:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_11_00",
-        "displayName" : "EUR-Annual Swap Rate-11:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_BLOOMBERG",
-        "displayName" : "EUR-Annual Swap Rate-11:00-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_ICAP",
-        "displayName" : "EUR-Annual Swap Rate-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_SWAP_MARKER",
-        "displayName" : "EUR-Annual Swap Rate-11:00-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_3_MONTH",
-        "displayName" : "EUR-Annual Swap Rate-3 Month",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_3_MONTH_SWAP_MARKER",
-        "displayName" : "EUR-Annual Swap Rate-3 Month-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_4_15_TRADITION",
-        "displayName" : "EUR-Annual Swap Rate-4:15-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "EUR-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_BASIS_SWAP_EONIA_VS_3_M_EUR_IBOR_SWAP_RATES_A_360_10_00_ICAP",
-        "displayName" : "EUR Basis Swap-EONIA vs 3m EUR+IBOR Swap Rates-A/360-10:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_CNO_TEC10",
-        "displayName" : "EUR-CNO TEC10",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA",
-        "displayName" : "EUR-EONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_AVERAGE_1",
-        "displayName" : "EUR-EONIA-AVERAGE",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_AVERAGE",
-        "displayName" : "EUR-EONIA-Average",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_10_00_BGCANTOR",
-        "displayName" : "EUR-EONIA-OIS-10:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_10_00_ICAP",
-        "displayName" : "EUR-EONIA-OIS-10:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_10_00_TRADITION",
-        "displayName" : "EUR-EONIA-OIS-10:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_11_00_ICAP",
-        "displayName" : "EUR-EONIA-OIS-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_4_15_TRADITION",
-        "displayName" : "EUR-EONIA-OIS-4:15-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_COMPOUND_1",
-        "displayName" : "EUR-EONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_COMPOUND",
-        "displayName" : "EUR-EONIA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_OIS_COMPOUND_BLOOMBERG",
-        "displayName" : "EUR-EONIA-OIS-COMPOUND-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EONIA_SWAP_INDEX",
-        "displayName" : "EUR-EONIA-Swap-Index",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR",
-        "displayName" : "EUR-EURIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_ACT_365",
-        "displayName" : "EUR-EURIBOR-Act/365",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_ACT_365_BLOOMBERG",
-        "displayName" : "EUR-EURIBOR-Act/365-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_ANNUAL_BOND_SWAP_VS_1_M_11_00_ICAP",
-        "displayName" : "EUR EURIBOR-Annual Bond Swap vs 1m-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_BASIS_SWAP_1_M_VS_3_M_EURIBOR_11_00_ICAP",
-        "displayName" : "EUR EURIBOR-Basis Swap-1m vs 3m-Euribor-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_BASIS_SWAP_3_M_VS_6_M_11_00_ICAP",
-        "displayName" : "EUR EURIBOR-Basis Swap-3m vs 6m-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_ICE_SWAP_RATE_11_00",
-        "displayName" : "EUR-EURIBOR ICE Swap Rate-11:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_ICE_SWAP_RATE_12_00",
-        "displayName" : "EUR-EURIBOR ICE Swap Rate-12:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_REFERENCE_BANKS",
-        "displayName" : "EUR-EURIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_REUTERS",
-        "displayName" : "EUR-EURIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURIBOR_TELERATE",
-        "displayName" : "EUR-EURIBOR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURONIA_OIS_COMPOUND_1",
-        "displayName" : "EUR-EURONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURONIA_OIS_COMPOUND",
-        "displayName" : "EUR-EURONIA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR",
-        "displayName" : "EUR-EuroSTR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_AVERAGE_12_M",
-        "displayName" : "EUR-EuroSTR Average 12M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_AVERAGE_1_M",
-        "displayName" : "EUR-EuroSTR Average 1M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_AVERAGE_1_W",
-        "displayName" : "EUR-EuroSTR Average 1W",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_AVERAGE_3_M",
-        "displayName" : "EUR-EuroSTR Average 3M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_AVERAGE_6_M",
-        "displayName" : "EUR-EuroSTR Average 6M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_COMPOUND",
-        "displayName" : "EUR-EuroSTR-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_COMPOUNDED_INDEX",
-        "displayName" : "EUR-EuroSTR Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_FTSE_TERM",
-        "displayName" : "EUR-EuroSTR FTSE Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX",
-        "displayName" : "EUR-EuroSTR ICE Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR",
-        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
-        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
-        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_2_D_LAG",
-        "displayName" : "EUR-EuroSTR ICE Compounded Index 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_5_D_LAG",
-        "displayName" : "EUR-EuroSTR ICE Compounded Index 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_ICE_SWAP_RATE",
-        "displayName" : "EUR-EuroSTR ICE Swap Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_OIS_COMPOUND",
-        "displayName" : "EUR-EuroSTR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_EURO_STR_TERM",
-        "displayName" : "EUR-EuroSTR Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ISDA_EURIBOR_SWAP_RATE_11_00",
-        "displayName" : "EUR-ISDA-EURIBOR Swap Rate-11:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ISDA_EURIBOR_SWAP_RATE_12_00",
-        "displayName" : "EUR-ISDA-EURIBOR Swap Rate-12:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ISDA_LIBOR_SWAP_RATE_10_00",
-        "displayName" : "EUR-ISDA-LIBOR Swap Rate-10:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_ISDA_LIBOR_SWAP_RATE_11_00",
-        "displayName" : "EUR-ISDA-LIBOR Swap Rate-11:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_LIBOR",
-        "displayName" : "EUR-LIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_LIBOR_BBA",
-        "displayName" : "EUR-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "EUR-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_LIBOR_REFERENCE_BANKS",
-        "displayName" : "EUR-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TAM_CDC",
-        "displayName" : "EUR-TAM-CDC",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TEC10_CNO",
-        "displayName" : "EUR-TEC10-CNO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TEC_10_CNO_SWAP_MARKER",
-        "displayName" : "EUR-TEC10-CNO-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TEC_10_REFERENCE_BANKS",
-        "displayName" : "EUR-TEC10-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TEC5_CNO",
-        "displayName" : "EUR-TEC5-CNO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TEC_5_CNO_SWAP_MARKER",
-        "displayName" : "EUR-TEC5-CNO-SwapMarker",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TEC_5_REFERENCE_BANKS",
-        "displayName" : "EUR-TEC5-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_TMM_CDC_COMPOUND",
-        "displayName" : "EUR-TMM-CDC-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "EUR_USD_BASIS_SWAPS_11_00_ICAP",
-        "displayName" : "EUR USD-Basis Swaps-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "GBP-6M LIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "GBP-6M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
-        "displayName" : "GBP-6M LIBOR SWAP-EUREX vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "GBP-6M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_ISDA_SWAP_RATE",
-        "displayName" : "GBP-ISDA-Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_LIBOR",
-        "displayName" : "GBP-LIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_LIBOR_BBA",
-        "displayName" : "GBP-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "GBP-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_LIBOR_ICE_SWAP_RATE",
-        "displayName" : "GBP-LIBOR ICE Swap Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_LIBOR_ISDA",
-        "displayName" : "GBP-LIBOR-ISDA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_LIBOR_REFERENCE_BANKS",
-        "displayName" : "GBP-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_RONIA",
-        "displayName" : "GBP-RONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_RONIA_OIS_COMPOUND",
-        "displayName" : "GBP-RONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE",
-        "displayName" : "GBP-Semi-Annual Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_11_00_ICAP",
-        "displayName" : "GBP-Semi-Annual Swap Rate-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "GBP-Semi Annual Swap Rate-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_4_15_TRADITION",
-        "displayName" : "GBP-Semi Annual Swap Rate-4:15-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "GBP-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_SWAP_MARKER_26",
-        "displayName" : "GBP-Semi-Annual Swap Rate-SwapMarker26",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA",
-        "displayName" : "GBP-SONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_COMPOUND",
-        "displayName" : "GBP-SONIA-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_COMPOUNDED_INDEX",
-        "displayName" : "GBP-SONIA Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_FTSE_TERM",
-        "displayName" : "GBP-SONIA FTSE Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX",
-        "displayName" : "GBP-SONIA ICE Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR",
-        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
-        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
-        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_2_D_LAG",
-        "displayName" : "GBP-SONIA ICE Compounded Index 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_5_D_LAG",
-        "displayName" : "GBP-SONIA ICE Compounded Index 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_SWAP_RATE",
-        "displayName" : "GBP-SONIA ICE Swap Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_ICE_TERM",
-        "displayName" : "GBP-SONIA ICE Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_OIS_11_00_ICAP",
-        "displayName" : "GBP-SONIA-OIS-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_OIS_11_00_TRADITION",
-        "displayName" : "GBP-SONIA-OIS-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_OIS_4_15_TRADITION",
-        "displayName" : "GBP-SONIA-OIS-4:15-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_OIS_COMPOUND",
-        "displayName" : "GBP-SONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_SONIA_SWAP_RATE",
-        "displayName" : "GBP-SONIA Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_UK_BASE_RATE",
-        "displayName" : "GBP-UK Base Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_USD_BASIS_SWAPS_11_00_ICAP",
-        "displayName" : "GBP USD-Basis Swaps-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_WMBA_RONIA_COMPOUND",
-        "displayName" : "GBP-WMBA-RONIA-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GBP_WMBA_SONIA_COMPOUND",
-        "displayName" : "GBP-WMBA-SONIA-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GRD_ATHIBOR_ATHIBOR",
-        "displayName" : "GRD-ATHIBOR-ATHIBOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GRD_ATHIBOR_REFERENCE_BANKS",
-        "displayName" : "GRD-ATHIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GRD_ATHIBOR_TELERATE",
-        "displayName" : "GRD-ATHIBOR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GRD_ATHIMID_REFERENCE_BANKS",
-        "displayName" : "GRD-ATHIMID-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "GRD_ATHIMID_REUTERS",
-        "displayName" : "GRD-ATHIMID-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR",
-        "displayName" : "HKD-HIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR_HIBOR_",
-        "displayName" : "HKD-HIBOR-HIBOR=",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR_HIBOR_BLOOMBERG",
-        "displayName" : "HKD-HIBOR-HIBOR-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR_HKAB",
-        "displayName" : "HKD-HIBOR-HKAB",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR_HKAB_BLOOMBERG",
-        "displayName" : "HKD-HIBOR-HKAB-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR_ISDC",
-        "displayName" : "HKD-HIBOR-ISDC",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HIBOR_REFERENCE_BANKS",
-        "displayName" : "HKD-HIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HONIA",
-        "displayName" : "HKD-HONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HONIA_OIS_COMPOUND",
-        "displayName" : "HKD-HONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_HONIX_OIS_COMPOUND",
-        "displayName" : "HKD-HONIX-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_ISDA_SWAP_RATE_11_00",
-        "displayName" : "HKD-ISDA-Swap Rate-11:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_ISDA_SWAP_RATE_4_00",
-        "displayName" : "HKD-ISDA-Swap Rate-4:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "HKD-Quarterly-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "HKD-Quarterly-Annual Swap Rate-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_4_00_BGCANTOR",
-        "displayName" : "HKD-Quarterly-Annual Swap Rate-4:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "HKD-Quarterly-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_11_00_ICAP",
-        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_4_00_ICAP",
-        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-4:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HUF_BUBOR",
-        "displayName" : "HUF-BUBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HUF_BUBOR_REFERENCE_BANKS",
-        "displayName" : "HUF-BUBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HUF_BUBOR_REUTERS",
-        "displayName" : "HUF-BUBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HUF_HUFONIA",
-        "displayName" : "HUF-HUFONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "HUF_HUFONIA_OIS_COMPOUND",
-        "displayName" : "HUF-HUFONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_IDMA_BLOOMBERG",
-        "displayName" : "IDR-IDMA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_IDRFIX",
-        "displayName" : "IDR-IDRFIX",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_INDONIA",
-        "displayName" : "IDR-INDONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_INDONIA_OIS_COMPOUND",
-        "displayName" : "IDR-INDONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_JIBOR",
-        "displayName" : "IDR-JIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_JIBOR_REUTERS",
-        "displayName" : "IDR-JIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SBI_REUTERS",
-        "displayName" : "IDR-SBI-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "IDR-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_NON_DELIVERABLE_16_00_TULLETT_PREBON",
-        "displayName" : "IDR-Semi Annual Swap Rate-Non-deliverable-16:00-Tullett Prebon",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "IDR-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SOR_REFERENCE_BANKS",
-        "displayName" : "IDR-SOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SOR_REUTERS",
-        "displayName" : "IDR-SOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "IDR_SOR_TELERATE",
-        "displayName" : "IDR-SOR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ILS_SHIR",
-        "displayName" : "ILS-SHIR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ILS_SHIR_OIS_COMPOUND",
-        "displayName" : "ILS-SHIR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ILS_TELBOR",
-        "displayName" : "ILS-TELBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ILS_TELBOR_01_REUTERS",
-        "displayName" : "ILS-TELBOR01-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ILS_TELBOR_REFERENCE_BANKS",
-        "displayName" : "ILS-TELBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_BMK",
-        "displayName" : "INR-BMK",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_CMT",
-        "displayName" : "INR-CMT",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_FBIL_MIBOR_OIS_COMPOUND",
-        "displayName" : "INR-FBIL-MIBOR-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_INBMK_REUTERS",
-        "displayName" : "INR-INBMK-REUTERS",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MIBOR",
-        "displayName" : "INR-MIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MIBOR_OIS",
-        "displayName" : "INR-MIBOR OIS",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MIBOR_OIS_COMPOUND_1",
-        "displayName" : "INR-MIBOR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MIBOR_OIS_COMPOUND",
-        "displayName" : "INR-MIBOR-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MIFOR",
-        "displayName" : "INR-MIFOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MIOIS",
-        "displayName" : "INR-MIOIS",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MITOR_OIS_COMPOUND",
-        "displayName" : "INR-MITOR-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_MODIFIED_MIFOR",
-        "displayName" : "INR-Modified MIFOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_REFERENCE_BANKS",
-        "displayName" : "INR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_11_30_BGCANTOR",
-        "displayName" : "INR-Semi-Annual Swap Rate-11:30-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_NON_DELIVERABLE_16_00_TULLETT_PREBON",
-        "displayName" : "INR-Semi Annual Swap Rate-Non-deliverable-16:00-Tullett Prebon",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "INR-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_SORR",
-        "displayName" : "INR-SORR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "INR_SORR_OIS_COMPOUND",
-        "displayName" : "INR-SORR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ISK_REIBOR",
-        "displayName" : "ISK-REIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ISK_REIBOR_REFERENCE_BANKS",
-        "displayName" : "ISK-REIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ISK_REIBOR_REUTERS",
-        "displayName" : "ISK-REIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_ANNUAL_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "JPY-Annual Swap Rate-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_ANNUAL_SWAP_RATE_3_00_TRADITION",
-        "displayName" : "JPY-Annual Swap Rate-3:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_BBSF_BLOOMBERG_10_00",
-        "displayName" : "JPY-BBSF-Bloomberg-10:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_BBSF_BLOOMBERG_15_00",
-        "displayName" : "JPY-BBSF-Bloomberg-15:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_EUROYEN_TIBOR",
-        "displayName" : "JPY-Euroyen TIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_ISDA_SWAP_RATE_10_00",
-        "displayName" : "JPY-ISDA-Swap Rate-10:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_ISDA_SWAP_RATE_15_00",
-        "displayName" : "JPY-ISDA-Swap Rate-15:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR",
-        "displayName" : "JPY-LIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_BBA",
-        "displayName" : "JPY-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "JPY-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_FRASETT",
-        "displayName" : "JPY-LIBOR-FRASETT",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_ISDA",
-        "displayName" : "JPY-LIBOR-ISDA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_REFERENCE_BANKS",
-        "displayName" : "JPY-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_TSR_10_00",
-        "displayName" : "JPY-LIBOR TSR-10:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LIBOR_TSR_15_00",
-        "displayName" : "JPY-LIBOR TSR-15:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LTPR_MHBK",
-        "displayName" : "JPY-LTPR MHBK",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LTPR_MHCB",
-        "displayName" : "JPY-LTPR-MHCB",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_LTPR_TBC",
-        "displayName" : "JPY-LTPR-TBC",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_MUTANCALL_TONAR",
-        "displayName" : "JPY-MUTANCALL-TONAR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_OIS_11_00_ICAP",
-        "displayName" : "JPY-OIS-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_OIS_11_00_TRADITION",
-        "displayName" : "JPY-OIS-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_OIS_3_00_TRADITION",
-        "displayName" : "JPY-OIS-3:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_QUOTING_BANKS_LIBOR",
-        "displayName" : "JPY-Quoting Banks-LIBOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_STPR_QUOTING_BANKS",
-        "displayName" : "JPY-STPR-Quoting Banks",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR",
-        "displayName" : "JPY-TIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_17096",
-        "displayName" : "JPY-TIBOR-17096",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_17097",
-        "displayName" : "JPY-TIBOR-17097",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_DTIBOR01",
-        "displayName" : "JPY-TIBOR-DTIBOR01",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_TIBM",
-        "displayName" : "JPY-TIBOR-TIBM",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_TIBM_10_BANKS",
-        "displayName" : "JPY-TIBOR-TIBM (10 Banks)",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_TIBM_5_BANKS",
-        "displayName" : "JPY-TIBOR-TIBM (5 Banks)",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_TIBM_ALL_BANKS",
-        "displayName" : "JPY-TIBOR-TIBM (All Banks)",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_TIBM_ALL_BANKS_BLOOMBERG",
-        "displayName" : "JPY-TIBOR-TIBM (All Banks)-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_TIBM_REFERENCE_BANKS",
-        "displayName" : "JPY-TIBOR-TIBM-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TIBOR_ZTIBOR",
-        "displayName" : "JPY-TIBOR-ZTIBOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA",
-        "displayName" : "JPY-TONA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_AVERAGE_180_D",
-        "displayName" : "JPY-TONA Average 180D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_AVERAGE_30_D",
-        "displayName" : "JPY-TONA Average 30D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_AVERAGE_90_D",
-        "displayName" : "JPY-TONA Average 90D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_COMPOUNDED_INDEX",
-        "displayName" : "JPY-TONA Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX",
-        "displayName" : "JPY-TONA ICE Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR",
-        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
-        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
-        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_2_D_LAG",
-        "displayName" : "JPY-TONA ICE Compounded Index 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_5_D_LAG",
-        "displayName" : "JPY-TONA ICE Compounded Index 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_OIS_COMPOUND_1",
-        "displayName" : "JPY-TONA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_OIS_COMPOUND",
-        "displayName" : "JPY-TONA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_TSR_10_00",
-        "displayName" : "JPY-TONA TSR-10:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TONA_TSR_15_00",
-        "displayName" : "JPY-TONA TSR-15:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TORF_QUICK",
-        "displayName" : "JPY-TORF QUICK",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TSR_REFERENCE_BANKS",
-        "displayName" : "JPY-TSR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TSR_REUTERS_10_00",
-        "displayName" : "JPY-TSR-Reuters-10:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TSR_REUTERS_15_00",
-        "displayName" : "JPY-TSR-Reuters-15:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TSR_TELERATE_10_00",
-        "displayName" : "JPY-TSR-Telerate-10:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_TSR_TELERATE_15_00",
-        "displayName" : "JPY-TSR-Telerate-15:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "JPY_USD_BASIS_SWAPS_11_00_ICAP",
-        "displayName" : "JPY USD-Basis Swaps-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_BOND_3222",
-        "displayName" : "KRW-Bond-3222",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_CD_3220",
-        "displayName" : "KRW-CD-3220",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_CD_91D",
-        "displayName" : "KRW-CD 91D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_CD_KSDA_BLOOMBERG",
-        "displayName" : "KRW-CD-KSDA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_KOFR",
-        "displayName" : "KRW-KOFR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_KOFR_OIS_COMPOUND",
-        "displayName" : "KRW-KOFR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "KRW_QUARTERLY_ANNUAL_SWAP_RATE_3_30_ICAP",
-        "displayName" : "KRW-Quarterly Annual Swap Rate-3:30-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE",
-        "displayName" : "MXN-TIIE",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE_BANXICO",
-        "displayName" : "MXN-TIIE-Banxico",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE_BANXICO_BLOOMBERG",
-        "displayName" : "MXN-TIIE-Banxico-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE_BANXICO_REFERENCE_BANKS",
-        "displayName" : "MXN-TIIE-Banxico-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE_ON",
-        "displayName" : "MXN-TIIE ON",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE_ON_OIS_COMPOUND",
-        "displayName" : "MXN-TIIE ON-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MXN_TIIE_REFERENCE_BANKS",
-        "displayName" : "MXN-TIIE-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_KLIBOR",
-        "displayName" : "MYR-KLIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_KLIBOR_BNM",
-        "displayName" : "MYR-KLIBOR-BNM",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_KLIBOR_REFERENCE_BANKS",
-        "displayName" : "MYR-KLIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_MYOR",
-        "displayName" : "MYR-MYOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_MYOR_OIS_COMPOUND",
-        "displayName" : "MYR-MYOR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_QUARTERLY_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "MYR-Quarterly Swap Rate-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "MYR_QUARTERLY_SWAP_RATE_TRADITION_REFERENCE_BANKS",
-        "displayName" : "MYR-Quarterly Swap Rate-TRADITION-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NIBOR",
-        "displayName" : "NOK-NIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NIBOR_NIBR",
-        "displayName" : "NOK-NIBOR-NIBR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NIBOR_NIBR_BLOOMBERG",
-        "displayName" : "NOK-NIBOR-NIBR-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NIBOR_NIBR_REFERENCE_BANKS",
-        "displayName" : "NOK-NIBOR-NIBR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NIBOR_OIBOR",
-        "displayName" : "NOK-NIBOR-OIBOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NIBOR_REFERENCE_BANKS",
-        "displayName" : "NOK-NIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NOWA",
-        "displayName" : "NOK-NOWA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NOK_NOWA_OIS_COMPOUND",
-        "displayName" : "NOK-NOWA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BBR_BID",
-        "displayName" : "NZD-BBR-BID",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BBR_FRA",
-        "displayName" : "NZD-BBR-FRA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BBR_ISDC",
-        "displayName" : "NZD-BBR-ISDC",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BBR_REFERENCE_BANKS",
-        "displayName" : "NZD-BBR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BBR_TELERATE",
-        "displayName" : "NZD-BBR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BKBM_BID",
-        "displayName" : "NZD-BKBM Bid",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BKBM_FRA",
-        "displayName" : "NZD-BKBM FRA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_BKBM_FRA_SWAP_RATE_ICAP",
-        "displayName" : "NZD-BKBM FRA Swap Rate ICAP",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_NZIONA",
-        "displayName" : "NZD-NZIONA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction. NOTE: In accordance with Section 2.1.11(ii) (New Zealand Business Days), from the date on which the New Zealand Financial Markets Association's 'New Zealand Business Day Guidance' (proposed effective date of October 6, 2025) becomes effective, the reference to a 'Wellington and Auckland Business Day' will be deemed to be replaced with a reference to a 'New Zealand Business Day' for all Transactions entered into from (and including) that effective date."
-      }, {
-        "name" : "NZD_NZIONA_OIS_COMPOUND_1",
-        "displayName" : "NZD-NZIONA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction. NOTE: In accordance with Section 2.1.11(ii) (New Zealand Business Days), from the date on which the New Zealand Financial Markets Association's 'New Zealand Business Day Guidance' (proposed effective date of October 6, 2025) becomes effective, the reference to a 'Wellington and Auckland Business Day' will be deemed to be replaced with a reference to a 'New Zealand Business Day' for all Transactions entered into from (and including) that effective date."
-      }, {
-        "name" : "NZD_NZIONA_OIS_COMPOUND",
-        "displayName" : "NZD-NZIONA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "NZD-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_SEMI_ANNUAL_SWAP_RATE_BGCANTOR_REFERENCE_BANKS",
-        "displayName" : "NZD-Semi-Annual Swap Rate-BGCANTOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_SWAP_RATE_ICAP",
-        "displayName" : "NZD-Swap Rate-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "NZD_SWAP_RATE_ICAP_REFERENCE_BANKS",
-        "displayName" : "NZD-Swap Rate-ICAP-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_ORR",
-        "displayName" : "PHP-ORR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_ORR_OIS_COMPOUND",
-        "displayName" : "PHP-ORR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_PHIREF",
-        "displayName" : "PHP-PHIREF",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_PHIREF_BAP",
-        "displayName" : "PHP-PHIREF-BAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_PHIREF_BLOOMBERG",
-        "displayName" : "PHP-PHIREF-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_PHIREF_REFERENCE_BANKS",
-        "displayName" : "PHP-PHIREF-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "PHP-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PHP_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "PHP-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_POLONIA",
-        "displayName" : "PLN-POLONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_POLONIA_OIS_COMPOUND_1",
-        "displayName" : "PLN-POLONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_POLONIA_OIS_COMPOUND",
-        "displayName" : "PLN-POLONIA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_POLSTR",
-        "displayName" : "PLN-POLSTR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_POLSTR_OIS_COMPOUND",
-        "displayName" : "PLN-POLSTR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_WIBID",
-        "displayName" : "PLN-WIBID",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_WIBOR",
-        "displayName" : "PLN-WIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_WIBOR_REFERENCE_BANKS",
-        "displayName" : "PLN-WIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_WIBOR_WIBO",
-        "displayName" : "PLN-WIBOR-WIBO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_WIRON",
-        "displayName" : "PLN-WIRON",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLN_WIRON_OIS_COMPOUND",
-        "displayName" : "PLN-WIRON-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLZ_WIBOR_REFERENCE_BANKS",
-        "displayName" : "PLZ-WIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "PLZ_WIBOR_WIBO",
-        "displayName" : "PLZ-WIBOR-WIBO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "REPOFUNDS_RATE_FRANCE_OIS_COMPOUND",
-        "displayName" : "REPOFUNDS RATE-FRANCE-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "REPOFUNDS_RATE_GERMANY_OIS_COMPOUND",
-        "displayName" : "REPOFUNDS RATE-GERMANY-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "REPOFUNDS_RATE_ITALY_OIS_COMPOUND",
-        "displayName" : "REPOFUNDS RATE-ITALY-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RON_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "RON-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RON_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "RON-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RON_RBOR_REUTERS",
-        "displayName" : "RON-RBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RON_ROBID",
-        "displayName" : "RON-ROBID",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RON_ROBOR",
-        "displayName" : "RON-ROBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "RUB-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_ANNUAL_SWAP_RATE_12_45_TRADITION",
-        "displayName" : "RUB-Annual Swap Rate-12:45-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_ANNUAL_SWAP_RATE_4_15_TRADITION",
-        "displayName" : "RUB-Annual Swap Rate-4:15-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "RUB-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
-        "displayName" : "RUB-Annual Swap Rate-TRADITION-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_KEY_RATE_CBRF",
-        "displayName" : "RUB-Key Rate CBRF",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_MOS_PRIME",
-        "displayName" : "RUB-MosPrime",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_MOSPRIME_NFEA",
-        "displayName" : "RUB-MOSPRIME-NFEA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_MOSPRIME_REFERENCE_BANKS",
-        "displayName" : "RUB-MOSPRIME-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_RUONIA",
-        "displayName" : "RUB-RUONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_RUONIA_OIS_COMPOUND_1",
-        "displayName" : "RUB-RUONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "RUB_RUONIA_OIS_COMPOUND",
-        "displayName" : "RUB-RUONIA-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SAR_SAIBOR",
-        "displayName" : "SAR-SAIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SAR_SRIOR_REFERENCE_BANKS",
-        "displayName" : "SAR-SRIOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SAR_SRIOR_SUAA",
-        "displayName" : "SAR-SRIOR-SUAA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_ANNUAL_SWAP_RATE",
-        "displayName" : "SEK-Annual Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_ANNUAL_SWAP_RATE_SESWFI",
-        "displayName" : "SEK-Annual Swap Rate-SESWFI",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SIOR_OIS_COMPOUND",
-        "displayName" : "SEK-SIOR-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_STIBOR",
-        "displayName" : "SEK-STIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_STIBOR_BLOOMBERG",
-        "displayName" : "SEK-STIBOR-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_STIBOR_OIS_COMPOUND",
-        "displayName" : "SEK-STIBOR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_STIBOR_REFERENCE_BANKS",
-        "displayName" : "SEK-STIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_STIBOR_SIDE",
-        "displayName" : "SEK-STIBOR-SIDE",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR",
-        "displayName" : "SEK-SWESTR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_AVERAGE_1_M",
-        "displayName" : "SEK-SWESTR Average 1M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_AVERAGE_1_W",
-        "displayName" : "SEK-SWESTR Average 1W",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_AVERAGE_2_M",
-        "displayName" : "SEK-SWESTR Average 2M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_AVERAGE_3_M",
-        "displayName" : "SEK-SWESTR Average 3M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_AVERAGE_6_M",
-        "displayName" : "SEK-SWESTR Average 6M",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_COMPOUNDED_INDEX",
-        "displayName" : "SEK-SWESTR Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SEK_SWESTR_OIS_COMPOUND",
-        "displayName" : "SEK-SWESTR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_CURRENCY_BASIS_SWAP_RATE_11_00_TULLETT_PREBON",
-        "displayName" : "SGD-Semi-Annual Currency Basis Swap Rate-11:00-Tullett Prebon",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_CURRENCY_BASIS_SWAP_RATE_16_00_TULLETT_PREBON",
-        "displayName" : "SGD-Semi-Annual Currency Basis Swap Rate-16:00-Tullett Prebon",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "SGD-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_TULLETT_PREBON",
-        "displayName" : "SGD-Semi-Annual Swap Rate-11:00-Tullett Prebon",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "SGD-Semi-Annual Swap Rate-11.00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_16_00_TULLETT_PREBON",
-        "displayName" : "SGD-Semi-Annual Swap Rate-16:00-Tullett Prebon",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_ICAP",
-        "displayName" : "SGD-Semi-Annual Swap Rate-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_ICAP_REFERENCE_BANKS",
-        "displayName" : "SGD-Semi-Annual Swap Rate-ICAP-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "SGD-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
-        "displayName" : "SGD-Semi-Annual Swap Rate-TRADITION-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SIBOR",
-        "displayName" : "SGD-SIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SIBOR_REFERENCE_BANKS",
-        "displayName" : "SGD-SIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SIBOR_REUTERS",
-        "displayName" : "SGD-SIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SIBOR_TELERATE",
-        "displayName" : "SGD-SIBOR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SONAR_OIS_COMPOUND",
-        "displayName" : "SGD-SONAR-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SONAR_OIS_VWAP_COMPOUND",
-        "displayName" : "SGD-SONAR-OIS-VWAP-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SOR",
-        "displayName" : "SGD-SOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SORA",
-        "displayName" : "SGD-SORA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SORA_COMPOUND",
-        "displayName" : "SGD-SORA-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SORA_OIS_COMPOUND",
-        "displayName" : "SGD-SORA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SOR_REFERENCE_BANKS",
-        "displayName" : "SGD-SOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SOR_REUTERS",
-        "displayName" : "SGD-SOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SOR_TELERATE",
-        "displayName" : "SGD-SOR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SOR_VWAP",
-        "displayName" : "SGD-SOR-VWAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SGD_SOR_VWAP_REFERENCE_BANKS",
-        "displayName" : "SGD-SOR-VWAP-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SKK_BRIBOR_BLOOMBERG",
-        "displayName" : "SKK-BRIBOR-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SKK_BRIBOR_BRBO",
-        "displayName" : "SKK-BRIBOR-BRBO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SKK_BRIBOR_NBSK07",
-        "displayName" : "SKK-BRIBOR-NBSK07",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "SKK_BRIBOR_REFERENCE_BANKS",
-        "displayName" : "SKK-BRIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "THB-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "THB-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_SOR_REFERENCE_BANKS",
-        "displayName" : "THB-SOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_SOR_REUTERS",
-        "displayName" : "THB-SOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_SOR_TELERATE",
-        "displayName" : "THB-SOR-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_THBFIX",
-        "displayName" : "THB-THBFIX",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_THBFIX_REFERENCE_BANKS",
-        "displayName" : "THB-THBFIX-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_THBFIX_REUTERS",
-        "displayName" : "THB-THBFIX-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_THOR",
-        "displayName" : "THB-THOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_THOR_COMPOUND",
-        "displayName" : "THB-THOR-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "THB_THOR_OIS_COMPOUND",
-        "displayName" : "THB-THOR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_ANNUAL_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "TRY Annual Swap Rate-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_ANNUAL_SWAP_RATE_11_15_BGCANTOR",
-        "displayName" : "TRY-Annual Swap Rate-11:15-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "TRY-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_SEMI_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
-        "displayName" : "TRY-Semi-Annual Swap Rate-TRADITION-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_TLREF",
-        "displayName" : "TRY-TLREF",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_TLREF_OIS_COMPOUND_1",
-        "displayName" : "TRY-TLREF-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_TLREF_OIS_COMPOUND",
-        "displayName" : "TRY-TLREF-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_TRLIBOR",
-        "displayName" : "TRY-TRLIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_TRYIBOR_REFERENCE_BANKS",
-        "displayName" : "TRY-TRYIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TRY_TRYIBOR_REUTERS",
-        "displayName" : "TRY-TRYIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "TWD-Quarterly-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_QUARTERLY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "TWD-Quarterly-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_REFERENCE_DEALERS",
-        "displayName" : "TWD-Reference Dealers",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_REUTERS_6165",
-        "displayName" : "TWD-Reuters-6165",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TAIBIR01",
-        "displayName" : "TWD-TAIBIR01",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TAIBIR02",
-        "displayName" : "TWD-TAIBIR02",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TAIBOR",
-        "displayName" : "TWD-TAIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TAIBOR_BLOOMBERG",
-        "displayName" : "TWD-TAIBOR-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TAIBOR_REUTERS",
-        "displayName" : "TWD-TAIBOR-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TELERATE_6165",
-        "displayName" : "TWD-Telerate-6165",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "TWD_TWCPBA",
-        "displayName" : "TWD-TWCPBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "UK_BASE_RATE",
-        "displayName" : "UK Base Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "USD-3M LIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "USD-3M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
-        "displayName" : "USD-6M LIBOR SWAP-CME vs LCH-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
-        "displayName" : "USD-6M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_AMERIBOR",
-        "displayName" : "USD-AMERIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_AMERIBOR_AVERAGE_30_D",
-        "displayName" : "USD-AMERIBOR Average 30D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_AMERIBOR_AVERAGE_90_D",
-        "displayName" : "USD-AMERIBOR Average 90D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_AMERIBOR_TERM",
-        "displayName" : "USD-AMERIBOR Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_AMERIBOR_TERM_STRUCTURE",
-        "displayName" : "USD-AMERIBOR Term Structure",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "USD-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ANNUAL_SWAP_RATE_11_00_TRADITION",
-        "displayName" : "USD-Annual Swap Rate-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ANNUAL_SWAP_RATE_4_00_TRADITION",
-        "displayName" : "USD-Annual Swap Rate-4:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_AXI_TERM",
-        "displayName" : "USD-AXI Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_BA_H_15",
-        "displayName" : "USD-BA-H.15",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_BA_REFERENCE_DEALERS",
-        "displayName" : "USD-BA-Reference Dealers",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_BMA_MUNICIPAL_SWAP_INDEX",
-        "displayName" : "USD-BMA Municipal Swap Index",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_BSBY",
-        "displayName" : "USD-BSBY",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CD_H_15",
-        "displayName" : "USD-CD-H.15",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CD_REFERENCE_DEALERS",
-        "displayName" : "USD-CD-Reference Dealers",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMS_REFERENCE_BANKS",
-        "displayName" : "USD-CMS-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMS_REFERENCE_BANKS_ICAP_SWAP_PX",
-        "displayName" : "USD-CMS-Reference Banks-ICAP SwapPX",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMS_REUTERS",
-        "displayName" : "USD-CMS-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMS_TELERATE",
-        "displayName" : "USD-CMS-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMT",
-        "displayName" : "USD-CMT",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMT_AVERAGE_1_W",
-        "displayName" : "USD-CMT Average 1W",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMT_T7051",
-        "displayName" : "USD-CMT-T7051",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CMT_T7052",
-        "displayName" : "USD-CMT-T7052",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_COF11_FHLBSF",
-        "displayName" : "USD-COF11-FHLBSF",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_COF_11_REUTERS",
-        "displayName" : "USD-COF11-Reuters",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_COF_11_TELERATE",
-        "displayName" : "USD-COF11-Telerate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_COFI",
-        "displayName" : "USD-COFI",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CP_H_15",
-        "displayName" : "USD-CP-H.15",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CP_MONEY_MARKET_YIELD",
-        "displayName" : "USD-CP-Money Market Yield",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CP_REFERENCE_DEALERS",
-        "displayName" : "USD-CP-Reference Dealers",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_CRITR",
-        "displayName" : "USD-CRITR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FEDERAL_FUNDS",
-        "displayName" : "USD-Federal Funds",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FEDERAL_FUNDS_H_15",
-        "displayName" : "USD-Federal Funds-H.15",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FEDERAL_FUNDS_H_15_BLOOMBERG",
-        "displayName" : "USD-Federal Funds-H.15-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FEDERAL_FUNDS_H_15_OIS_COMPOUND",
-        "displayName" : "USD-Federal Funds-H.15-OIS-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FEDERAL_FUNDS_OIS_COMPOUND",
-        "displayName" : "USD-Federal Funds-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FEDERAL_FUNDS_REFERENCE_DEALERS",
-        "displayName" : "USD-Federal Funds-Reference Dealers",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FFCB_DISCO",
-        "displayName" : "USD-FFCB-DISCO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_FXI_TERM",
-        "displayName" : "USD-FXI Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ISDAFIX_3_SWAP_RATE",
-        "displayName" : "USD-ISDAFIX3-Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ISDAFIX_3_SWAP_RATE_3_00",
-        "displayName" : "USD-ISDAFIX3-Swap Rate-3:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ISDA_SWAP_RATE",
-        "displayName" : "USD-ISDA-Swap Rate",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_ISDA_SWAP_RATE_3_00",
-        "displayName" : "USD-ISDA-Swap Rate-3:00",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR",
-        "displayName" : "USD-LIBOR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_BBA",
-        "displayName" : "USD-LIBOR-BBA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_BBA_BLOOMBERG",
-        "displayName" : "USD-LIBOR-BBA-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_ICE_SWAP_RATE_11_00",
-        "displayName" : "USD-LIBOR ICE Swap Rate-11:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_ICE_SWAP_RATE_15_00",
-        "displayName" : "USD-LIBOR ICE Swap Rate-15:00",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_ISDA",
-        "displayName" : "USD-LIBOR-ISDA",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_LIBO",
-        "displayName" : "USD-LIBOR-LIBO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_LIBOR_REFERENCE_BANKS",
-        "displayName" : "USD-LIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_MUNICIPAL_SWAP_INDEX",
-        "displayName" : "USD-Municipal Swap Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_MUNICIPAL_SWAP_LIBOR_RATIO_11_00_ICAP",
-        "displayName" : "USD-Municipal Swap Libor Ratio-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_MUNICIPAL_SWAP_RATE_11_00_ICAP",
-        "displayName" : "USD-Municipal Swap Rate-11:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_11_00_BGCANTOR",
-        "displayName" : "USD-OIS-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_11_00_LON_ICAP",
-        "displayName" : "USD-OIS-11:00-LON-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_11_00_NY_ICAP",
-        "displayName" : "USD-OIS-11:00-NY-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_11_00_TRADITION",
-        "displayName" : "USD-OIS-11:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_3_00_BGCANTOR",
-        "displayName" : "USD-OIS-3:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_3_00_NY_ICAP",
-        "displayName" : "USD-OIS-3:00-NY-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OIS_4_00_TRADITION",
-        "displayName" : "USD-OIS-4:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_OVERNIGHT_BANK_FUNDING_RATE",
-        "displayName" : "USD-Overnight Bank Funding Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_PRIME",
-        "displayName" : "USD-Prime",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_PRIME_H_15",
-        "displayName" : "USD-Prime-H.15",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_PRIME_REFERENCE_BANKS",
-        "displayName" : "USD-Prime-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_S_P_INDEX_HIGH_GRADE",
-        "displayName" : "USD-S&P Index-High Grade",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SAND_P_INDEX_HIGH_GRADE",
-        "displayName" : "USD-SandP Index High Grade",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SIBOR_REFERENCE_BANKS",
-        "displayName" : "USD-SIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SIBOR_SIBO",
-        "displayName" : "USD-SIBOR-SIBO",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SIFMA_MUNICIPAL_SWAP_INDEX",
-        "displayName" : "USD-SIFMA Municipal Swap Index",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR",
-        "displayName" : "USD-SOFR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_AVERAGE_180_D",
-        "displayName" : "USD-SOFR Average 180D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_AVERAGE_30_D",
-        "displayName" : "USD-SOFR Average 30D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_AVERAGE_90_D",
-        "displayName" : "USD-SOFR Average 90D",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_CME_TERM",
-        "displayName" : "USD-SOFR CME Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_COMPOUND",
-        "displayName" : "USD-SOFR-COMPOUND",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_COMPOUNDED_INDEX",
-        "displayName" : "USD-SOFR Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX",
-        "displayName" : "USD-SOFR ICE Compounded Index",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR",
-        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
-        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
-        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_2_D_LAG",
-        "displayName" : "USD-SOFR ICE Compounded Index 2D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_5_D_LAG",
-        "displayName" : "USD-SOFR ICE Compounded Index 5D Lag",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_SWAP_RATE",
-        "displayName" : "USD-SOFR ICE Swap Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_SWAP_RATE_SPREADS",
-        "displayName" : "USD-SOFR ICE Swap Rate Spreads",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_ICE_TERM",
-        "displayName" : "USD-SOFR ICE Term",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SOFR_OIS_COMPOUND",
-        "displayName" : "USD-SOFR-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_SWAP_RATE_BCMP_1",
-        "displayName" : "USD Swap Rate-BCMP1",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TBILL_AUCTION_HIGH_RATE",
-        "displayName" : "USD-TBILL Auction High Rate",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TBILL_H_15",
-        "displayName" : "USD-TBILL-H.15",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TBILL_H_15_BLOOMBERG",
-        "displayName" : "USD-TBILL-H.15-Bloomberg",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TBILL_SECONDARY_MARKET",
-        "displayName" : "USD-TBILL-Secondary Market",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TBILL_SECONDARY_MARKET_BOND_EQUIVALENT_YIELD",
-        "displayName" : "USD-TBILL Secondary Market-Bond Equivalent Yield",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TIBOR_ISDC",
-        "displayName" : "USD-TIBOR-ISDC",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TIBOR_REFERENCE_BANKS",
-        "displayName" : "USD-TIBOR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_19901_3_00_ICAP",
-        "displayName" : "USD-Treasury-19901-3:00-ICAP",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_RATE_BCMP_1",
-        "displayName" : "USD Treasury Rate-BCMP1",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_RATE_ICAP_BROKER_TEC",
-        "displayName" : "USD-Treasury Rate-ICAP BrokerTec",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_RATE_SWAP_MARKER_100",
-        "displayName" : "USD-Treasury Rate-SwapMarker100",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_RATE_SWAP_MARKER_99",
-        "displayName" : "USD-Treasury Rate-SwapMarker99",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_RATE_T_19901",
-        "displayName" : "USD-Treasury Rate-T19901",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "USD_TREASURY_RATE_T_500",
-        "displayName" : "USD-Treasury Rate-T500",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "VND_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
-        "displayName" : "VND-Semi-Annual Swap Rate-11:00-BGCANTOR",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "VND_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
-        "displayName" : "VND-Semi-Annual Swap Rate-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_DEPOSIT_REFERENCE_BANKS",
-        "displayName" : "ZAR-DEPOSIT-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_DEPOSIT_SAFEX",
-        "displayName" : "ZAR-DEPOSIT-SAFEX",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_JIBAR",
-        "displayName" : "ZAR-JIBAR",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_JIBAR_REFERENCE_BANKS",
-        "displayName" : "ZAR-JIBAR-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_JIBAR_SAFEX",
-        "displayName" : "ZAR-JIBAR-SAFEX",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_PRIME_AVERAGE_1",
-        "displayName" : "ZAR-Prime Average",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_PRIME_AVERAGE",
-        "displayName" : "ZAR-PRIME-AVERAGE",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_PRIME_AVERAGE_REFERENCE_BANKS",
-        "displayName" : "ZAR-PRIME-AVERAGE-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_QUARTERLY_SWAP_RATE_1_00_TRADITION",
-        "displayName" : "ZAR-Quarterly Swap Rate-1:00-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_QUARTERLY_SWAP_RATE_5_30_TRADITION",
-        "displayName" : "ZAR-Quarterly Swap Rate-5:30-TRADITION",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_QUARTERLY_SWAP_RATE_TRADITION_REFERENCE_BANKS",
-        "displayName" : "ZAR-Quarterly Swap Rate-TRADITION-Reference Banks",
-        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_ZARONIA",
-        "displayName" : "ZAR-ZARONIA",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "ZAR_ZARONIA_OIS_COMPOUND",
-        "displayName" : "ZAR-ZARONIA-OIS Compound",
-        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
-      } ]
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : true
-  }, {
-    "name" : "tenor",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Period",
-      "namespace" : "cdm.base.datetime",
-      "description" : "A class to define recurring periods or time offsets."
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.observable.asset.fro.ContractualDefinition" : [ {
     "name" : "identifier",
     "type" : {
@@ -16156,14 +13650,60 @@ export const attributesJson = {
     "metaField" : false
   } ],
   "cdm.base.math.NonNegativeQuantity" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "For a non-negative quantity, the value attribute must be positive.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "Requires the single rate or amount, as the case may be, to be present. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule must be absent.",
+    "cardinality" : {
+      "upperBound" : "0",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "unit",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnitType",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines the unit to be used for price, quantity, or other purposes"
+    },
+    "description" : "Requires that a unit of amount must be specified for any quantity.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
     "name" : "multiplier",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Measure",
+      "name" : "NonNegativeMeasure",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional."
+      "description" : "Defines a concrete non-negative measure as a number associated to a unit. It extends Measure by requiring the value attribute to be non-negative. A measure may be unit-less so the unit attribute is still optional."
     },
-    "description" : "Defines an optional number that the quantity should be multiplied by to derive a total quantity. This number is associated to a unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
+    "description" : "Defines an optional measure that the quantity should be multiplied by to derive a total quantity. Requires that the multiplier must be positive. This number is associated to an optional unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -16184,23 +13724,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "total",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "Schedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies an amount or quantity, either as a single value or as a schedule of dated values. This can be used where the applicable quantity changes over time, with each dated value becoming effective from its associated step date."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the total quantity when the quantity itself is specified with a frequency.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -16217,6 +13748,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -20620,6 +18174,49 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.common.AgreementTermsChangeInstruction" : [ {
+    "name" : "vmCSATermsChange",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditSupportAgreementVariationMarginElections",
+      "namespace" : "cdm.legaldocumentation.csa",
+      "description" : "The set of elections which specify a Variation Margin Credit Support Annex or Deed."
+    },
+    "description" : "Specifies instructions describing a terms change to a Variation Margin agreement as represented by a set of agreement instructions.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "imCSATermsChange",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditSupportAgreementInitialMarginElections",
+      "namespace" : "cdm.legaldocumentation.csa",
+      "description" : "The set of elections which specify an Initial Margin Credit Support Annex or Deed."
+    },
+    "description" : "Specifies instructions describing a terms change to a Initial Margin agreement as represented by a set of agreement instructions.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "legacyCSATermsChange",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditSupportAgreementLegacyElections",
+      "namespace" : "cdm.legaldocumentation.csa",
+      "description" : "The set of elections which specify a Legacy (1994 or 1995) Credit Support Annex or Deed."
+    },
+    "description" : "Specifies instructions describing a terms change to a Legacy CSA agreement as represented by a set of agreement instructions.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.business.events.ResetCalculationPeriod" : [ {
     "name" : "adjustedStartDate",
     "type" : "zonedDateTime",
@@ -23399,6 +20996,99 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.common.AgreementEvent" : [ {
+    "name" : "eventQualifier",
+    "type" : "string",
+    "description" : "The CDM event qualifier, which corresponds to the outcome of the isEvent qualification logic which qualifies the lifecycle event as a function of its features (e.g. PartialTermination, ClearingSubmission, Novation, ...).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "after",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "LegalAgreement",
+      "namespace" : "cdm.legaldocumentation.common",
+      "description" : "The specification of a legal agreement between two parties, being negotiated or having been executed. This includes the baseline information and the optional specialised elections"
+    },
+    "description" : "The agreement as it looks after the event",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "eventDate",
+    "type" : "date",
+    "description" : "Specifies the date of the agreement event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "effectiveDate",
+    "type" : "date",
+    "description" : "Specifies the effective date of the agreement event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "instruction",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AgreementInstruction",
+      "namespace" : "cdm.event.common",
+      "description" : "Instruction to a function that will be used to perform an agreement event"
+    },
+    "description" : "Specifies the instruction associated with the agreement event triggered by an amendment.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "intent",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AgreementEventIntentEnum",
+      "values" : [ {
+        "name" : "AMENDED_TERMS",
+        "displayName" : "AmendedTerms",
+        "description" : "Specifies that an agreement event results in updated agreement terms for the overall legal agreement to which the agreement event applies."
+      }, {
+        "name" : "AMENDED_PARTIES",
+        "displayName" : "AmendedParties",
+        "description" : "Represents a change to the contractual parties to an agreement through the process of addition or deletion."
+      }, {
+        "name" : "TERMINATION",
+        "displayName" : "Termination",
+        "description" : "Represents a change that results in the related agreement being terminated."
+      }, {
+        "name" : "AMENDED_AND_RESTATED",
+        "displayName" : "AmendedAndRestated",
+        "description" : "Represents a change in terms and or parties where the agreement is required to be restated in its entirety."
+      }, {
+        "name" : "NOVATION",
+        "displayName" : "Novation",
+        "description" : "Represents a change where certain trades will be moved to a different agreement while the existing agreement remains in place."
+      }, {
+        "name" : "SUPERSEDED",
+        "displayName" : "Superseded",
+        "description" : "Represents a change where an agreement is being superseded by another existing agreement and the agreement that is being amended is being terminated as a function of this process."
+      } ]
+    },
+    "description" : "Specifies the purposes for which the amendment agreement exists and how it will impact the agreement to which it applies.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.doc.LinkedTrade" : [ {
     "name" : "linkType",
     "type" : {
@@ -23821,15 +21511,6 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "clearedDate",
-    "type" : "date",
-    "description" : "Specifies the date on which a trade is cleared (novated) through a central counterparty clearing service.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
     "name" : "collateral",
     "type" : {
       "typeCategory" : "StructuredType",
@@ -23840,20 +21521,6 @@ export const attributesJson = {
     "description" : "Represents the collateral obligations of a party.",
     "cardinality" : {
       "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "account",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Account",
-      "namespace" : "cdm.base.staticdata.party",
-      "description" : "A class to specify an account as an account number alongside, optionally. an account name, an account type, an account beneficiary and a servicing party."
-    },
-    "description" : "Represents a party's granular account information, which may be used in subsequent internal processing.",
-    "cardinality" : {
-      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -27830,39 +25497,6 @@ export const attributesJson = {
     },
     "metaField" : true
   } ],
-  "cdm.product.common.schedule.AmountSchedule" : [ {
-    "name" : "currency",
-    "type" : "string",
-    "description" : "The currency in which the amount schedule is denominated. The currency is specified outside of the actual schedule in order to be applied uniformly to it. The list of valid currencies is not presently positioned as an enumeration as part of the CDM because that scope is limited to the values specified by ISDA and FpML. As a result, implementers have to make reference to the relevant standard, such as the ISO 4217 standard for currency codes.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "1"
-    },
-    "metaField" : true
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "datedValue",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
-      "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
-    },
-    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "fpml.consolidated.loan.FacilityTermination" : [ {
     "name" : "facilityReference",
     "type" : {
@@ -29596,44 +27230,6 @@ export const attributesJson = {
   }, {
     "name" : "id",
     "type" : "string",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
-  "cdm.base.math.MeasureSchedule" : [ {
-    "name" : "datedValue",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
-      "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
-    },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "unit",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "UnitType",
-      "namespace" : "cdm.base.math",
-      "description" : "Defines the unit to be used for price, quantity, or other purposes"
-    },
-    "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -32899,6 +30495,96 @@ export const attributesJson = {
       "lowerBound" : "0"
     },
     "metaField" : false
+  }, {
+    "name" : "securitySettlementCentre",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AssetAncillaryPartyRoleEnum",
+      "values" : [ {
+        "name" : "REGISTRAR",
+        "displayName" : "Registrar",
+        "description" : "The party responsible for maintaining records of asset owners and holders."
+      }, {
+        "name" : "TRANSFER_AGENT",
+        "displayName" : "TransferAgent",
+        "description" : "The party responsible for maintaining records of owners and processing changes in ownership."
+      }, {
+        "name" : "EXCHANGE",
+        "displayName" : "Exchange",
+        "description" : "The exchange or platform where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "RELATED_EXCHANGE",
+        "displayName" : "RelatedExchange",
+        "description" : "An exchange or platform other than the primary exchange where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "SECURITY_SETTLEMENT_CENTRE",
+        "displayName" : "SecuritySettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of securities between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "CASH_SETTLEMENT_CENTRE",
+        "displayName" : "CashSettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of cash between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "PLACE_OF_DEPOSIT",
+        "displayName" : "PlaceOfDeposit",
+        "description" : "Specifies the party responsible for recording securities ownership, holding physical certificates and facilitating securities transfers."
+      }, {
+        "name" : "CUSTODIAN",
+        "displayName" : "Custodian",
+        "description" : "Specifies the party responsible for safekeeping securities and performing securities lifecycle events."
+      } ]
+    },
+    "description" : "Specifies the settlement centre of a security.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "cashSettlementCentre",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AssetAncillaryPartyRoleEnum",
+      "values" : [ {
+        "name" : "REGISTRAR",
+        "displayName" : "Registrar",
+        "description" : "The party responsible for maintaining records of asset owners and holders."
+      }, {
+        "name" : "TRANSFER_AGENT",
+        "displayName" : "TransferAgent",
+        "description" : "The party responsible for maintaining records of owners and processing changes in ownership."
+      }, {
+        "name" : "EXCHANGE",
+        "displayName" : "Exchange",
+        "description" : "The exchange or platform where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "RELATED_EXCHANGE",
+        "displayName" : "RelatedExchange",
+        "description" : "An exchange or platform other than the primary exchange where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "SECURITY_SETTLEMENT_CENTRE",
+        "displayName" : "SecuritySettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of securities between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "CASH_SETTLEMENT_CENTRE",
+        "displayName" : "CashSettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of cash between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "PLACE_OF_DEPOSIT",
+        "displayName" : "PlaceOfDeposit",
+        "description" : "Specifies the party responsible for recording securities ownership, holding physical certificates and facilitating securities transfers."
+      }, {
+        "name" : "CUSTODIAN",
+        "displayName" : "Custodian",
+        "description" : "Specifies the party responsible for safekeeping securities and performing securities lifecycle events."
+      } ]
+    },
+    "description" : "Specifies the settlement centre of cash.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
   } ],
   "fpml.consolidated.com.CommodityDigitalExercise" : [ {
     "name" : "americanExercise",
@@ -33665,7 +31351,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "Specifies the quantity of shares and cash to be returned in a partial return event.",
     "cardinality" : {
@@ -34688,20 +32374,6 @@ export const attributesJson = {
     "description" : "Optional account information that could be associated to the event.",
     "cardinality" : {
       "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "lineage",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "Lineage",
-      "namespace" : "cdm.event.common",
-      "description" : "A class to provide lineage information across lifecycle events through a pointer or set of pointers into the event(s), contract(s) and, possibly, payout components that the event is dependent on or relates to. As an example, if an contractFormation event is corrected, the correction event will have a lineage into the initial event, which takes the form of a globalKey into that initial contract formation event. Two referencing mechanisms are provided as part of the CDM: either the globalKey, which corresponds to the hash value of the CDM class which is referred to, or a reference qualifier which is meant to provide support for the ingestion of xml documents with id/href mechanisms. The CDM recommends the use of the globalKey and provides a default implementation which is accessible in the generated code through org.finos.cdm.globalKey.GlobalKeyHashCalculator. If implementers want to use an alternative hashing mechanism, the API in which they need to plug it is com.rosetta.model.lib.HashFunction."
-    },
-    "description" : "The lineage attribute provides a linkage among lifecycle events through the globalKey hash value. One example is when a given lifecycle event is being corrected or cancelled. In such case, each subsequent event will have lineage into the prior version of that event. The second broad use case is when an event has a dependency upon either another event (e.g. the regular payment associated with a fix/float swap will have a lineage into the reset event, which will in turn have a lineage into the observation event for the floating rate and the contract) or a contract (e.g. the exercise of an option has a lineage into that option).",
-    "cardinality" : {
-      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -36000,6 +33672,35 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.common.AgreementPrimitiveInstruction" : [ {
+    "name" : "termsChange",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AgreementTermsChangeInstruction",
+      "namespace" : "cdm.event.common",
+      "description" : "A primitive instruction set that details all associated terms changes that are defined within the instruction."
+    },
+    "description" : "A printive instruction set that details all associated terms changes that are defined within the instruction",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "partyChange",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "PartyChangeInstruction",
+      "namespace" : "cdm.event.common",
+      "description" : "Specifies instruction to change the party on a trade. This primitive instruction is used in a number of scenarios including: clearing, allocation and novation. The instrution must include a trade identifier, because a change of party effectively results in a different trade."
+    },
+    "description" : "A primitive Instruction set to capture any Party changes applicable to the agreement.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.mktenv.FxCurveValuation" : [ {
     "name" : "settlementCurrencyYieldCurve",
     "type" : {
@@ -36737,6 +34438,96 @@ export const attributesJson = {
       } ]
     },
     "description" : "Settlement Style.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "securitySettlementCentre",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AssetAncillaryPartyRoleEnum",
+      "values" : [ {
+        "name" : "REGISTRAR",
+        "displayName" : "Registrar",
+        "description" : "The party responsible for maintaining records of asset owners and holders."
+      }, {
+        "name" : "TRANSFER_AGENT",
+        "displayName" : "TransferAgent",
+        "description" : "The party responsible for maintaining records of owners and processing changes in ownership."
+      }, {
+        "name" : "EXCHANGE",
+        "displayName" : "Exchange",
+        "description" : "The exchange or platform where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "RELATED_EXCHANGE",
+        "displayName" : "RelatedExchange",
+        "description" : "An exchange or platform other than the primary exchange where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "SECURITY_SETTLEMENT_CENTRE",
+        "displayName" : "SecuritySettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of securities between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "CASH_SETTLEMENT_CENTRE",
+        "displayName" : "CashSettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of cash between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "PLACE_OF_DEPOSIT",
+        "displayName" : "PlaceOfDeposit",
+        "description" : "Specifies the party responsible for recording securities ownership, holding physical certificates and facilitating securities transfers."
+      }, {
+        "name" : "CUSTODIAN",
+        "displayName" : "Custodian",
+        "description" : "Specifies the party responsible for safekeeping securities and performing securities lifecycle events."
+      } ]
+    },
+    "description" : "Specifies the settlement centre of a security.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "cashSettlementCentre",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AssetAncillaryPartyRoleEnum",
+      "values" : [ {
+        "name" : "REGISTRAR",
+        "displayName" : "Registrar",
+        "description" : "The party responsible for maintaining records of asset owners and holders."
+      }, {
+        "name" : "TRANSFER_AGENT",
+        "displayName" : "TransferAgent",
+        "description" : "The party responsible for maintaining records of owners and processing changes in ownership."
+      }, {
+        "name" : "EXCHANGE",
+        "displayName" : "Exchange",
+        "description" : "The exchange or platform where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "RELATED_EXCHANGE",
+        "displayName" : "RelatedExchange",
+        "description" : "An exchange or platform other than the primary exchange where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "SECURITY_SETTLEMENT_CENTRE",
+        "displayName" : "SecuritySettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of securities between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "CASH_SETTLEMENT_CENTRE",
+        "displayName" : "CashSettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of cash between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "PLACE_OF_DEPOSIT",
+        "displayName" : "PlaceOfDeposit",
+        "description" : "Specifies the party responsible for recording securities ownership, holding physical certificates and facilitating securities transfers."
+      }, {
+        "name" : "CUSTODIAN",
+        "displayName" : "Custodian",
+        "description" : "Specifies the party responsible for safekeeping securities and performing securities lifecycle events."
+      } ]
+    },
+    "description" : "Specifies the settlement centre of cash.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -49821,15 +47612,6 @@ export const attributesJson = {
     "metaField" : false
   } ],
   "cdm.base.math.MeasureBase" : [ {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
     "name" : "unit",
     "type" : {
       "typeCategory" : "StructuredType",
@@ -49840,6 +47622,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -51564,7 +49369,7 @@ export const attributesJson = {
     "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
     "cardinality" : {
       "upperBound" : "1",
-      "lowerBound" : "1"
+      "lowerBound" : "0"
     },
     "metaField" : false
   }, {
@@ -51996,14 +49801,51 @@ export const attributesJson = {
     "metaField" : false
   } ],
   "cdm.observable.asset.Money" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "Requires the single rate or amount, as the case may be, to be present. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule must be absent.",
+    "cardinality" : {
+      "upperBound" : "0",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "unit",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnitType",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines the unit to be used for price, quantity, or other purposes"
+    },
+    "description" : "Requires that a unit of amount must be specified for any quantity.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
     "name" : "multiplier",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Measure",
+      "name" : "NonNegativeMeasure",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional."
+      "description" : "Defines a concrete non-negative measure as a number associated to a unit. It extends Measure by requiring the value attribute to be non-negative. A measure may be unit-less so the unit attribute is still optional."
     },
-    "description" : "Defines an optional number that the quantity should be multiplied by to derive a total quantity. This number is associated to a unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
+    "description" : "Defines an optional measure that the quantity should be multiplied by to derive a total quantity. Requires that the multiplier must be positive. This number is associated to an optional unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -52024,23 +49866,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "total",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "Schedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies an amount or quantity, either as a single value or as a schedule of dated values. This can be used where the applicable quantity changes over time, with each dated value becoming effective from its associated step date."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the total quantity when the quantity itself is specified with a frequency.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -52057,6 +49890,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -52601,6 +50457,21 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.legaldocumentation.master.isda.AdditionalTerminationEvent" : [ {
+    "name" : "partyElection",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdditionalTerminationEventElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "A party specific election to determine whether Additional Early Termination Events apply, and if so what they are."
+    },
+    "description" : "The party election specific to Additional Termination Events clause(s).",
+    "cardinality" : {
+      "upperBound" : "2",
+      "lowerBound" : "2"
     },
     "metaField" : false
   } ],
@@ -56123,14 +53994,65 @@ export const attributesJson = {
     "metaField" : false
   } ],
   "cdm.base.math.NonNegativeQuantitySchedule" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "For a non-negative quantity schedule, all amount attribute must be positive.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "NonNegativeDatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair where the value is non-negative. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "For a non-negative quantity schedule, all amount attribute must be positive.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "total",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "NonNegativeSchedule",
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a schedule whose values are non-negative."
+    },
+    "description" : "For a non-negative quantity schedule, all amount attribute must be positive.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "unit",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnitType",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines the unit to be used for price, quantity, or other purposes"
+    },
+    "description" : "Requires that a unit of amount must be specified for any quantity.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
     "name" : "multiplier",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Measure",
+      "name" : "NonNegativeMeasure",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional."
+      "description" : "Defines a concrete non-negative measure as a number associated to a unit. It extends Measure by requiring the value attribute to be non-negative. A measure may be unit-less so the unit attribute is still optional."
     },
-    "description" : "Defines an optional number that the quantity should be multiplied by to derive a total quantity. This number is associated to a unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
+    "description" : "Defines an optional measure that the quantity should be multiplied by to derive a total quantity. Requires that the multiplier must be positive. This number is associated to an optional unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -56151,23 +54073,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "total",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "Schedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies an amount or quantity, either as a single value or as a schedule of dated values. This can be used where the applicable quantity changes over time, with each dated value becoming effective from its associated step date."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the total quantity when the quantity itself is specified with a frequency.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -56184,6 +54097,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -63024,7 +60960,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "Specifies quantity amount returned if not the full amount from the TradeState, e.g. partial return",
     "cardinality" : {
@@ -67444,23 +65380,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "derivedQuantity",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "NonNegativeQuantitySchedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the derived quantity associated with the price. For instance when the price is an asset price expressed in a currency, the primary quantity is the asset's quantity while the derived quantity is the corresponding monetary amount in that currency. When the price is an exchange rate, both the primary quantity and the derived quantity are monetary amounts, in the 2 currencies of the exchange rate.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -67477,6 +65404,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -68222,6 +66172,62 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "4",
       "lowerBound" : "4"
+    },
+    "metaField" : false
+  }, {
+    "name" : "creditEventUponMerger",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditEventUponMerger",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "Specification of the Credit Event Upon Merger provision applicable to a Master Agreement."
+    },
+    "description" : "Defines whether Credit Event Upon Merger is applicable to either party.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "governingLaw",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "GoverningLaw",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "A represenation of the governing law of the ISDA master agreement."
+    },
+    "description" : "The specification of the governing law of the ISDA Master Agreement.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "additionalTerminationEvent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AdditionalTerminationEvent",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "Elections to determine if Additional Termination Events apply to either party, and if so, what they are."
+    },
+    "description" : "The specification of whether additional termination events apply to either party, and if so, what they are.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "calculationAgent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "IsdaCalculationAgent",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "The set of elections to define and categorise the Calculation Agent for the ISDA master agreement."
+    },
+    "description" : "Defines the Calculation Agent for the ISDA Master Agreement.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -69717,7 +67723,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "The quantity of the security",
     "cardinality" : {
@@ -77207,7 +75213,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "ResetInstructionSteps",
       "namespace" : "cdm.event.instructioncomposition.reset",
-      "description" : "A wrapper that encapsulates the specific ResetInstructionInstructionCompositionStepsEnum, allowing the engine to identify the exact phase of the Reset lifecycle currently being processed."
+      "description" : "A wrapper that encapsulates the specific ResetInstructionCompositionStepsEnum, allowing the engine to identify the exact phase of the Reset lifecycle currently being processed."
     },
     "cardinality" : {
       "upperBound" : "1",
@@ -77563,11 +75569,12 @@ export const attributesJson = {
     "type" : {
       "typeCategory" : "StructuredType",
       "name" : "NonNegativeQuantitySchedule",
-      "namespace" : "cdm.base.math"
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
     "description" : "Specifies a quantity to be associated with an event, for example a trade amount.",
     "cardinality" : {
-      "upperBound" : "*",
+      "upperBound" : "1",
       "lowerBound" : "0"
     },
     "metaField" : true
@@ -78747,6 +76754,43 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.event.instructioncomposition.reset.ResetInstructionSteps" : [ {
+    "name" : "resetInstructionCompositionSteps",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "ResetInstructionCompositionStepsEnum",
+      "values" : [ {
+        "name" : "COLLECT_FLOATING_RATE_OPTION_INSTRUCTION",
+        "displayName" : "CollectFloatingRateOptionInstruction"
+      }, {
+        "name" : "DETERMINE_UNADJUSTED_CALCULATION_PERIOD_INSTRUCTION",
+        "displayName" : "DetermineUnadjustedCalculationPeriodInstruction"
+      }, {
+        "name" : "ADJUST_PERIOD_INSTRUCTION",
+        "displayName" : "AdjustPeriodInstruction"
+      }, {
+        "name" : "ADJUST_DATE_INSTRUCTION",
+        "displayName" : "AdjustDateInstruction"
+      }, {
+        "name" : "DETERMINE_UNADJUSTED_OBSERVATION_DATES_INSTRUCTION",
+        "displayName" : "DetermineUnadjustedObservationDatesInstruction"
+      }, {
+        "name" : "ADJUST_OBSERVATION_DATES_INSTRUCTION",
+        "displayName" : "AdjustObservationDatesInstruction"
+      }, {
+        "name" : "CALCULATE_RESET_VALUE_INSTRUCTION",
+        "displayName" : "CalculateResetValueInstruction"
+      }, {
+        "name" : "RESET_INSTRUCTION_OUTPUT",
+        "displayName" : "ResetInstructionOutput"
+      } ]
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -81452,6 +79496,44 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.legaldocumentation.master.isda.CreditEventUponMergerElection" : [ {
+    "name" : "party",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "CounterpartyRoleEnum",
+      "values" : [ {
+        "name" : "PARTY_1",
+        "displayName" : "Party1"
+      }, {
+        "name" : "PARTY_2",
+        "displayName" : "Party2"
+      } ]
+    },
+    "description" : "The party for which the provisions are being specified.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "isApplicable",
+    "type" : "boolean",
+    "description" : "Defines whether Credit Event Upon Merger are applicable to the respective party (True) or not (False).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "materiallyWeakerReferencesCreditRating",
+    "type" : "boolean",
+    "description" : "Defines whether the definition of 'Materially Weaker' references a credit rating.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.com.CommodityMetalBrandManager" : [ {
     "name" : "value",
     "type" : "string",
@@ -81911,15 +79993,6 @@ export const attributesJson = {
     },
     "metaField" : true
   }, {
-    "name" : "productQualifier",
-    "type" : "string",
-    "description" : "Derived from the product payout features using a CDM product qualification function that determines the product type based on the product payout features.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
     "name" : "source",
     "type" : {
       "typeCategory" : "EnumType",
@@ -81985,6 +80058,15 @@ export const attributesJson = {
       "description" : "Defines a taxonomy value as either a simple string or a more granular expression with class names and values for each class."
     },
     "description" : "The value according to that taxonomy. Optional as it may not be possible to classify the object in that taxonomy.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "calculated",
+    "type" : "boolean",
+    "description" : "Specifies whether the taxonomy has been derived from the model features using a CDM qualification function that determines the product type based on the model features.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -85659,7 +83741,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "A product's quantity as a single, non-negative amount.  When specified as part of a product definition, this quantity attribute would not be set.  Instead it is specified on the quantity notation along with an asset identifier matching this payout's asset identifier.  This allows the quantity to be resolved for a payout leg, which can then be specified here for convenience during data processing.  There needs to be at least one resolvable quantity across payout legs of a product to define an anchor that other payout quantities can refer to.  This attribute is ignored when mapping existing FpML messages.",
     "cardinality" : {
@@ -85672,7 +83754,8 @@ export const attributesJson = {
     "type" : {
       "typeCategory" : "StructuredType",
       "name" : "NonNegativeQuantitySchedule",
-      "namespace" : "cdm.base.math"
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
     "description" : "A payout's quantity specified as a schedule, which may also contain a single value if that quantity is constant. There can only be a single quantity schedule applicable to a payout: e.g. the notional for an interest rate leg. The quantity must be specified outside of the payout in a PriceQuantity object and only referenced inside the payout using an address.",
     "cardinality" : {
@@ -94443,6 +92526,34 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.base.math.NonNegativeDatedValue" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "requires the rate of amount which becomes effective on the associated step date to be non-negative. A rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "date",
+    "type" : "date",
+    "description" : "The date on which the associated step value becomes effective. This day may be subject to adjustment in accordance with a business day convention.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The rate of amount which becomes effective on the associated step date. A rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "cdm.legaldocumentation.transaction.additionalterms.Nationalization" : [ {
     "name" : "nationalizationIsApplicable",
     "type" : "boolean",
@@ -98027,6 +96138,2667 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.instructioncomposition.reset.CollectFloatingRateOptionInstruction" : [ {
+    "name" : "floatingRateIndex",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "FloatingRateIndexEnum",
+      "values" : [ {
+        "name" : "AED_EBOR_REUTERS",
+        "displayName" : "AED-EBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AED_EIBOR",
+        "displayName" : "AED-EIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA",
+        "displayName" : "AUD-AONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA_OIS_COMPOUND_1",
+        "displayName" : "AUD-AONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA_OIS_COMPOUND",
+        "displayName" : "AUD-AONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA_OIS_COMPOUND_SWAP_MARKER",
+        "displayName" : "AUD-AONIA-OIS-COMPOUND-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_AUBBSW",
+        "displayName" : "AUD-BBR-AUBBSW",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_BBSW",
+        "displayName" : "AUD-BBR-BBSW",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_BBSW_BLOOMBERG",
+        "displayName" : "AUD-BBR-BBSW-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_BBSY__BID_",
+        "displayName" : "AUD-BBR-BBSY (BID)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_ISDC",
+        "displayName" : "AUD-BBR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSW",
+        "displayName" : "AUD-BBSW",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSW_QUARTERLY_SWAP_RATE_ICAP",
+        "displayName" : "AUD-BBSW Quarterly Swap Rate ICAP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSW_SEMI_ANNUAL_SWAP_RATE_ICAP",
+        "displayName" : "AUD-BBSW Semi Annual Swap Rate ICAP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSY_BID",
+        "displayName" : "AUD-BBSY Bid",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_LIBOR_BBA",
+        "displayName" : "AUD-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "AUD-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_LIBOR_REFERENCE_BANKS",
+        "displayName" : "AUD-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_QUARTERLY_SWAP_RATE_ICAP",
+        "displayName" : "AUD-Quarterly Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_QUARTERLY_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "AUD-Quarterly Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "AUD-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_BGCANTOR_REFERENCE_BANKS",
+        "displayName" : "AUD-Semi-Annual Swap Rate-BGCANTOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_ICAP",
+        "displayName" : "AUD-Semi-annual Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "AUD-Semi-Annual Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SWAP_RATE_REUTERS",
+        "displayName" : "AUD-Swap Rate-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "BRL_CDI",
+        "displayName" : "BRL-CDI",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_CDOR",
+        "displayName" : "CAD-BA-CDOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_CDOR_BLOOMBERG",
+        "displayName" : "CAD-BA-CDOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_ISDD",
+        "displayName" : "CAD-BA-ISDD",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_REFERENCE_BANKS",
+        "displayName" : "CAD-BA-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_REUTERS",
+        "displayName" : "CAD-BA-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_TELERATE",
+        "displayName" : "CAD-BA-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CDOR",
+        "displayName" : "CAD-CDOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA",
+        "displayName" : "CAD-CORRA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_CAN_DEAL_TMX_TERM",
+        "displayName" : "CAD-CORRA CanDeal TMX Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_COMPOUNDED_INDEX",
+        "displayName" : "CAD-CORRA Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_OIS_COMPOUND_1",
+        "displayName" : "CAD-CORRA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_OIS_COMPOUND",
+        "displayName" : "CAD-CORRA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_ISDA_SWAP_RATE",
+        "displayName" : "CAD-ISDA-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_BBA",
+        "displayName" : "CAD-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "CAD-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_BBA_SWAP_MARKER",
+        "displayName" : "CAD-LIBOR-BBA-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_REFERENCE_BANKS",
+        "displayName" : "CAD-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_REPO_CORRA",
+        "displayName" : "CAD-REPO-CORRA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_ISDD",
+        "displayName" : "CAD-TBILL-ISDD",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_REFERENCE_BANKS",
+        "displayName" : "CAD-TBILL-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_REUTERS",
+        "displayName" : "CAD-TBILL-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_TELERATE",
+        "displayName" : "CAD-TBILL-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "CHF-3M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-3M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "CHF-3M LIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-3M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "CHF-6M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBORSWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-6M LIBORSWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "CHF-6M LIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-6M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ANNUAL_SWAP_RATE",
+        "displayName" : "CHF-Annual Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ANNUAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "CHF-Annual Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "CHF-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_BASIS_SWAP_3_M_VS_6_M_LIBOR_11_00_ICAP",
+        "displayName" : "CHF-Basis Swap-3m vs 6m-LIBOR-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ISDAFIX_SWAP_RATE",
+        "displayName" : "CHF-ISDAFIX-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR",
+        "displayName" : "CHF-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_BBA",
+        "displayName" : "CHF-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "CHF-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_ISDA",
+        "displayName" : "CHF-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_REFERENCE_BANKS",
+        "displayName" : "CHF-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_OIS_11_00_ICAP",
+        "displayName" : "CHF-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON",
+        "displayName" : "CHF-SARON",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_12_M",
+        "displayName" : "CHF-SARON Average 12M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_1_M",
+        "displayName" : "CHF-SARON Average 1M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_1_W",
+        "displayName" : "CHF-SARON Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_2_M",
+        "displayName" : "CHF-SARON Average 2M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_3_M",
+        "displayName" : "CHF-SARON Average 3M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_6_M",
+        "displayName" : "CHF-SARON Average 6M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_9_M",
+        "displayName" : "CHF-SARON Average 9M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_COMPOUNDED_INDEX",
+        "displayName" : "CHF-SARON Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_OIS_COMPOUND_1",
+        "displayName" : "CHF-SARON-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_OIS_COMPOUND",
+        "displayName" : "CHF-SARON-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_TOIS_OIS_COMPOUND",
+        "displayName" : "CHF-TOIS-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "CHF USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CL_CLICP_BLOOMBERG",
+        "displayName" : "CL-CLICP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CLP_ICP",
+        "displayName" : "CLP-ICP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CLP_TNA",
+        "displayName" : "CLP-TNA",
+        "description" : "Refers to the Indice Camara Promedio ('ICP') rate for Chilean Pesos which, for a Reset Date, is determined and published by the Asociacion de Bancos e Instituciones Financieras de Chile A.G. ('ABIF') in accordance with the 'Reglamento Indice de Camara Promedio' of the ABIF as published in the Diario Oficial de la Republica de Chile (the 'ICP Rules') and which is reported on the ABIF website by not later than 10:00 a.m., Santiago time, on that Reset Date."
+      }, {
+        "name" : "CNH_HIBOR",
+        "displayName" : "CNH-HIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNH_HIBOR_REFERENCE_BANKS",
+        "displayName" : "CNH-HIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNH_HIBOR_TMA",
+        "displayName" : "CNH-HIBOR-TMA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_7_REPO_COMPOUNDING_DATE",
+        "displayName" : "CNY 7-Repo Compounding Date",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_CNREPOFIX_CFXS_REUTERS",
+        "displayName" : "CNY-CNREPOFIX=CFXS-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_DEPOSIT_RATE",
+        "displayName" : "CNY-Deposit Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_FIXING_REPO_RATE",
+        "displayName" : "CNY-Fixing Repo Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_LPR",
+        "displayName" : "CNY-LPR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_PBOCB_REUTERS",
+        "displayName" : "CNY-PBOCB-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_QUARTERLY_7_DAY_REPO_NON_DELIVERABLE_SWAP_RATE_TRADITION",
+        "displayName" : "CNY-Quarterly 7 day Repo Non Deliverable Swap Rate-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_QUARTERLY_7_DAY_REPO_NON_DELIVERABLE_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "CNY-Quarterly 7 day Repo Non Deliverable Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_QUARTERLY_7_D_REPO_NDS_RATE_TRADITION",
+        "displayName" : "CNY-Quarterly 7D Repo NDS Rate Tradition",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "CNY-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "CNY-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR",
+        "displayName" : "CNY-SHIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR_OIS_COMPOUND",
+        "displayName" : "CNY-SHIBOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR_OIS_COMPOUNDING",
+        "displayName" : "CNY-Shibor-OIS-Compounding",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR_REUTERS",
+        "displayName" : "CNY-SHIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction.."
+      }, {
+        "name" : "COP_IBR_OIS_COMPOUND_1",
+        "displayName" : "COP-IBR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "COP_IBR_OIS_COMPOUND",
+        "displayName" : "COP-IBR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "CZK-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "CZK-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_CZEONIA",
+        "displayName" : "CZK-CZEONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_CZEONIA_OIS_COMPOUND",
+        "displayName" : "CZK-CZEONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_PRIBOR",
+        "displayName" : "CZK-PRIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_PRIBOR_PRBO",
+        "displayName" : "CZK-PRIBOR-PRBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_PRIBOR_REFERENCE_BANKS",
+        "displayName" : "CZK-PRIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR",
+        "displayName" : "DKK-CIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR2",
+        "displayName" : "DKK-CIBOR2",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_2_BLOOMBERG",
+        "displayName" : "DKK-CIBOR2-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR2_DKNA13",
+        "displayName" : "DKK-CIBOR2-DKNA13",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_DKNA13",
+        "displayName" : "DKK-CIBOR-DKNA13",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_DKNA_13_BLOOMBERG",
+        "displayName" : "DKK-CIBOR-DKNA13-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_REFERENCE_BANKS",
+        "displayName" : "DKK-CIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CITA",
+        "displayName" : "DKK-CITA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CITA_DKNA14_COMPOUND",
+        "displayName" : "DKK-CITA-DKNA14-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DESTR",
+        "displayName" : "DKK-DESTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DESTR_COMPOUNDED_INDEX",
+        "displayName" : "DKK-DESTR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DESTR_OIS_COMPOUND",
+        "displayName" : "DKK-DESTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DKKOIS_OIS_COMPOUND",
+        "displayName" : "DKK-DKKOIS-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_TOM_NEXT_OIS_COMPOUND",
+        "displayName" : "DKK-Tom Next-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "EUR-3M EURIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-3M EURIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "EUR-3M EURIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-3M EURIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "EUR-6M EURIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-6M EURIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "EUR-6M EURIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-6M EURIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00",
+        "displayName" : "EUR-Annual Swap Rate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_BGCANTOR",
+        "displayName" : "EUR-Annual Swap Rate-10:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_BLOOMBERG",
+        "displayName" : "EUR-Annual Swap Rate-10:00-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_ICAP",
+        "displayName" : "EUR-Annual Swap Rate-10:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_SWAP_MARKER",
+        "displayName" : "EUR-Annual Swap Rate-10:00-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_TRADITION",
+        "displayName" : "EUR-Annual Swap Rate-10:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00",
+        "displayName" : "EUR-Annual Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_BLOOMBERG",
+        "displayName" : "EUR-Annual Swap Rate-11:00-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "EUR-Annual Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_SWAP_MARKER",
+        "displayName" : "EUR-Annual Swap Rate-11:00-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_3_MONTH",
+        "displayName" : "EUR-Annual Swap Rate-3 Month",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_3_MONTH_SWAP_MARKER",
+        "displayName" : "EUR-Annual Swap Rate-3 Month-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_4_15_TRADITION",
+        "displayName" : "EUR-Annual Swap Rate-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "EUR-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_BASIS_SWAP_EONIA_VS_3_M_EUR_IBOR_SWAP_RATES_A_360_10_00_ICAP",
+        "displayName" : "EUR Basis Swap-EONIA vs 3m EUR+IBOR Swap Rates-A/360-10:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_CNO_TEC10",
+        "displayName" : "EUR-CNO TEC10",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA",
+        "displayName" : "EUR-EONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_AVERAGE_1",
+        "displayName" : "EUR-EONIA-AVERAGE",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_AVERAGE",
+        "displayName" : "EUR-EONIA-Average",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_10_00_BGCANTOR",
+        "displayName" : "EUR-EONIA-OIS-10:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_10_00_ICAP",
+        "displayName" : "EUR-EONIA-OIS-10:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_10_00_TRADITION",
+        "displayName" : "EUR-EONIA-OIS-10:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_11_00_ICAP",
+        "displayName" : "EUR-EONIA-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_4_15_TRADITION",
+        "displayName" : "EUR-EONIA-OIS-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_COMPOUND_1",
+        "displayName" : "EUR-EONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_COMPOUND",
+        "displayName" : "EUR-EONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_COMPOUND_BLOOMBERG",
+        "displayName" : "EUR-EONIA-OIS-COMPOUND-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_SWAP_INDEX",
+        "displayName" : "EUR-EONIA-Swap-Index",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR",
+        "displayName" : "EUR-EURIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ACT_365",
+        "displayName" : "EUR-EURIBOR-Act/365",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ACT_365_BLOOMBERG",
+        "displayName" : "EUR-EURIBOR-Act/365-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ANNUAL_BOND_SWAP_VS_1_M_11_00_ICAP",
+        "displayName" : "EUR EURIBOR-Annual Bond Swap vs 1m-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_BASIS_SWAP_1_M_VS_3_M_EURIBOR_11_00_ICAP",
+        "displayName" : "EUR EURIBOR-Basis Swap-1m vs 3m-Euribor-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_BASIS_SWAP_3_M_VS_6_M_11_00_ICAP",
+        "displayName" : "EUR EURIBOR-Basis Swap-3m vs 6m-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ICE_SWAP_RATE_11_00",
+        "displayName" : "EUR-EURIBOR ICE Swap Rate-11:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ICE_SWAP_RATE_12_00",
+        "displayName" : "EUR-EURIBOR ICE Swap Rate-12:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_REFERENCE_BANKS",
+        "displayName" : "EUR-EURIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_REUTERS",
+        "displayName" : "EUR-EURIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_TELERATE",
+        "displayName" : "EUR-EURIBOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURONIA_OIS_COMPOUND_1",
+        "displayName" : "EUR-EURONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURONIA_OIS_COMPOUND",
+        "displayName" : "EUR-EURONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR",
+        "displayName" : "EUR-EuroSTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_12_M",
+        "displayName" : "EUR-EuroSTR Average 12M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_1_M",
+        "displayName" : "EUR-EuroSTR Average 1M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_1_W",
+        "displayName" : "EUR-EuroSTR Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_3_M",
+        "displayName" : "EUR-EuroSTR Average 3M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_6_M",
+        "displayName" : "EUR-EuroSTR Average 6M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_COMPOUND",
+        "displayName" : "EUR-EuroSTR-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_COMPOUNDED_INDEX",
+        "displayName" : "EUR-EuroSTR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_FTSE_TERM",
+        "displayName" : "EUR-EuroSTR FTSE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_SWAP_RATE",
+        "displayName" : "EUR-EuroSTR ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_OIS_COMPOUND",
+        "displayName" : "EUR-EuroSTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_TERM",
+        "displayName" : "EUR-EuroSTR Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_EURIBOR_SWAP_RATE_11_00",
+        "displayName" : "EUR-ISDA-EURIBOR Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_EURIBOR_SWAP_RATE_12_00",
+        "displayName" : "EUR-ISDA-EURIBOR Swap Rate-12:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_LIBOR_SWAP_RATE_10_00",
+        "displayName" : "EUR-ISDA-LIBOR Swap Rate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_LIBOR_SWAP_RATE_11_00",
+        "displayName" : "EUR-ISDA-LIBOR Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR",
+        "displayName" : "EUR-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR_BBA",
+        "displayName" : "EUR-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "EUR-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR_REFERENCE_BANKS",
+        "displayName" : "EUR-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TAM_CDC",
+        "displayName" : "EUR-TAM-CDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC10_CNO",
+        "displayName" : "EUR-TEC10-CNO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_10_CNO_SWAP_MARKER",
+        "displayName" : "EUR-TEC10-CNO-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_10_REFERENCE_BANKS",
+        "displayName" : "EUR-TEC10-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC5_CNO",
+        "displayName" : "EUR-TEC5-CNO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_5_CNO_SWAP_MARKER",
+        "displayName" : "EUR-TEC5-CNO-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_5_REFERENCE_BANKS",
+        "displayName" : "EUR-TEC5-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TMM_CDC_COMPOUND",
+        "displayName" : "EUR-TMM-CDC-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "EUR USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "GBP-6M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "GBP-6M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "GBP-6M LIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "GBP-6M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_ISDA_SWAP_RATE",
+        "displayName" : "GBP-ISDA-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR",
+        "displayName" : "GBP-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_BBA",
+        "displayName" : "GBP-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "GBP-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_ICE_SWAP_RATE",
+        "displayName" : "GBP-LIBOR ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_ISDA",
+        "displayName" : "GBP-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_REFERENCE_BANKS",
+        "displayName" : "GBP-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_RONIA",
+        "displayName" : "GBP-RONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_RONIA_OIS_COMPOUND",
+        "displayName" : "GBP-RONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE",
+        "displayName" : "GBP-Semi-Annual Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "GBP-Semi-Annual Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "GBP-Semi Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_4_15_TRADITION",
+        "displayName" : "GBP-Semi Annual Swap Rate-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "GBP-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_SWAP_MARKER_26",
+        "displayName" : "GBP-Semi-Annual Swap Rate-SwapMarker26",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA",
+        "displayName" : "GBP-SONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_COMPOUND",
+        "displayName" : "GBP-SONIA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_COMPOUNDED_INDEX",
+        "displayName" : "GBP-SONIA Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_FTSE_TERM",
+        "displayName" : "GBP-SONIA FTSE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX",
+        "displayName" : "GBP-SONIA ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_SWAP_RATE",
+        "displayName" : "GBP-SONIA ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_TERM",
+        "displayName" : "GBP-SONIA ICE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_11_00_ICAP",
+        "displayName" : "GBP-SONIA-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_11_00_TRADITION",
+        "displayName" : "GBP-SONIA-OIS-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_4_15_TRADITION",
+        "displayName" : "GBP-SONIA-OIS-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_COMPOUND",
+        "displayName" : "GBP-SONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_SWAP_RATE",
+        "displayName" : "GBP-SONIA Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_UK_BASE_RATE",
+        "displayName" : "GBP-UK Base Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "GBP USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_WMBA_RONIA_COMPOUND",
+        "displayName" : "GBP-WMBA-RONIA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_WMBA_SONIA_COMPOUND",
+        "displayName" : "GBP-WMBA-SONIA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIBOR_ATHIBOR",
+        "displayName" : "GRD-ATHIBOR-ATHIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIBOR_REFERENCE_BANKS",
+        "displayName" : "GRD-ATHIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIBOR_TELERATE",
+        "displayName" : "GRD-ATHIBOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIMID_REFERENCE_BANKS",
+        "displayName" : "GRD-ATHIMID-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIMID_REUTERS",
+        "displayName" : "GRD-ATHIMID-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR",
+        "displayName" : "HKD-HIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HIBOR_",
+        "displayName" : "HKD-HIBOR-HIBOR=",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HIBOR_BLOOMBERG",
+        "displayName" : "HKD-HIBOR-HIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HKAB",
+        "displayName" : "HKD-HIBOR-HKAB",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HKAB_BLOOMBERG",
+        "displayName" : "HKD-HIBOR-HKAB-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_ISDC",
+        "displayName" : "HKD-HIBOR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_REFERENCE_BANKS",
+        "displayName" : "HKD-HIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HONIA",
+        "displayName" : "HKD-HONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HONIA_OIS_COMPOUND",
+        "displayName" : "HKD-HONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HONIX_OIS_COMPOUND",
+        "displayName" : "HKD-HONIX-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_ISDA_SWAP_RATE_11_00",
+        "displayName" : "HKD-ISDA-Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_ISDA_SWAP_RATE_4_00",
+        "displayName" : "HKD-ISDA-Swap Rate-4:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_4_00_BGCANTOR",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-4:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_11_00_ICAP",
+        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_4_00_ICAP",
+        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-4:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_BUBOR",
+        "displayName" : "HUF-BUBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_BUBOR_REFERENCE_BANKS",
+        "displayName" : "HUF-BUBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_BUBOR_REUTERS",
+        "displayName" : "HUF-BUBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_HUFONIA",
+        "displayName" : "HUF-HUFONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_HUFONIA_OIS_COMPOUND",
+        "displayName" : "HUF-HUFONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_IDMA_BLOOMBERG",
+        "displayName" : "IDR-IDMA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_IDRFIX",
+        "displayName" : "IDR-IDRFIX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_INDONIA",
+        "displayName" : "IDR-INDONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_INDONIA_OIS_COMPOUND",
+        "displayName" : "IDR-INDONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_JIBOR",
+        "displayName" : "IDR-JIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_JIBOR_REUTERS",
+        "displayName" : "IDR-JIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SBI_REUTERS",
+        "displayName" : "IDR-SBI-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "IDR-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_NON_DELIVERABLE_16_00_TULLETT_PREBON",
+        "displayName" : "IDR-Semi Annual Swap Rate-Non-deliverable-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "IDR-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SOR_REFERENCE_BANKS",
+        "displayName" : "IDR-SOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SOR_REUTERS",
+        "displayName" : "IDR-SOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SOR_TELERATE",
+        "displayName" : "IDR-SOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_SHIR",
+        "displayName" : "ILS-SHIR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_SHIR_OIS_COMPOUND",
+        "displayName" : "ILS-SHIR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_TELBOR",
+        "displayName" : "ILS-TELBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_TELBOR_01_REUTERS",
+        "displayName" : "ILS-TELBOR01-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_TELBOR_REFERENCE_BANKS",
+        "displayName" : "ILS-TELBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_BMK",
+        "displayName" : "INR-BMK",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_CMT",
+        "displayName" : "INR-CMT",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_FBIL_MIBOR_OIS_COMPOUND",
+        "displayName" : "INR-FBIL-MIBOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_INBMK_REUTERS",
+        "displayName" : "INR-INBMK-REUTERS",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR",
+        "displayName" : "INR-MIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR_OIS",
+        "displayName" : "INR-MIBOR OIS",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR_OIS_COMPOUND_1",
+        "displayName" : "INR-MIBOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR_OIS_COMPOUND",
+        "displayName" : "INR-MIBOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIFOR",
+        "displayName" : "INR-MIFOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIOIS",
+        "displayName" : "INR-MIOIS",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MITOR_OIS_COMPOUND",
+        "displayName" : "INR-MITOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MODIFIED_MIFOR",
+        "displayName" : "INR-Modified MIFOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_REFERENCE_BANKS",
+        "displayName" : "INR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_11_30_BGCANTOR",
+        "displayName" : "INR-Semi-Annual Swap Rate-11:30-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_NON_DELIVERABLE_16_00_TULLETT_PREBON",
+        "displayName" : "INR-Semi Annual Swap Rate-Non-deliverable-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "INR-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SORR",
+        "displayName" : "INR-SORR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SORR_OIS_COMPOUND",
+        "displayName" : "INR-SORR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ISK_REIBOR",
+        "displayName" : "ISK-REIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ISK_REIBOR_REFERENCE_BANKS",
+        "displayName" : "ISK-REIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ISK_REIBOR_REUTERS",
+        "displayName" : "ISK-REIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "JPY-Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ANNUAL_SWAP_RATE_3_00_TRADITION",
+        "displayName" : "JPY-Annual Swap Rate-3:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_BBSF_BLOOMBERG_10_00",
+        "displayName" : "JPY-BBSF-Bloomberg-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_BBSF_BLOOMBERG_15_00",
+        "displayName" : "JPY-BBSF-Bloomberg-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_EUROYEN_TIBOR",
+        "displayName" : "JPY-Euroyen TIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ISDA_SWAP_RATE_10_00",
+        "displayName" : "JPY-ISDA-Swap Rate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ISDA_SWAP_RATE_15_00",
+        "displayName" : "JPY-ISDA-Swap Rate-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR",
+        "displayName" : "JPY-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_BBA",
+        "displayName" : "JPY-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "JPY-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_FRASETT",
+        "displayName" : "JPY-LIBOR-FRASETT",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_ISDA",
+        "displayName" : "JPY-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_REFERENCE_BANKS",
+        "displayName" : "JPY-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_TSR_10_00",
+        "displayName" : "JPY-LIBOR TSR-10:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_TSR_15_00",
+        "displayName" : "JPY-LIBOR TSR-15:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LTPR_MHBK",
+        "displayName" : "JPY-LTPR MHBK",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LTPR_MHCB",
+        "displayName" : "JPY-LTPR-MHCB",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LTPR_TBC",
+        "displayName" : "JPY-LTPR-TBC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_MUTANCALL_TONAR",
+        "displayName" : "JPY-MUTANCALL-TONAR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_OIS_11_00_ICAP",
+        "displayName" : "JPY-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_OIS_11_00_TRADITION",
+        "displayName" : "JPY-OIS-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_OIS_3_00_TRADITION",
+        "displayName" : "JPY-OIS-3:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_QUOTING_BANKS_LIBOR",
+        "displayName" : "JPY-Quoting Banks-LIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_STPR_QUOTING_BANKS",
+        "displayName" : "JPY-STPR-Quoting Banks",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR",
+        "displayName" : "JPY-TIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_17096",
+        "displayName" : "JPY-TIBOR-17096",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_17097",
+        "displayName" : "JPY-TIBOR-17097",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_DTIBOR01",
+        "displayName" : "JPY-TIBOR-DTIBOR01",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM",
+        "displayName" : "JPY-TIBOR-TIBM",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_10_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM (10 Banks)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_5_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM (5 Banks)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_ALL_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM (All Banks)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_ALL_BANKS_BLOOMBERG",
+        "displayName" : "JPY-TIBOR-TIBM (All Banks)-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_REFERENCE_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_ZTIBOR",
+        "displayName" : "JPY-TIBOR-ZTIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA",
+        "displayName" : "JPY-TONA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_AVERAGE_180_D",
+        "displayName" : "JPY-TONA Average 180D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_AVERAGE_30_D",
+        "displayName" : "JPY-TONA Average 30D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_AVERAGE_90_D",
+        "displayName" : "JPY-TONA Average 90D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_COMPOUNDED_INDEX",
+        "displayName" : "JPY-TONA Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX",
+        "displayName" : "JPY-TONA ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_OIS_COMPOUND_1",
+        "displayName" : "JPY-TONA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_OIS_COMPOUND",
+        "displayName" : "JPY-TONA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_TSR_10_00",
+        "displayName" : "JPY-TONA TSR-10:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_TSR_15_00",
+        "displayName" : "JPY-TONA TSR-15:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TORF_QUICK",
+        "displayName" : "JPY-TORF QUICK",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_REFERENCE_BANKS",
+        "displayName" : "JPY-TSR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_REUTERS_10_00",
+        "displayName" : "JPY-TSR-Reuters-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_REUTERS_15_00",
+        "displayName" : "JPY-TSR-Reuters-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_TELERATE_10_00",
+        "displayName" : "JPY-TSR-Telerate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_TELERATE_15_00",
+        "displayName" : "JPY-TSR-Telerate-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "JPY USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_BOND_3222",
+        "displayName" : "KRW-Bond-3222",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_CD_3220",
+        "displayName" : "KRW-CD-3220",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_CD_91D",
+        "displayName" : "KRW-CD 91D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_CD_KSDA_BLOOMBERG",
+        "displayName" : "KRW-CD-KSDA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_KOFR",
+        "displayName" : "KRW-KOFR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_KOFR_OIS_COMPOUND",
+        "displayName" : "KRW-KOFR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_QUARTERLY_ANNUAL_SWAP_RATE_3_30_ICAP",
+        "displayName" : "KRW-Quarterly Annual Swap Rate-3:30-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE",
+        "displayName" : "MXN-TIIE",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_BANXICO",
+        "displayName" : "MXN-TIIE-Banxico",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_BANXICO_BLOOMBERG",
+        "displayName" : "MXN-TIIE-Banxico-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_BANXICO_REFERENCE_BANKS",
+        "displayName" : "MXN-TIIE-Banxico-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_ON",
+        "displayName" : "MXN-TIIE ON",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_ON_OIS_COMPOUND",
+        "displayName" : "MXN-TIIE ON-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_REFERENCE_BANKS",
+        "displayName" : "MXN-TIIE-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_KLIBOR",
+        "displayName" : "MYR-KLIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_KLIBOR_BNM",
+        "displayName" : "MYR-KLIBOR-BNM",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_KLIBOR_REFERENCE_BANKS",
+        "displayName" : "MYR-KLIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_MYOR",
+        "displayName" : "MYR-MYOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_MYOR_OIS_COMPOUND",
+        "displayName" : "MYR-MYOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_QUARTERLY_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "MYR-Quarterly Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_QUARTERLY_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "MYR-Quarterly Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR",
+        "displayName" : "NOK-NIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_NIBR",
+        "displayName" : "NOK-NIBOR-NIBR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_NIBR_BLOOMBERG",
+        "displayName" : "NOK-NIBOR-NIBR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_NIBR_REFERENCE_BANKS",
+        "displayName" : "NOK-NIBOR-NIBR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_OIBOR",
+        "displayName" : "NOK-NIBOR-OIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_REFERENCE_BANKS",
+        "displayName" : "NOK-NIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NOWA",
+        "displayName" : "NOK-NOWA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NOWA_OIS_COMPOUND",
+        "displayName" : "NOK-NOWA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_BID",
+        "displayName" : "NZD-BBR-BID",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_FRA",
+        "displayName" : "NZD-BBR-FRA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_ISDC",
+        "displayName" : "NZD-BBR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_REFERENCE_BANKS",
+        "displayName" : "NZD-BBR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_TELERATE",
+        "displayName" : "NZD-BBR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BKBM_BID",
+        "displayName" : "NZD-BKBM Bid",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BKBM_FRA",
+        "displayName" : "NZD-BKBM FRA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BKBM_FRA_SWAP_RATE_ICAP",
+        "displayName" : "NZD-BKBM FRA Swap Rate ICAP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_NZIONA",
+        "displayName" : "NZD-NZIONA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction. NOTE: In accordance with Section 2.1.11(ii) (New Zealand Business Days), from the date on which the New Zealand Financial Markets Association's 'New Zealand Business Day Guidance' (proposed effective date of October 6, 2025) becomes effective, the reference to a 'Wellington and Auckland Business Day' will be deemed to be replaced with a reference to a 'New Zealand Business Day' for all Transactions entered into from (and including) that effective date."
+      }, {
+        "name" : "NZD_NZIONA_OIS_COMPOUND_1",
+        "displayName" : "NZD-NZIONA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction. NOTE: In accordance with Section 2.1.11(ii) (New Zealand Business Days), from the date on which the New Zealand Financial Markets Association's 'New Zealand Business Day Guidance' (proposed effective date of October 6, 2025) becomes effective, the reference to a 'Wellington and Auckland Business Day' will be deemed to be replaced with a reference to a 'New Zealand Business Day' for all Transactions entered into from (and including) that effective date."
+      }, {
+        "name" : "NZD_NZIONA_OIS_COMPOUND",
+        "displayName" : "NZD-NZIONA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "NZD-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SEMI_ANNUAL_SWAP_RATE_BGCANTOR_REFERENCE_BANKS",
+        "displayName" : "NZD-Semi-Annual Swap Rate-BGCANTOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SWAP_RATE_ICAP",
+        "displayName" : "NZD-Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "NZD-Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_ORR",
+        "displayName" : "PHP-ORR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_ORR_OIS_COMPOUND",
+        "displayName" : "PHP-ORR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF",
+        "displayName" : "PHP-PHIREF",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF_BAP",
+        "displayName" : "PHP-PHIREF-BAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF_BLOOMBERG",
+        "displayName" : "PHP-PHIREF-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF_REFERENCE_BANKS",
+        "displayName" : "PHP-PHIREF-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "PHP-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "PHP-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLONIA",
+        "displayName" : "PLN-POLONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLONIA_OIS_COMPOUND_1",
+        "displayName" : "PLN-POLONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLONIA_OIS_COMPOUND",
+        "displayName" : "PLN-POLONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLSTR",
+        "displayName" : "PLN-POLSTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLSTR_OIS_COMPOUND",
+        "displayName" : "PLN-POLSTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBID",
+        "displayName" : "PLN-WIBID",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBOR",
+        "displayName" : "PLN-WIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBOR_REFERENCE_BANKS",
+        "displayName" : "PLN-WIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBOR_WIBO",
+        "displayName" : "PLN-WIBOR-WIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIRON",
+        "displayName" : "PLN-WIRON",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIRON_OIS_COMPOUND",
+        "displayName" : "PLN-WIRON-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLZ_WIBOR_REFERENCE_BANKS",
+        "displayName" : "PLZ-WIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLZ_WIBOR_WIBO",
+        "displayName" : "PLZ-WIBOR-WIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "REPOFUNDS_RATE_FRANCE_OIS_COMPOUND",
+        "displayName" : "REPOFUNDS RATE-FRANCE-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "REPOFUNDS_RATE_GERMANY_OIS_COMPOUND",
+        "displayName" : "REPOFUNDS RATE-GERMANY-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "REPOFUNDS_RATE_ITALY_OIS_COMPOUND",
+        "displayName" : "REPOFUNDS RATE-ITALY-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "RON-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "RON-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_RBOR_REUTERS",
+        "displayName" : "RON-RBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ROBID",
+        "displayName" : "RON-ROBID",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ROBOR",
+        "displayName" : "RON-ROBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "RUB-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_12_45_TRADITION",
+        "displayName" : "RUB-Annual Swap Rate-12:45-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_4_15_TRADITION",
+        "displayName" : "RUB-Annual Swap Rate-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "RUB-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "RUB-Annual Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_KEY_RATE_CBRF",
+        "displayName" : "RUB-Key Rate CBRF",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_MOS_PRIME",
+        "displayName" : "RUB-MosPrime",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_MOSPRIME_NFEA",
+        "displayName" : "RUB-MOSPRIME-NFEA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_MOSPRIME_REFERENCE_BANKS",
+        "displayName" : "RUB-MOSPRIME-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_RUONIA",
+        "displayName" : "RUB-RUONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_RUONIA_OIS_COMPOUND_1",
+        "displayName" : "RUB-RUONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_RUONIA_OIS_COMPOUND",
+        "displayName" : "RUB-RUONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SAR_SAIBOR",
+        "displayName" : "SAR-SAIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SAR_SRIOR_REFERENCE_BANKS",
+        "displayName" : "SAR-SRIOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SAR_SRIOR_SUAA",
+        "displayName" : "SAR-SRIOR-SUAA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_ANNUAL_SWAP_RATE",
+        "displayName" : "SEK-Annual Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_ANNUAL_SWAP_RATE_SESWFI",
+        "displayName" : "SEK-Annual Swap Rate-SESWFI",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SIOR_OIS_COMPOUND",
+        "displayName" : "SEK-SIOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR",
+        "displayName" : "SEK-STIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_BLOOMBERG",
+        "displayName" : "SEK-STIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_OIS_COMPOUND",
+        "displayName" : "SEK-STIBOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_REFERENCE_BANKS",
+        "displayName" : "SEK-STIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_SIDE",
+        "displayName" : "SEK-STIBOR-SIDE",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR",
+        "displayName" : "SEK-SWESTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_1_M",
+        "displayName" : "SEK-SWESTR Average 1M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_1_W",
+        "displayName" : "SEK-SWESTR Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_2_M",
+        "displayName" : "SEK-SWESTR Average 2M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_3_M",
+        "displayName" : "SEK-SWESTR Average 3M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_6_M",
+        "displayName" : "SEK-SWESTR Average 6M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_COMPOUNDED_INDEX",
+        "displayName" : "SEK-SWESTR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_OIS_COMPOUND",
+        "displayName" : "SEK-SWESTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_CURRENCY_BASIS_SWAP_RATE_11_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Currency Basis Swap Rate-11:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_CURRENCY_BASIS_SWAP_RATE_16_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Currency Basis Swap Rate-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "SGD-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Swap Rate-11:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "SGD-Semi-Annual Swap Rate-11.00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_16_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Swap Rate-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_ICAP",
+        "displayName" : "SGD-Semi-Annual Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "SGD-Semi-Annual Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "SGD-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "SGD-Semi-Annual Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR",
+        "displayName" : "SGD-SIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR_REFERENCE_BANKS",
+        "displayName" : "SGD-SIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR_REUTERS",
+        "displayName" : "SGD-SIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR_TELERATE",
+        "displayName" : "SGD-SIBOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SONAR_OIS_COMPOUND",
+        "displayName" : "SGD-SONAR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SONAR_OIS_VWAP_COMPOUND",
+        "displayName" : "SGD-SONAR-OIS-VWAP-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR",
+        "displayName" : "SGD-SOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SORA",
+        "displayName" : "SGD-SORA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SORA_COMPOUND",
+        "displayName" : "SGD-SORA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SORA_OIS_COMPOUND",
+        "displayName" : "SGD-SORA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_REFERENCE_BANKS",
+        "displayName" : "SGD-SOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_REUTERS",
+        "displayName" : "SGD-SOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_TELERATE",
+        "displayName" : "SGD-SOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_VWAP",
+        "displayName" : "SGD-SOR-VWAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_VWAP_REFERENCE_BANKS",
+        "displayName" : "SGD-SOR-VWAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_BLOOMBERG",
+        "displayName" : "SKK-BRIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_BRBO",
+        "displayName" : "SKK-BRIBOR-BRBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_NBSK07",
+        "displayName" : "SKK-BRIBOR-NBSK07",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_REFERENCE_BANKS",
+        "displayName" : "SKK-BRIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "THB-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "THB-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SOR_REFERENCE_BANKS",
+        "displayName" : "THB-SOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SOR_REUTERS",
+        "displayName" : "THB-SOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SOR_TELERATE",
+        "displayName" : "THB-SOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THBFIX",
+        "displayName" : "THB-THBFIX",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THBFIX_REFERENCE_BANKS",
+        "displayName" : "THB-THBFIX-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THBFIX_REUTERS",
+        "displayName" : "THB-THBFIX-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THOR",
+        "displayName" : "THB-THOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THOR_COMPOUND",
+        "displayName" : "THB-THOR-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THOR_OIS_COMPOUND",
+        "displayName" : "THB-THOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "TRY Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_ANNUAL_SWAP_RATE_11_15_BGCANTOR",
+        "displayName" : "TRY-Annual Swap Rate-11:15-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "TRY-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_SEMI_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "TRY-Semi-Annual Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TLREF",
+        "displayName" : "TRY-TLREF",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TLREF_OIS_COMPOUND_1",
+        "displayName" : "TRY-TLREF-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TLREF_OIS_COMPOUND",
+        "displayName" : "TRY-TLREF-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TRLIBOR",
+        "displayName" : "TRY-TRLIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TRYIBOR_REFERENCE_BANKS",
+        "displayName" : "TRY-TRYIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TRYIBOR_REUTERS",
+        "displayName" : "TRY-TRYIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "TWD-Quarterly-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_QUARTERLY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "TWD-Quarterly-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_REFERENCE_DEALERS",
+        "displayName" : "TWD-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_REUTERS_6165",
+        "displayName" : "TWD-Reuters-6165",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBIR01",
+        "displayName" : "TWD-TAIBIR01",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBIR02",
+        "displayName" : "TWD-TAIBIR02",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBOR",
+        "displayName" : "TWD-TAIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBOR_BLOOMBERG",
+        "displayName" : "TWD-TAIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBOR_REUTERS",
+        "displayName" : "TWD-TAIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TELERATE_6165",
+        "displayName" : "TWD-Telerate-6165",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TWCPBA",
+        "displayName" : "TWD-TWCPBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "UK_BASE_RATE",
+        "displayName" : "UK Base Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "USD-3M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "USD-3M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "USD-6M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "USD-6M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR",
+        "displayName" : "USD-AMERIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_AVERAGE_30_D",
+        "displayName" : "USD-AMERIBOR Average 30D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_AVERAGE_90_D",
+        "displayName" : "USD-AMERIBOR Average 90D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_TERM",
+        "displayName" : "USD-AMERIBOR Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_TERM_STRUCTURE",
+        "displayName" : "USD-AMERIBOR Term Structure",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "USD-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "USD-Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ANNUAL_SWAP_RATE_4_00_TRADITION",
+        "displayName" : "USD-Annual Swap Rate-4:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AXI_TERM",
+        "displayName" : "USD-AXI Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BA_H_15",
+        "displayName" : "USD-BA-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BA_REFERENCE_DEALERS",
+        "displayName" : "USD-BA-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BMA_MUNICIPAL_SWAP_INDEX",
+        "displayName" : "USD-BMA Municipal Swap Index",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BSBY",
+        "displayName" : "USD-BSBY",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CD_H_15",
+        "displayName" : "USD-CD-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CD_REFERENCE_DEALERS",
+        "displayName" : "USD-CD-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_REFERENCE_BANKS",
+        "displayName" : "USD-CMS-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_REFERENCE_BANKS_ICAP_SWAP_PX",
+        "displayName" : "USD-CMS-Reference Banks-ICAP SwapPX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_REUTERS",
+        "displayName" : "USD-CMS-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_TELERATE",
+        "displayName" : "USD-CMS-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT",
+        "displayName" : "USD-CMT",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT_AVERAGE_1_W",
+        "displayName" : "USD-CMT Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT_T7051",
+        "displayName" : "USD-CMT-T7051",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT_T7052",
+        "displayName" : "USD-CMT-T7052",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COF11_FHLBSF",
+        "displayName" : "USD-COF11-FHLBSF",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COF_11_REUTERS",
+        "displayName" : "USD-COF11-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COF_11_TELERATE",
+        "displayName" : "USD-COF11-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COFI",
+        "displayName" : "USD-COFI",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CP_H_15",
+        "displayName" : "USD-CP-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CP_MONEY_MARKET_YIELD",
+        "displayName" : "USD-CP-Money Market Yield",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CP_REFERENCE_DEALERS",
+        "displayName" : "USD-CP-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CRITR",
+        "displayName" : "USD-CRITR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS",
+        "displayName" : "USD-Federal Funds",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_H_15",
+        "displayName" : "USD-Federal Funds-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_H_15_BLOOMBERG",
+        "displayName" : "USD-Federal Funds-H.15-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_H_15_OIS_COMPOUND",
+        "displayName" : "USD-Federal Funds-H.15-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_OIS_COMPOUND",
+        "displayName" : "USD-Federal Funds-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_REFERENCE_DEALERS",
+        "displayName" : "USD-Federal Funds-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FFCB_DISCO",
+        "displayName" : "USD-FFCB-DISCO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FXI_TERM",
+        "displayName" : "USD-FXI Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDAFIX_3_SWAP_RATE",
+        "displayName" : "USD-ISDAFIX3-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDAFIX_3_SWAP_RATE_3_00",
+        "displayName" : "USD-ISDAFIX3-Swap Rate-3:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDA_SWAP_RATE",
+        "displayName" : "USD-ISDA-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDA_SWAP_RATE_3_00",
+        "displayName" : "USD-ISDA-Swap Rate-3:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR",
+        "displayName" : "USD-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_BBA",
+        "displayName" : "USD-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "USD-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_ICE_SWAP_RATE_11_00",
+        "displayName" : "USD-LIBOR ICE Swap Rate-11:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_ICE_SWAP_RATE_15_00",
+        "displayName" : "USD-LIBOR ICE Swap Rate-15:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_ISDA",
+        "displayName" : "USD-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_LIBO",
+        "displayName" : "USD-LIBOR-LIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_REFERENCE_BANKS",
+        "displayName" : "USD-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_MUNICIPAL_SWAP_INDEX",
+        "displayName" : "USD-Municipal Swap Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_MUNICIPAL_SWAP_LIBOR_RATIO_11_00_ICAP",
+        "displayName" : "USD-Municipal Swap Libor Ratio-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_MUNICIPAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "USD-Municipal Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_BGCANTOR",
+        "displayName" : "USD-OIS-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_LON_ICAP",
+        "displayName" : "USD-OIS-11:00-LON-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_NY_ICAP",
+        "displayName" : "USD-OIS-11:00-NY-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_TRADITION",
+        "displayName" : "USD-OIS-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_3_00_BGCANTOR",
+        "displayName" : "USD-OIS-3:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_3_00_NY_ICAP",
+        "displayName" : "USD-OIS-3:00-NY-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_4_00_TRADITION",
+        "displayName" : "USD-OIS-4:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OVERNIGHT_BANK_FUNDING_RATE",
+        "displayName" : "USD-Overnight Bank Funding Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_PRIME",
+        "displayName" : "USD-Prime",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_PRIME_H_15",
+        "displayName" : "USD-Prime-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_PRIME_REFERENCE_BANKS",
+        "displayName" : "USD-Prime-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_S_P_INDEX_HIGH_GRADE",
+        "displayName" : "USD-S&P Index-High Grade",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SAND_P_INDEX_HIGH_GRADE",
+        "displayName" : "USD-SandP Index High Grade",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SIBOR_REFERENCE_BANKS",
+        "displayName" : "USD-SIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SIBOR_SIBO",
+        "displayName" : "USD-SIBOR-SIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SIFMA_MUNICIPAL_SWAP_INDEX",
+        "displayName" : "USD-SIFMA Municipal Swap Index",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR",
+        "displayName" : "USD-SOFR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_AVERAGE_180_D",
+        "displayName" : "USD-SOFR Average 180D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_AVERAGE_30_D",
+        "displayName" : "USD-SOFR Average 30D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_AVERAGE_90_D",
+        "displayName" : "USD-SOFR Average 90D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_CME_TERM",
+        "displayName" : "USD-SOFR CME Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_COMPOUND",
+        "displayName" : "USD-SOFR-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_COMPOUNDED_INDEX",
+        "displayName" : "USD-SOFR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX",
+        "displayName" : "USD-SOFR ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_SWAP_RATE",
+        "displayName" : "USD-SOFR ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_SWAP_RATE_SPREADS",
+        "displayName" : "USD-SOFR ICE Swap Rate Spreads",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_TERM",
+        "displayName" : "USD-SOFR ICE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_OIS_COMPOUND",
+        "displayName" : "USD-SOFR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SWAP_RATE_BCMP_1",
+        "displayName" : "USD Swap Rate-BCMP1",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_AUCTION_HIGH_RATE",
+        "displayName" : "USD-TBILL Auction High Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_H_15",
+        "displayName" : "USD-TBILL-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_H_15_BLOOMBERG",
+        "displayName" : "USD-TBILL-H.15-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_SECONDARY_MARKET",
+        "displayName" : "USD-TBILL-Secondary Market",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_SECONDARY_MARKET_BOND_EQUIVALENT_YIELD",
+        "displayName" : "USD-TBILL Secondary Market-Bond Equivalent Yield",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TIBOR_ISDC",
+        "displayName" : "USD-TIBOR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TIBOR_REFERENCE_BANKS",
+        "displayName" : "USD-TIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_19901_3_00_ICAP",
+        "displayName" : "USD-Treasury-19901-3:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_BCMP_1",
+        "displayName" : "USD Treasury Rate-BCMP1",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_ICAP_BROKER_TEC",
+        "displayName" : "USD-Treasury Rate-ICAP BrokerTec",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_SWAP_MARKER_100",
+        "displayName" : "USD-Treasury Rate-SwapMarker100",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_SWAP_MARKER_99",
+        "displayName" : "USD-Treasury Rate-SwapMarker99",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_T_19901",
+        "displayName" : "USD-Treasury Rate-T19901",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_T_500",
+        "displayName" : "USD-Treasury Rate-T500",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "VND_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "VND-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "VND_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "VND-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_DEPOSIT_REFERENCE_BANKS",
+        "displayName" : "ZAR-DEPOSIT-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_DEPOSIT_SAFEX",
+        "displayName" : "ZAR-DEPOSIT-SAFEX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_JIBAR",
+        "displayName" : "ZAR-JIBAR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_JIBAR_REFERENCE_BANKS",
+        "displayName" : "ZAR-JIBAR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_JIBAR_SAFEX",
+        "displayName" : "ZAR-JIBAR-SAFEX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_PRIME_AVERAGE_1",
+        "displayName" : "ZAR-Prime Average",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_PRIME_AVERAGE",
+        "displayName" : "ZAR-PRIME-AVERAGE",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_PRIME_AVERAGE_REFERENCE_BANKS",
+        "displayName" : "ZAR-PRIME-AVERAGE-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_QUARTERLY_SWAP_RATE_1_00_TRADITION",
+        "displayName" : "ZAR-Quarterly Swap Rate-1:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_QUARTERLY_SWAP_RATE_5_30_TRADITION",
+        "displayName" : "ZAR-Quarterly Swap Rate-5:30-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_QUARTERLY_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "ZAR-Quarterly Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_ZARONIA",
+        "displayName" : "ZAR-ZARONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_ZARONIA_OIS_COMPOUND",
+        "displayName" : "ZAR-ZARONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      } ]
+    },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "tradeDate",
+    "type" : "date",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.com.InterconnectionPoint" : [ {
     "name" : "value",
     "type" : "string",
@@ -99431,7 +100203,8 @@ export const attributesJson = {
     "type" : {
       "typeCategory" : "StructuredType",
       "name" : "NonNegativeQuantitySchedule",
-      "namespace" : "cdm.base.math"
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
     "description" : "Vega Notional represents the approximate gain/loss at maturity for a 1% difference between RVol (realised vol) and KVol (strike vol). It does not necessarily represent the Vega Risk of the trade.",
     "cardinality" : {
@@ -100422,7 +101195,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "The number of units included in the transaction for each delivery interval",
     "cardinality" : {
@@ -102424,6 +103197,22 @@ export const attributesJson = {
         "name" : "RELATED_EXCHANGE",
         "displayName" : "RelatedExchange",
         "description" : "An exchange or platform other than the primary exchange where the security has been issued and the exchange has an indirect role."
+      }, {
+        "name" : "SECURITY_SETTLEMENT_CENTRE",
+        "displayName" : "SecuritySettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of securities between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "CASH_SETTLEMENT_CENTRE",
+        "displayName" : "CashSettlementCentre",
+        "description" : "Specifies the party that processes the transfer and delivery of cash between issuers, counterparties, agents and other service providers."
+      }, {
+        "name" : "PLACE_OF_DEPOSIT",
+        "displayName" : "PlaceOfDeposit",
+        "description" : "Specifies the party responsible for recording securities ownership, holding physical certificates and facilitating securities transfers."
+      }, {
+        "name" : "CUSTODIAN",
+        "displayName" : "Custodian",
+        "description" : "Specifies the party responsible for safekeeping securities and performing securities lifecycle events."
       } ]
     },
     "description" : "The party role.",
@@ -112068,7 +112857,8 @@ export const attributesJson = {
     "type" : {
       "typeCategory" : "StructuredType",
       "name" : "NonNegativeQuantitySchedule",
-      "namespace" : "cdm.base.math"
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
     "description" : "Specifies a quantity schedule for the underlier, which applies to each individual return leg.",
     "cardinality" : {
@@ -114336,7 +115126,8 @@ export const attributesJson = {
     "type" : {
       "typeCategory" : "StructuredType",
       "name" : "NonNegativeQuantitySchedule",
-      "namespace" : "cdm.base.math"
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
     "cardinality" : {
       "upperBound" : "1",
@@ -114898,6 +115689,90 @@ export const attributesJson = {
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.legaldocumentation.master.isda.GoverningLaw" : [ {
+    "name" : "governingLaw",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "IsdaMasterGoverningLawEnum",
+      "values" : [ {
+        "name" : "AUS",
+        "displayName" : "AUS",
+        "description" : "Australian law"
+      }, {
+        "name" : "BE",
+        "displayName" : "BE",
+        "description" : "Belgian law"
+      }, {
+        "name" : "GBEN",
+        "displayName" : "GBEN",
+        "description" : "English law"
+      }, {
+        "name" : "FR",
+        "displayName" : "FR",
+        "description" : "French law"
+      }, {
+        "name" : "DE",
+        "displayName" : "DE",
+        "description" : "German law"
+      }, {
+        "name" : "IN",
+        "displayName" : "IN",
+        "description" : "Indian law"
+      }, {
+        "name" : "IE",
+        "displayName" : "IE",
+        "description" : "Irish law"
+      }, {
+        "name" : "JP",
+        "displayName" : "JP",
+        "description" : "Japanese law"
+      }, {
+        "name" : "MLT",
+        "displayName" : "MLT",
+        "description" : "Maltese law"
+      }, {
+        "name" : "USNY",
+        "displayName" : "USNY",
+        "description" : "New York law"
+      }, {
+        "name" : "NZ",
+        "displayName" : "NZ",
+        "description" : "New Zealand law"
+      }, {
+        "name" : "NG",
+        "displayName" : "NG",
+        "description" : "Nigerian law"
+      }, {
+        "name" : "OTHER",
+        "displayName" : "OTHER",
+        "description" : "Other law to be specified"
+      } ]
+    },
+    "description" : "Selection from the enumerated list of governing laws specified.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "governingLawIfOther",
+    "type" : "string",
+    "description" : "Specifies the governing law if the choice on the enumerated list is 'Other'.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "includesNonContractualObligations",
+    "type" : "boolean",
+    "description" : "Specifies if the governing law of the agreement extends to any non-contractual obligations.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
     },
     "metaField" : false
   } ],
@@ -116977,6 +117852,53 @@ export const attributesJson = {
     "type" : "string",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.base.math.NonNegativeSchedule" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The non-negative initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "NonNegativeDatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair where the value is non-negative. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and non-negative value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -119789,6 +120711,44 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.legaldocumentation.master.isda.AdditionalTerminationEventElection" : [ {
+    "name" : "party",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "CounterpartyRoleEnum",
+      "values" : [ {
+        "name" : "PARTY_1",
+        "displayName" : "Party1"
+      }, {
+        "name" : "PARTY_2",
+        "displayName" : "Party2"
+      } ]
+    },
+    "description" : "The elective party.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "isApplicable",
+    "type" : "boolean",
+    "description" : "Defines whether Additional Termination events apply (True) or not (False).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "furtherDetails",
+    "type" : "string",
+    "description" : "Further Details on the Additional Termination Events that apply to the party.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.shared.CreditSupportAgreement" : [ {
     "name" : "type",
     "type" : {
@@ -120546,7 +121506,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "The number of units included in the transaction for each delivery interval",
     "cardinality" : {
@@ -122227,14 +123187,51 @@ export const attributesJson = {
     "metaField" : false
   } ],
   "cdm.base.math.Quantity" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "Requires the single rate or amount, as the case may be, to be present. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule must be absent.",
+    "cardinality" : {
+      "upperBound" : "0",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "unit",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnitType",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines the unit to be used for price, quantity, or other purposes"
+    },
+    "description" : "Requires that a unit of amount must be specified for any quantity.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
     "name" : "multiplier",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Measure",
+      "name" : "NonNegativeMeasure",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional."
+      "description" : "Defines a concrete non-negative measure as a number associated to a unit. It extends Measure by requiring the value attribute to be non-negative. A measure may be unit-less so the unit attribute is still optional."
     },
-    "description" : "Defines an optional number that the quantity should be multiplied by to derive a total quantity. This number is associated to a unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
+    "description" : "Defines an optional measure that the quantity should be multiplied by to derive a total quantity. Requires that the multiplier must be positive. This number is associated to an optional unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -122255,23 +123252,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "total",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "Schedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies an amount or quantity, either as a single value or as a schedule of dated values. This can be used where the applicable quantity changes over time, with each dated value becoming effective from its associated step date."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the total quantity when the quantity itself is specified with a frequency.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -122288,6 +123276,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -123722,23 +124733,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "derivedQuantity",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "NonNegativeQuantitySchedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the derived quantity associated with the price. For instance when the price is an asset price expressed in a currency, the primary quantity is the asset's quantity while the derived quantity is the corresponding monetary amount in that currency. When the price is an exchange rate, both the primary quantity and the derived quantity are monetary amounts, in the 2 currencies of the exchange rate.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -123755,6 +124757,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -132020,6 +133045,39 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.base.math.ScheduleWithInitialValue" : [ {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount must be specified, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.loan.LcAdjustment" : [ {
     "name" : "adjustment",
     "type" : {
@@ -138126,7 +139184,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "cardinality" : {
       "upperBound" : "1",
@@ -146363,7 +147421,7 @@ export const attributesJson = {
     "name" : "floatingRateMultiplierSchedule",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Schedule",
+      "name" : "ScheduleWithInitialValue",
       "namespace" : "cdm.base.math",
       "description" : "A class defining a schedule of rates or amounts in terms of an initial value and then a series of step date and value pairs. On each step date the rate or amount changes to the new step value. The series of step date and value pairs are optional. If not specified, this implies that the initial value remains unchanged over time."
     },
@@ -147852,6 +148910,66 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.legaldocumentation.master.isda.IsdaCalculationAgentElection" : [ {
+    "name" : "isApplicable",
+    "type" : "boolean",
+    "description" : "Whether a Calculation Agent election is applicable for the event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "agent",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "IsdaMasterCalculationAgentEnum",
+      "values" : [ {
+        "name" : "PARTY_A",
+        "displayName" : "Party_A",
+        "description" : "Party A"
+      }, {
+        "name" : "PARTY_B",
+        "displayName" : "Party_B",
+        "description" : "Party B"
+      }, {
+        "name" : "PARTY_A_PARTY_B",
+        "displayName" : "Party_A_Party_B",
+        "description" : "Party A and Party B"
+      }, {
+        "name" : "PARTY_A_OR_PARTY_B",
+        "displayName" : "Party_A_Or_Party_B",
+        "description" : "Party A or Party B, as applicable"
+      }, {
+        "name" : "DEMANDS_4_C",
+        "displayName" : "Demands_4c",
+        "description" : "Party making the demand for the purposes of Paragraphs 3, 4(c) and 5 and the Secured Party for the purposes of Paragraph 4(d)"
+      }, {
+        "name" : "DEMANDS_4_D",
+        "displayName" : "Demands_4d",
+        "description" : "Party making the demand for the purposes of Paragraphs 3, 4(d) and 5 and the Secured Party for the purposes of Paragraph 4(e )"
+      }, {
+        "name" : "OTHER",
+        "displayName" : "Other",
+        "description" : "Other (to be specified)"
+      } ]
+    },
+    "description" : "The determined Calculation Agent for the event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "agentIfOther",
+    "type" : "string",
+    "description" : "The specified Calculation Agent if identified as other from the enumerated list.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.doc.AdditionalData" : [ {
     "name" : "mimeType",
     "type" : {
@@ -148994,9 +150112,23 @@ export const attributesJson = {
   "cdm.base.math.Measure" : [ {
     "name" : "value",
     "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "The value attribute must be present in a concrete measure.",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs must be absent.",
+    "cardinality" : {
+      "upperBound" : "0",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -149011,6 +150143,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -153962,6 +155117,95 @@ export const attributesJson = {
       "name" : "CalculationPeriodsScheduleReference",
       "namespace" : "fpml.consolidated.com"
     },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.legaldocumentation.master.isda.IsdaCalculationAgent" : [ {
+    "name" : "asSpecifiedInConfirmation",
+    "type" : "boolean",
+    "description" : "Specifies if the calculation agent is provided in the confirmation related to the relevant transaction (note this would override anything else in the calculation agent terms)",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "eventOfDefault",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "IsdaCalculationAgentElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "An election to determine who the Calculation Agent is for various events in an ISDA Master Agreement."
+    },
+    "description" : "Capturing the Calculation Agent in the Event of Default.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "potentialEventOfDefault",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "IsdaCalculationAgentElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "An election to determine who the Calculation Agent is for various events in an ISDA Master Agreement."
+    },
+    "description" : "Capturing the Calculation in the potential of an event of default.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "terminationEvent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "IsdaCalculationAgentElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "An election to determine who the Calculation Agent is for various events in an ISDA Master Agreement."
+    },
+    "description" : "Capturing the Calculation Agent for a Termination Event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "noEvent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "IsdaCalculationAgentElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "An election to determine who the Calculation Agent is for various events in an ISDA Master Agreement."
+    },
+    "description" : "Capturing the default Calculation Agent when no Event of Default or Termination Event occurs.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "substituteCalculationAgent",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "SubstituteCalculationAgentElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "An election to determine the characteristics around a subsitution Calculation Agent."
+    },
+    "description" : "Capturing the details regarding appointing a substitute Calculation Agent.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "otherComments",
+    "type" : "string",
+    "description" : "Optional string to capture further information regarding the Calculation Agent.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -165446,6 +166690,21 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.instructioncomposition.CompositionStepInstructions" : [ {
+    "name" : "collectFloatingRateOption",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CollectFloatingRateOptionInstruction",
+      "namespace" : "cdm.event.instructioncomposition.reset",
+      "description" : "Instruction that identifies the floating rate index and the trade date required for downstream Floating Rate Option Data retrieval."
+    },
+    "description" : "Data needed to execute the extraction of the Floating Rate Option index name.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.fx.targets.FxSettlementSchedule" : [ {
     "name" : "finalSettlementDate",
     "type" : "zonedDateTime",
@@ -165612,179 +166871,6 @@ export const attributesJson = {
       "lowerBound" : "0"
     },
     "metaField" : false
-  } ],
-  "cdm.observable.asset.Curve" : [ {
-    "name" : "interestRateCurve",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "InterestRateCurve",
-      "namespace" : "cdm.observable.asset"
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "commodityCurve",
-    "type" : {
-      "typeCategory" : "EnumType",
-      "name" : "CommodityReferencePriceEnum",
-      "values" : [ {
-        "name" : "ALUMINIUM_ALLOY_LME_15_MONTH",
-        "displayName" : "ALUMINIUM ALLOY-LME 15 MONTH",
-        "description" : "Per 2005 ISDA Commodity Definitions, Sub-Annex A, Section 7.1 Commodity Reference Prices, as amended and supplemented through the date on which parties enter into the relevant transaction."
-      }, {
-        "name" : "COAL_CENTRAL_APPALACHIAN_NYMEX",
-        "displayName" : "COAL-CENTRAL APPALACHIAN-NYMEX",
-        "description" : "A code for the NYMEX Central Appalachian Coal commodity"
-      }, {
-        "name" : "COCOA_ICE",
-        "displayName" : "COCOA-ICE",
-        "description" : "A code for the ICE Futures U.S. (‘ICUS’) Cocoa commodity"
-      }, {
-        "name" : "COFFEE_ARABICA_ICE",
-        "displayName" : "COFFEE ARABICA-ICE",
-        "description" : "A code for the ICUS Coffee C commodity"
-      }, {
-        "name" : "COFFEE_ROBUSTA_ICE",
-        "displayName" : "COFFEE ROBUSTA-ICE",
-        "description" : "A code for the ICUS Coffee C commodity"
-      }, {
-        "name" : "COPPER_COMEX",
-        "displayName" : "COPPER-COMEX",
-        "description" : "A code for the COMEX (‘CMX’) Copper Grade #1 commodity"
-      }, {
-        "name" : "CORN_CBOT",
-        "displayName" : "CORN-CBOT",
-        "description" : "A code for the Chicago Board of Trade (‘CBOT’) Corn commodity"
-      }, {
-        "name" : "COTTON_NO__2_ICE",
-        "displayName" : "COTTON NO. 2-ICE",
-        "description" : "A code for the ICUS Cotton No. 2 commodity"
-      }, {
-        "name" : "ETHANOL_CBOT",
-        "displayName" : "ETHANOL-CBOT",
-        "description" : "A code for the CBOT Ethanol commodity"
-      }, {
-        "name" : "FEEDER_CATTLE_CME",
-        "displayName" : "FEEDER CATTLE-CME",
-        "description" : "A code for the CME Feeder Cattle commodity"
-      }, {
-        "name" : "FROZEN_CONCENTRATED_ORANGE_JUICE_NO__1_ICE",
-        "displayName" : "FROZEN CONCENTRATED ORANGE JUICE NO. 1-ICE",
-        "description" : "A code for the ICUS Frozen Concentrated Orange Juice commodity"
-      }, {
-        "name" : "GASOLINE_RBOB_NEW_YORK_ICE",
-        "displayName" : "GASOLINE-RBOB-NEW YORK-ICE",
-        "description" : "A code for the NYMEX Gasoline Blendstock (RBOB) commodity"
-      }, {
-        "name" : "GASOLINE_RBOB_NEW_YORK_NYMEX",
-        "displayName" : "GASOLINE-RBOB-NEW YORK-NYMEX",
-        "description" : "A code for the NYMEX Gasoline Blendstock (RBOB) commodity"
-      }, {
-        "name" : "GOLD_COMEX",
-        "displayName" : "GOLD-COMEX",
-        "description" : "A code for the CMX Gold commodity"
-      }, {
-        "name" : "HEATING_OIL_NEW_YORK_NYMEX",
-        "displayName" : "HEATING OIL-NEW YORK-NYMEX",
-        "description" : "A code for the NYMEX No. 2 Heating Oil, New York Harbor commodity"
-      }, {
-        "name" : "LEAN_HOGS_CME",
-        "displayName" : "LEAN HOGS-CME",
-        "description" : "A code for the CME Lean Hogs commodity"
-      }, {
-        "name" : "LIVE_CATTLE_CME",
-        "displayName" : "LIVE CATTLE-CME",
-        "description" : "A code for the CME Live Cattle commodity"
-      }, {
-        "name" : "LUMBER_CME",
-        "displayName" : "LUMBER-CME",
-        "description" : "A code for the CME Random Length Lumber commodity"
-      }, {
-        "name" : "MILK_CLASS_III_CME",
-        "displayName" : "MILK-CLASS III-CME",
-        "description" : "A code for the CME Milk Class III commodity"
-      }, {
-        "name" : "MILK_NONFAT_DRY_CME",
-        "displayName" : "MILK-NONFAT-DRY-CME",
-        "description" : "A code for the CME Non Fat Dry Milk commodity"
-      }, {
-        "name" : "NATURAL_GAS_NYMEX",
-        "displayName" : "NATURAL GAS-NYMEX",
-        "description" : "A code for the NYMEX Natural Gas commodity"
-      }, {
-        "name" : "NATURAL_GAS_PEPL__TEXOK_MAINLINE__INSIDE_FERC",
-        "displayName" : "NATURAL GAS-PEPL (TEXOK MAINLINE)-INSIDE FERC",
-        "description" : "A code for the NYMEX Panhandle Basis Swap commodity"
-      }, {
-        "name" : "NATURAL_GAS_W__TEXAS__WAHA__INSIDE_FERC",
-        "displayName" : "NATURAL GAS-W. TEXAS (WAHA)-INSIDE FERC",
-        "description" : "A code for the NYMEX Waha Basis Swap commodity"
-      }, {
-        "name" : "OATS_CBOT",
-        "displayName" : "OATS-CBOT",
-        "description" : "A code for the CBOT Oats commodity"
-      }, {
-        "name" : "OIL_WTI_NYMEX",
-        "displayName" : "OIL-WTI-NYMEX",
-        "description" : "A code for the NYMEX Crude Oil, Light Sweet commodity"
-      }, {
-        "name" : "PALLADIUM_NYMEX",
-        "displayName" : "PALLADIUM-NYMEX",
-        "description" : "A code for the NYMEX Palladium commodity"
-      }, {
-        "name" : "PLATINUM_NYMEX",
-        "displayName" : "PLATINUM-NYMEX",
-        "description" : "A code for the NYMEX Platinum commodity"
-      }, {
-        "name" : "RICE_CBOT",
-        "displayName" : "RICE-CBOT",
-        "description" : "A code for the CBOT Rough Rice commodity"
-      }, {
-        "name" : "SILVER_COMEX",
-        "displayName" : "SILVER-COMEX",
-        "description" : "A code for the CMX Silver commodity"
-      }, {
-        "name" : "SOYBEANS_CBOT",
-        "displayName" : "SOYBEANS-CBOT",
-        "description" : "A code for the CBOT Soybeans commodity"
-      }, {
-        "name" : "SOYBEAN_MEAL_CBOT",
-        "displayName" : "SOYBEAN MEAL-CBOT",
-        "description" : "A code for the CBOT Soybean Meal commodity"
-      }, {
-        "name" : "SOYBEAN_OIL_CBOT",
-        "displayName" : "SOYBEAN OIL-CBOT",
-        "description" : "A code for the CBOT Soybean Oil commodity"
-      }, {
-        "name" : "SUGAR___11__WORLD__ICE",
-        "displayName" : "SUGAR # 11 (WORLD)-ICE",
-        "description" : "A code for the ICUS Sugar No. 11 commodity"
-      }, {
-        "name" : "SUGAR___16__US__ICE",
-        "displayName" : "SUGAR # 16 (US)-ICE",
-        "description" : "A code for the ICUS Sugar No. 16 commodity"
-      }, {
-        "name" : "WHEAT_CBOT",
-        "displayName" : "WHEAT-CBOT",
-        "description" : "A code for the CBOT Wheat commodity"
-      }, {
-        "name" : "WHEAT_HRW_KCBOT",
-        "displayName" : "WHEAT HRW-KCBOT",
-        "description" : "A code for the Kansas City Board of Trade (‘KCBT’)Wheat commodity"
-      }, {
-        "name" : "WHEAT_RED_SPRING_MGE",
-        "displayName" : "WHEAT RED SPRING-MGE",
-        "description" : "A code for the Wheat commodity"
-      } ]
-    },
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : true
   } ],
   "fpml.consolidated.loan.LoanCovenantObligationChoice" : [ {
     "name" : "description",
@@ -167507,6 +168593,2669 @@ export const attributesJson = {
   }, {
     "name" : "actualBuild",
     "type" : "number",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.event.instructioncomposition.reset.ResetInstructionState" : [ {
+    "name" : "floatingRateIndex",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "FloatingRateIndexEnum",
+      "values" : [ {
+        "name" : "AED_EBOR_REUTERS",
+        "displayName" : "AED-EBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AED_EIBOR",
+        "displayName" : "AED-EIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA",
+        "displayName" : "AUD-AONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA_OIS_COMPOUND_1",
+        "displayName" : "AUD-AONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA_OIS_COMPOUND",
+        "displayName" : "AUD-AONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_AONIA_OIS_COMPOUND_SWAP_MARKER",
+        "displayName" : "AUD-AONIA-OIS-COMPOUND-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_AUBBSW",
+        "displayName" : "AUD-BBR-AUBBSW",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_BBSW",
+        "displayName" : "AUD-BBR-BBSW",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_BBSW_BLOOMBERG",
+        "displayName" : "AUD-BBR-BBSW-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_BBSY__BID_",
+        "displayName" : "AUD-BBR-BBSY (BID)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBR_ISDC",
+        "displayName" : "AUD-BBR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSW",
+        "displayName" : "AUD-BBSW",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSW_QUARTERLY_SWAP_RATE_ICAP",
+        "displayName" : "AUD-BBSW Quarterly Swap Rate ICAP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSW_SEMI_ANNUAL_SWAP_RATE_ICAP",
+        "displayName" : "AUD-BBSW Semi Annual Swap Rate ICAP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_BBSY_BID",
+        "displayName" : "AUD-BBSY Bid",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_LIBOR_BBA",
+        "displayName" : "AUD-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "AUD-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_LIBOR_REFERENCE_BANKS",
+        "displayName" : "AUD-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_QUARTERLY_SWAP_RATE_ICAP",
+        "displayName" : "AUD-Quarterly Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_QUARTERLY_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "AUD-Quarterly Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "AUD-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_BGCANTOR_REFERENCE_BANKS",
+        "displayName" : "AUD-Semi-Annual Swap Rate-BGCANTOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_ICAP",
+        "displayName" : "AUD-Semi-annual Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SEMI_ANNUAL_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "AUD-Semi-Annual Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "AUD_SWAP_RATE_REUTERS",
+        "displayName" : "AUD-Swap Rate-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "BRL_CDI",
+        "displayName" : "BRL-CDI",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_CDOR",
+        "displayName" : "CAD-BA-CDOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_CDOR_BLOOMBERG",
+        "displayName" : "CAD-BA-CDOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_ISDD",
+        "displayName" : "CAD-BA-ISDD",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_REFERENCE_BANKS",
+        "displayName" : "CAD-BA-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_REUTERS",
+        "displayName" : "CAD-BA-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_BA_TELERATE",
+        "displayName" : "CAD-BA-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CDOR",
+        "displayName" : "CAD-CDOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA",
+        "displayName" : "CAD-CORRA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_CAN_DEAL_TMX_TERM",
+        "displayName" : "CAD-CORRA CanDeal TMX Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_COMPOUNDED_INDEX",
+        "displayName" : "CAD-CORRA Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_OIS_COMPOUND_1",
+        "displayName" : "CAD-CORRA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_CORRA_OIS_COMPOUND",
+        "displayName" : "CAD-CORRA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_ISDA_SWAP_RATE",
+        "displayName" : "CAD-ISDA-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_BBA",
+        "displayName" : "CAD-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "CAD-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_BBA_SWAP_MARKER",
+        "displayName" : "CAD-LIBOR-BBA-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_LIBOR_REFERENCE_BANKS",
+        "displayName" : "CAD-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_REPO_CORRA",
+        "displayName" : "CAD-REPO-CORRA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_ISDD",
+        "displayName" : "CAD-TBILL-ISDD",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_REFERENCE_BANKS",
+        "displayName" : "CAD-TBILL-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_REUTERS",
+        "displayName" : "CAD-TBILL-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CAD_TBILL_TELERATE",
+        "displayName" : "CAD-TBILL-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "CHF-3M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-3M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "CHF-3M LIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_3_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-3M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "CHF-6M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBORSWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-6M LIBORSWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "CHF-6M LIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "CHF-6M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ANNUAL_SWAP_RATE",
+        "displayName" : "CHF-Annual Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ANNUAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "CHF-Annual Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "CHF-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_BASIS_SWAP_3_M_VS_6_M_LIBOR_11_00_ICAP",
+        "displayName" : "CHF-Basis Swap-3m vs 6m-LIBOR-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_ISDAFIX_SWAP_RATE",
+        "displayName" : "CHF-ISDAFIX-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR",
+        "displayName" : "CHF-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_BBA",
+        "displayName" : "CHF-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "CHF-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_ISDA",
+        "displayName" : "CHF-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_LIBOR_REFERENCE_BANKS",
+        "displayName" : "CHF-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_OIS_11_00_ICAP",
+        "displayName" : "CHF-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON",
+        "displayName" : "CHF-SARON",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_12_M",
+        "displayName" : "CHF-SARON Average 12M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_1_M",
+        "displayName" : "CHF-SARON Average 1M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_1_W",
+        "displayName" : "CHF-SARON Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_2_M",
+        "displayName" : "CHF-SARON Average 2M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_3_M",
+        "displayName" : "CHF-SARON Average 3M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_6_M",
+        "displayName" : "CHF-SARON Average 6M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_AVERAGE_9_M",
+        "displayName" : "CHF-SARON Average 9M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_COMPOUNDED_INDEX",
+        "displayName" : "CHF-SARON Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_OIS_COMPOUND_1",
+        "displayName" : "CHF-SARON-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_SARON_OIS_COMPOUND",
+        "displayName" : "CHF-SARON-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_TOIS_OIS_COMPOUND",
+        "displayName" : "CHF-TOIS-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CHF_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "CHF USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CL_CLICP_BLOOMBERG",
+        "displayName" : "CL-CLICP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CLP_ICP",
+        "displayName" : "CLP-ICP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CLP_TNA",
+        "displayName" : "CLP-TNA",
+        "description" : "Refers to the Indice Camara Promedio ('ICP') rate for Chilean Pesos which, for a Reset Date, is determined and published by the Asociacion de Bancos e Instituciones Financieras de Chile A.G. ('ABIF') in accordance with the 'Reglamento Indice de Camara Promedio' of the ABIF as published in the Diario Oficial de la Republica de Chile (the 'ICP Rules') and which is reported on the ABIF website by not later than 10:00 a.m., Santiago time, on that Reset Date."
+      }, {
+        "name" : "CNH_HIBOR",
+        "displayName" : "CNH-HIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNH_HIBOR_REFERENCE_BANKS",
+        "displayName" : "CNH-HIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNH_HIBOR_TMA",
+        "displayName" : "CNH-HIBOR-TMA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_7_REPO_COMPOUNDING_DATE",
+        "displayName" : "CNY 7-Repo Compounding Date",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_CNREPOFIX_CFXS_REUTERS",
+        "displayName" : "CNY-CNREPOFIX=CFXS-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_DEPOSIT_RATE",
+        "displayName" : "CNY-Deposit Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_FIXING_REPO_RATE",
+        "displayName" : "CNY-Fixing Repo Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_LPR",
+        "displayName" : "CNY-LPR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_PBOCB_REUTERS",
+        "displayName" : "CNY-PBOCB-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_QUARTERLY_7_DAY_REPO_NON_DELIVERABLE_SWAP_RATE_TRADITION",
+        "displayName" : "CNY-Quarterly 7 day Repo Non Deliverable Swap Rate-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_QUARTERLY_7_DAY_REPO_NON_DELIVERABLE_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "CNY-Quarterly 7 day Repo Non Deliverable Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_QUARTERLY_7_D_REPO_NDS_RATE_TRADITION",
+        "displayName" : "CNY-Quarterly 7D Repo NDS Rate Tradition",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "CNY-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "CNY-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR",
+        "displayName" : "CNY-SHIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR_OIS_COMPOUND",
+        "displayName" : "CNY-SHIBOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR_OIS_COMPOUNDING",
+        "displayName" : "CNY-Shibor-OIS-Compounding",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CNY_SHIBOR_REUTERS",
+        "displayName" : "CNY-SHIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction.."
+      }, {
+        "name" : "COP_IBR_OIS_COMPOUND_1",
+        "displayName" : "COP-IBR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "COP_IBR_OIS_COMPOUND",
+        "displayName" : "COP-IBR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "CZK-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "CZK-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_CZEONIA",
+        "displayName" : "CZK-CZEONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_CZEONIA_OIS_COMPOUND",
+        "displayName" : "CZK-CZEONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_PRIBOR",
+        "displayName" : "CZK-PRIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_PRIBOR_PRBO",
+        "displayName" : "CZK-PRIBOR-PRBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "CZK_PRIBOR_REFERENCE_BANKS",
+        "displayName" : "CZK-PRIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR",
+        "displayName" : "DKK-CIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR2",
+        "displayName" : "DKK-CIBOR2",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_2_BLOOMBERG",
+        "displayName" : "DKK-CIBOR2-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR2_DKNA13",
+        "displayName" : "DKK-CIBOR2-DKNA13",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_DKNA13",
+        "displayName" : "DKK-CIBOR-DKNA13",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_DKNA_13_BLOOMBERG",
+        "displayName" : "DKK-CIBOR-DKNA13-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CIBOR_REFERENCE_BANKS",
+        "displayName" : "DKK-CIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CITA",
+        "displayName" : "DKK-CITA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_CITA_DKNA14_COMPOUND",
+        "displayName" : "DKK-CITA-DKNA14-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DESTR",
+        "displayName" : "DKK-DESTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DESTR_COMPOUNDED_INDEX",
+        "displayName" : "DKK-DESTR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DESTR_OIS_COMPOUND",
+        "displayName" : "DKK-DESTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_DKKOIS_OIS_COMPOUND",
+        "displayName" : "DKK-DKKOIS-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "DKK_TOM_NEXT_OIS_COMPOUND",
+        "displayName" : "DKK-Tom Next-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "EUR-3M EURIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-3M EURIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "EUR-3M EURIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_3_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-3M EURIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "EUR-6M EURIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-6M EURIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "EUR-6M EURIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_6_M_EURIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "EUR-6M EURIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00",
+        "displayName" : "EUR-Annual Swap Rate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_BGCANTOR",
+        "displayName" : "EUR-Annual Swap Rate-10:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_BLOOMBERG",
+        "displayName" : "EUR-Annual Swap Rate-10:00-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_ICAP",
+        "displayName" : "EUR-Annual Swap Rate-10:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_SWAP_MARKER",
+        "displayName" : "EUR-Annual Swap Rate-10:00-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_10_00_TRADITION",
+        "displayName" : "EUR-Annual Swap Rate-10:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00",
+        "displayName" : "EUR-Annual Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_BLOOMBERG",
+        "displayName" : "EUR-Annual Swap Rate-11:00-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "EUR-Annual Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_11_00_SWAP_MARKER",
+        "displayName" : "EUR-Annual Swap Rate-11:00-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_3_MONTH",
+        "displayName" : "EUR-Annual Swap Rate-3 Month",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_3_MONTH_SWAP_MARKER",
+        "displayName" : "EUR-Annual Swap Rate-3 Month-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_4_15_TRADITION",
+        "displayName" : "EUR-Annual Swap Rate-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "EUR-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_BASIS_SWAP_EONIA_VS_3_M_EUR_IBOR_SWAP_RATES_A_360_10_00_ICAP",
+        "displayName" : "EUR Basis Swap-EONIA vs 3m EUR+IBOR Swap Rates-A/360-10:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_CNO_TEC10",
+        "displayName" : "EUR-CNO TEC10",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA",
+        "displayName" : "EUR-EONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_AVERAGE_1",
+        "displayName" : "EUR-EONIA-AVERAGE",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_AVERAGE",
+        "displayName" : "EUR-EONIA-Average",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_10_00_BGCANTOR",
+        "displayName" : "EUR-EONIA-OIS-10:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_10_00_ICAP",
+        "displayName" : "EUR-EONIA-OIS-10:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_10_00_TRADITION",
+        "displayName" : "EUR-EONIA-OIS-10:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_11_00_ICAP",
+        "displayName" : "EUR-EONIA-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_4_15_TRADITION",
+        "displayName" : "EUR-EONIA-OIS-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_COMPOUND_1",
+        "displayName" : "EUR-EONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_COMPOUND",
+        "displayName" : "EUR-EONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_OIS_COMPOUND_BLOOMBERG",
+        "displayName" : "EUR-EONIA-OIS-COMPOUND-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EONIA_SWAP_INDEX",
+        "displayName" : "EUR-EONIA-Swap-Index",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR",
+        "displayName" : "EUR-EURIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ACT_365",
+        "displayName" : "EUR-EURIBOR-Act/365",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ACT_365_BLOOMBERG",
+        "displayName" : "EUR-EURIBOR-Act/365-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ANNUAL_BOND_SWAP_VS_1_M_11_00_ICAP",
+        "displayName" : "EUR EURIBOR-Annual Bond Swap vs 1m-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_BASIS_SWAP_1_M_VS_3_M_EURIBOR_11_00_ICAP",
+        "displayName" : "EUR EURIBOR-Basis Swap-1m vs 3m-Euribor-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_BASIS_SWAP_3_M_VS_6_M_11_00_ICAP",
+        "displayName" : "EUR EURIBOR-Basis Swap-3m vs 6m-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ICE_SWAP_RATE_11_00",
+        "displayName" : "EUR-EURIBOR ICE Swap Rate-11:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_ICE_SWAP_RATE_12_00",
+        "displayName" : "EUR-EURIBOR ICE Swap Rate-12:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_REFERENCE_BANKS",
+        "displayName" : "EUR-EURIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_REUTERS",
+        "displayName" : "EUR-EURIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURIBOR_TELERATE",
+        "displayName" : "EUR-EURIBOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURONIA_OIS_COMPOUND_1",
+        "displayName" : "EUR-EURONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURONIA_OIS_COMPOUND",
+        "displayName" : "EUR-EURONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR",
+        "displayName" : "EUR-EuroSTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_12_M",
+        "displayName" : "EUR-EuroSTR Average 12M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_1_M",
+        "displayName" : "EUR-EuroSTR Average 1M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_1_W",
+        "displayName" : "EUR-EuroSTR Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_3_M",
+        "displayName" : "EUR-EuroSTR Average 3M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_AVERAGE_6_M",
+        "displayName" : "EUR-EuroSTR Average 6M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_COMPOUND",
+        "displayName" : "EUR-EuroSTR-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_COMPOUNDED_INDEX",
+        "displayName" : "EUR-EuroSTR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_FTSE_TERM",
+        "displayName" : "EUR-EuroSTR FTSE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "EUR-EuroSTR ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_ICE_SWAP_RATE",
+        "displayName" : "EUR-EuroSTR ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_OIS_COMPOUND",
+        "displayName" : "EUR-EuroSTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_EURO_STR_TERM",
+        "displayName" : "EUR-EuroSTR Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_EURIBOR_SWAP_RATE_11_00",
+        "displayName" : "EUR-ISDA-EURIBOR Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_EURIBOR_SWAP_RATE_12_00",
+        "displayName" : "EUR-ISDA-EURIBOR Swap Rate-12:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_LIBOR_SWAP_RATE_10_00",
+        "displayName" : "EUR-ISDA-LIBOR Swap Rate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_ISDA_LIBOR_SWAP_RATE_11_00",
+        "displayName" : "EUR-ISDA-LIBOR Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR",
+        "displayName" : "EUR-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR_BBA",
+        "displayName" : "EUR-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "EUR-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_LIBOR_REFERENCE_BANKS",
+        "displayName" : "EUR-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TAM_CDC",
+        "displayName" : "EUR-TAM-CDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC10_CNO",
+        "displayName" : "EUR-TEC10-CNO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_10_CNO_SWAP_MARKER",
+        "displayName" : "EUR-TEC10-CNO-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_10_REFERENCE_BANKS",
+        "displayName" : "EUR-TEC10-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC5_CNO",
+        "displayName" : "EUR-TEC5-CNO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_5_CNO_SWAP_MARKER",
+        "displayName" : "EUR-TEC5-CNO-SwapMarker",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TEC_5_REFERENCE_BANKS",
+        "displayName" : "EUR-TEC5-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_TMM_CDC_COMPOUND",
+        "displayName" : "EUR-TMM-CDC-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "EUR_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "EUR USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "GBP-6M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "GBP-6M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP",
+        "displayName" : "GBP-6M LIBOR SWAP-EUREX vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_6_M_LIBOR_SWAP_EUREX_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "GBP-6M LIBOR SWAP-EUREX vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_ISDA_SWAP_RATE",
+        "displayName" : "GBP-ISDA-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR",
+        "displayName" : "GBP-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_BBA",
+        "displayName" : "GBP-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "GBP-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_ICE_SWAP_RATE",
+        "displayName" : "GBP-LIBOR ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_ISDA",
+        "displayName" : "GBP-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_LIBOR_REFERENCE_BANKS",
+        "displayName" : "GBP-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_RONIA",
+        "displayName" : "GBP-RONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_RONIA_OIS_COMPOUND",
+        "displayName" : "GBP-RONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE",
+        "displayName" : "GBP-Semi-Annual Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "GBP-Semi-Annual Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "GBP-Semi Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_4_15_TRADITION",
+        "displayName" : "GBP-Semi Annual Swap Rate-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "GBP-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SEMI_ANNUAL_SWAP_RATE_SWAP_MARKER_26",
+        "displayName" : "GBP-Semi-Annual Swap Rate-SwapMarker26",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA",
+        "displayName" : "GBP-SONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_COMPOUND",
+        "displayName" : "GBP-SONIA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_COMPOUNDED_INDEX",
+        "displayName" : "GBP-SONIA Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_FTSE_TERM",
+        "displayName" : "GBP-SONIA FTSE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX",
+        "displayName" : "GBP-SONIA ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "GBP-SONIA ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_SWAP_RATE",
+        "displayName" : "GBP-SONIA ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_ICE_TERM",
+        "displayName" : "GBP-SONIA ICE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_11_00_ICAP",
+        "displayName" : "GBP-SONIA-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_11_00_TRADITION",
+        "displayName" : "GBP-SONIA-OIS-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_4_15_TRADITION",
+        "displayName" : "GBP-SONIA-OIS-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_OIS_COMPOUND",
+        "displayName" : "GBP-SONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_SONIA_SWAP_RATE",
+        "displayName" : "GBP-SONIA Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_UK_BASE_RATE",
+        "displayName" : "GBP-UK Base Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "GBP USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_WMBA_RONIA_COMPOUND",
+        "displayName" : "GBP-WMBA-RONIA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GBP_WMBA_SONIA_COMPOUND",
+        "displayName" : "GBP-WMBA-SONIA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIBOR_ATHIBOR",
+        "displayName" : "GRD-ATHIBOR-ATHIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIBOR_REFERENCE_BANKS",
+        "displayName" : "GRD-ATHIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIBOR_TELERATE",
+        "displayName" : "GRD-ATHIBOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIMID_REFERENCE_BANKS",
+        "displayName" : "GRD-ATHIMID-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "GRD_ATHIMID_REUTERS",
+        "displayName" : "GRD-ATHIMID-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR",
+        "displayName" : "HKD-HIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HIBOR_",
+        "displayName" : "HKD-HIBOR-HIBOR=",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HIBOR_BLOOMBERG",
+        "displayName" : "HKD-HIBOR-HIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HKAB",
+        "displayName" : "HKD-HIBOR-HKAB",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_HKAB_BLOOMBERG",
+        "displayName" : "HKD-HIBOR-HKAB-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_ISDC",
+        "displayName" : "HKD-HIBOR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HIBOR_REFERENCE_BANKS",
+        "displayName" : "HKD-HIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HONIA",
+        "displayName" : "HKD-HONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HONIA_OIS_COMPOUND",
+        "displayName" : "HKD-HONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_HONIX_OIS_COMPOUND",
+        "displayName" : "HKD-HONIX-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_ISDA_SWAP_RATE_11_00",
+        "displayName" : "HKD-ISDA-Swap Rate-11:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_ISDA_SWAP_RATE_4_00",
+        "displayName" : "HKD-ISDA-Swap Rate-4:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_4_00_BGCANTOR",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-4:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "HKD-Quarterly-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_11_00_ICAP",
+        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_4_00_ICAP",
+        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-4:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HKD_QUARTERLY_QUARTERLY_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "HKD-Quarterly-Quarterly Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_BUBOR",
+        "displayName" : "HUF-BUBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_BUBOR_REFERENCE_BANKS",
+        "displayName" : "HUF-BUBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_BUBOR_REUTERS",
+        "displayName" : "HUF-BUBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_HUFONIA",
+        "displayName" : "HUF-HUFONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "HUF_HUFONIA_OIS_COMPOUND",
+        "displayName" : "HUF-HUFONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_IDMA_BLOOMBERG",
+        "displayName" : "IDR-IDMA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_IDRFIX",
+        "displayName" : "IDR-IDRFIX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_INDONIA",
+        "displayName" : "IDR-INDONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_INDONIA_OIS_COMPOUND",
+        "displayName" : "IDR-INDONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_JIBOR",
+        "displayName" : "IDR-JIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_JIBOR_REUTERS",
+        "displayName" : "IDR-JIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SBI_REUTERS",
+        "displayName" : "IDR-SBI-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "IDR-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_NON_DELIVERABLE_16_00_TULLETT_PREBON",
+        "displayName" : "IDR-Semi Annual Swap Rate-Non-deliverable-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "IDR-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SOR_REFERENCE_BANKS",
+        "displayName" : "IDR-SOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SOR_REUTERS",
+        "displayName" : "IDR-SOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "IDR_SOR_TELERATE",
+        "displayName" : "IDR-SOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_SHIR",
+        "displayName" : "ILS-SHIR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_SHIR_OIS_COMPOUND",
+        "displayName" : "ILS-SHIR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_TELBOR",
+        "displayName" : "ILS-TELBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_TELBOR_01_REUTERS",
+        "displayName" : "ILS-TELBOR01-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ILS_TELBOR_REFERENCE_BANKS",
+        "displayName" : "ILS-TELBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_BMK",
+        "displayName" : "INR-BMK",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_CMT",
+        "displayName" : "INR-CMT",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_FBIL_MIBOR_OIS_COMPOUND",
+        "displayName" : "INR-FBIL-MIBOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_INBMK_REUTERS",
+        "displayName" : "INR-INBMK-REUTERS",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR",
+        "displayName" : "INR-MIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR_OIS",
+        "displayName" : "INR-MIBOR OIS",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR_OIS_COMPOUND_1",
+        "displayName" : "INR-MIBOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIBOR_OIS_COMPOUND",
+        "displayName" : "INR-MIBOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIFOR",
+        "displayName" : "INR-MIFOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MIOIS",
+        "displayName" : "INR-MIOIS",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MITOR_OIS_COMPOUND",
+        "displayName" : "INR-MITOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_MODIFIED_MIFOR",
+        "displayName" : "INR-Modified MIFOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_REFERENCE_BANKS",
+        "displayName" : "INR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_11_30_BGCANTOR",
+        "displayName" : "INR-Semi-Annual Swap Rate-11:30-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_NON_DELIVERABLE_16_00_TULLETT_PREBON",
+        "displayName" : "INR-Semi Annual Swap Rate-Non-deliverable-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "INR-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SORR",
+        "displayName" : "INR-SORR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "INR_SORR_OIS_COMPOUND",
+        "displayName" : "INR-SORR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ISK_REIBOR",
+        "displayName" : "ISK-REIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ISK_REIBOR_REFERENCE_BANKS",
+        "displayName" : "ISK-REIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ISK_REIBOR_REUTERS",
+        "displayName" : "ISK-REIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "JPY-Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ANNUAL_SWAP_RATE_3_00_TRADITION",
+        "displayName" : "JPY-Annual Swap Rate-3:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_BBSF_BLOOMBERG_10_00",
+        "displayName" : "JPY-BBSF-Bloomberg-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_BBSF_BLOOMBERG_15_00",
+        "displayName" : "JPY-BBSF-Bloomberg-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_EUROYEN_TIBOR",
+        "displayName" : "JPY-Euroyen TIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ISDA_SWAP_RATE_10_00",
+        "displayName" : "JPY-ISDA-Swap Rate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_ISDA_SWAP_RATE_15_00",
+        "displayName" : "JPY-ISDA-Swap Rate-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR",
+        "displayName" : "JPY-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_BBA",
+        "displayName" : "JPY-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "JPY-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_FRASETT",
+        "displayName" : "JPY-LIBOR-FRASETT",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_ISDA",
+        "displayName" : "JPY-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_REFERENCE_BANKS",
+        "displayName" : "JPY-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_TSR_10_00",
+        "displayName" : "JPY-LIBOR TSR-10:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LIBOR_TSR_15_00",
+        "displayName" : "JPY-LIBOR TSR-15:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LTPR_MHBK",
+        "displayName" : "JPY-LTPR MHBK",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LTPR_MHCB",
+        "displayName" : "JPY-LTPR-MHCB",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_LTPR_TBC",
+        "displayName" : "JPY-LTPR-TBC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_MUTANCALL_TONAR",
+        "displayName" : "JPY-MUTANCALL-TONAR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_OIS_11_00_ICAP",
+        "displayName" : "JPY-OIS-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_OIS_11_00_TRADITION",
+        "displayName" : "JPY-OIS-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_OIS_3_00_TRADITION",
+        "displayName" : "JPY-OIS-3:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_QUOTING_BANKS_LIBOR",
+        "displayName" : "JPY-Quoting Banks-LIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_STPR_QUOTING_BANKS",
+        "displayName" : "JPY-STPR-Quoting Banks",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR",
+        "displayName" : "JPY-TIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_17096",
+        "displayName" : "JPY-TIBOR-17096",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_17097",
+        "displayName" : "JPY-TIBOR-17097",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_DTIBOR01",
+        "displayName" : "JPY-TIBOR-DTIBOR01",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM",
+        "displayName" : "JPY-TIBOR-TIBM",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_10_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM (10 Banks)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_5_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM (5 Banks)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_ALL_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM (All Banks)",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_ALL_BANKS_BLOOMBERG",
+        "displayName" : "JPY-TIBOR-TIBM (All Banks)-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_TIBM_REFERENCE_BANKS",
+        "displayName" : "JPY-TIBOR-TIBM-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TIBOR_ZTIBOR",
+        "displayName" : "JPY-TIBOR-ZTIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA",
+        "displayName" : "JPY-TONA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_AVERAGE_180_D",
+        "displayName" : "JPY-TONA Average 180D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_AVERAGE_30_D",
+        "displayName" : "JPY-TONA Average 30D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_AVERAGE_90_D",
+        "displayName" : "JPY-TONA Average 90D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_COMPOUNDED_INDEX",
+        "displayName" : "JPY-TONA Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX",
+        "displayName" : "JPY-TONA ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "JPY-TONA ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_OIS_COMPOUND_1",
+        "displayName" : "JPY-TONA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_OIS_COMPOUND",
+        "displayName" : "JPY-TONA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_TSR_10_00",
+        "displayName" : "JPY-TONA TSR-10:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TONA_TSR_15_00",
+        "displayName" : "JPY-TONA TSR-15:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TORF_QUICK",
+        "displayName" : "JPY-TORF QUICK",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_REFERENCE_BANKS",
+        "displayName" : "JPY-TSR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_REUTERS_10_00",
+        "displayName" : "JPY-TSR-Reuters-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_REUTERS_15_00",
+        "displayName" : "JPY-TSR-Reuters-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_TELERATE_10_00",
+        "displayName" : "JPY-TSR-Telerate-10:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_TSR_TELERATE_15_00",
+        "displayName" : "JPY-TSR-Telerate-15:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "JPY_USD_BASIS_SWAPS_11_00_ICAP",
+        "displayName" : "JPY USD-Basis Swaps-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_BOND_3222",
+        "displayName" : "KRW-Bond-3222",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_CD_3220",
+        "displayName" : "KRW-CD-3220",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_CD_91D",
+        "displayName" : "KRW-CD 91D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_CD_KSDA_BLOOMBERG",
+        "displayName" : "KRW-CD-KSDA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_KOFR",
+        "displayName" : "KRW-KOFR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_KOFR_OIS_COMPOUND",
+        "displayName" : "KRW-KOFR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "KRW_QUARTERLY_ANNUAL_SWAP_RATE_3_30_ICAP",
+        "displayName" : "KRW-Quarterly Annual Swap Rate-3:30-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE",
+        "displayName" : "MXN-TIIE",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_BANXICO",
+        "displayName" : "MXN-TIIE-Banxico",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_BANXICO_BLOOMBERG",
+        "displayName" : "MXN-TIIE-Banxico-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_BANXICO_REFERENCE_BANKS",
+        "displayName" : "MXN-TIIE-Banxico-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_ON",
+        "displayName" : "MXN-TIIE ON",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_ON_OIS_COMPOUND",
+        "displayName" : "MXN-TIIE ON-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MXN_TIIE_REFERENCE_BANKS",
+        "displayName" : "MXN-TIIE-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_KLIBOR",
+        "displayName" : "MYR-KLIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_KLIBOR_BNM",
+        "displayName" : "MYR-KLIBOR-BNM",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_KLIBOR_REFERENCE_BANKS",
+        "displayName" : "MYR-KLIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_MYOR",
+        "displayName" : "MYR-MYOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_MYOR_OIS_COMPOUND",
+        "displayName" : "MYR-MYOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_QUARTERLY_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "MYR-Quarterly Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "MYR_QUARTERLY_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "MYR-Quarterly Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR",
+        "displayName" : "NOK-NIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_NIBR",
+        "displayName" : "NOK-NIBOR-NIBR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_NIBR_BLOOMBERG",
+        "displayName" : "NOK-NIBOR-NIBR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_NIBR_REFERENCE_BANKS",
+        "displayName" : "NOK-NIBOR-NIBR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_OIBOR",
+        "displayName" : "NOK-NIBOR-OIBOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NIBOR_REFERENCE_BANKS",
+        "displayName" : "NOK-NIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NOWA",
+        "displayName" : "NOK-NOWA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NOK_NOWA_OIS_COMPOUND",
+        "displayName" : "NOK-NOWA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_BID",
+        "displayName" : "NZD-BBR-BID",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_FRA",
+        "displayName" : "NZD-BBR-FRA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_ISDC",
+        "displayName" : "NZD-BBR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_REFERENCE_BANKS",
+        "displayName" : "NZD-BBR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BBR_TELERATE",
+        "displayName" : "NZD-BBR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BKBM_BID",
+        "displayName" : "NZD-BKBM Bid",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BKBM_FRA",
+        "displayName" : "NZD-BKBM FRA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_BKBM_FRA_SWAP_RATE_ICAP",
+        "displayName" : "NZD-BKBM FRA Swap Rate ICAP",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_NZIONA",
+        "displayName" : "NZD-NZIONA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction. NOTE: In accordance with Section 2.1.11(ii) (New Zealand Business Days), from the date on which the New Zealand Financial Markets Association's 'New Zealand Business Day Guidance' (proposed effective date of October 6, 2025) becomes effective, the reference to a 'Wellington and Auckland Business Day' will be deemed to be replaced with a reference to a 'New Zealand Business Day' for all Transactions entered into from (and including) that effective date."
+      }, {
+        "name" : "NZD_NZIONA_OIS_COMPOUND_1",
+        "displayName" : "NZD-NZIONA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction. NOTE: In accordance with Section 2.1.11(ii) (New Zealand Business Days), from the date on which the New Zealand Financial Markets Association's 'New Zealand Business Day Guidance' (proposed effective date of October 6, 2025) becomes effective, the reference to a 'Wellington and Auckland Business Day' will be deemed to be replaced with a reference to a 'New Zealand Business Day' for all Transactions entered into from (and including) that effective date."
+      }, {
+        "name" : "NZD_NZIONA_OIS_COMPOUND",
+        "displayName" : "NZD-NZIONA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "NZD-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SEMI_ANNUAL_SWAP_RATE_BGCANTOR_REFERENCE_BANKS",
+        "displayName" : "NZD-Semi-Annual Swap Rate-BGCANTOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SWAP_RATE_ICAP",
+        "displayName" : "NZD-Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "NZD_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "NZD-Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_ORR",
+        "displayName" : "PHP-ORR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_ORR_OIS_COMPOUND",
+        "displayName" : "PHP-ORR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF",
+        "displayName" : "PHP-PHIREF",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF_BAP",
+        "displayName" : "PHP-PHIREF-BAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF_BLOOMBERG",
+        "displayName" : "PHP-PHIREF-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_PHIREF_REFERENCE_BANKS",
+        "displayName" : "PHP-PHIREF-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "PHP-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PHP_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "PHP-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLONIA",
+        "displayName" : "PLN-POLONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLONIA_OIS_COMPOUND_1",
+        "displayName" : "PLN-POLONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLONIA_OIS_COMPOUND",
+        "displayName" : "PLN-POLONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLSTR",
+        "displayName" : "PLN-POLSTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_POLSTR_OIS_COMPOUND",
+        "displayName" : "PLN-POLSTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBID",
+        "displayName" : "PLN-WIBID",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBOR",
+        "displayName" : "PLN-WIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBOR_REFERENCE_BANKS",
+        "displayName" : "PLN-WIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIBOR_WIBO",
+        "displayName" : "PLN-WIBOR-WIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIRON",
+        "displayName" : "PLN-WIRON",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLN_WIRON_OIS_COMPOUND",
+        "displayName" : "PLN-WIRON-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLZ_WIBOR_REFERENCE_BANKS",
+        "displayName" : "PLZ-WIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "PLZ_WIBOR_WIBO",
+        "displayName" : "PLZ-WIBOR-WIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "REPOFUNDS_RATE_FRANCE_OIS_COMPOUND",
+        "displayName" : "REPOFUNDS RATE-FRANCE-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "REPOFUNDS_RATE_GERMANY_OIS_COMPOUND",
+        "displayName" : "REPOFUNDS RATE-GERMANY-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "REPOFUNDS_RATE_ITALY_OIS_COMPOUND",
+        "displayName" : "REPOFUNDS RATE-ITALY-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "RON-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "RON-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_RBOR_REUTERS",
+        "displayName" : "RON-RBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ROBID",
+        "displayName" : "RON-ROBID",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RON_ROBOR",
+        "displayName" : "RON-ROBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "RUB-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_12_45_TRADITION",
+        "displayName" : "RUB-Annual Swap Rate-12:45-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_4_15_TRADITION",
+        "displayName" : "RUB-Annual Swap Rate-4:15-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "RUB-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "RUB-Annual Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_KEY_RATE_CBRF",
+        "displayName" : "RUB-Key Rate CBRF",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_MOS_PRIME",
+        "displayName" : "RUB-MosPrime",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_MOSPRIME_NFEA",
+        "displayName" : "RUB-MOSPRIME-NFEA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_MOSPRIME_REFERENCE_BANKS",
+        "displayName" : "RUB-MOSPRIME-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_RUONIA",
+        "displayName" : "RUB-RUONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_RUONIA_OIS_COMPOUND_1",
+        "displayName" : "RUB-RUONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "RUB_RUONIA_OIS_COMPOUND",
+        "displayName" : "RUB-RUONIA-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SAR_SAIBOR",
+        "displayName" : "SAR-SAIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SAR_SRIOR_REFERENCE_BANKS",
+        "displayName" : "SAR-SRIOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SAR_SRIOR_SUAA",
+        "displayName" : "SAR-SRIOR-SUAA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_ANNUAL_SWAP_RATE",
+        "displayName" : "SEK-Annual Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_ANNUAL_SWAP_RATE_SESWFI",
+        "displayName" : "SEK-Annual Swap Rate-SESWFI",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SIOR_OIS_COMPOUND",
+        "displayName" : "SEK-SIOR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR",
+        "displayName" : "SEK-STIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_BLOOMBERG",
+        "displayName" : "SEK-STIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_OIS_COMPOUND",
+        "displayName" : "SEK-STIBOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_REFERENCE_BANKS",
+        "displayName" : "SEK-STIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_STIBOR_SIDE",
+        "displayName" : "SEK-STIBOR-SIDE",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR",
+        "displayName" : "SEK-SWESTR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_1_M",
+        "displayName" : "SEK-SWESTR Average 1M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_1_W",
+        "displayName" : "SEK-SWESTR Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_2_M",
+        "displayName" : "SEK-SWESTR Average 2M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_3_M",
+        "displayName" : "SEK-SWESTR Average 3M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_AVERAGE_6_M",
+        "displayName" : "SEK-SWESTR Average 6M",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_COMPOUNDED_INDEX",
+        "displayName" : "SEK-SWESTR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SEK_SWESTR_OIS_COMPOUND",
+        "displayName" : "SEK-SWESTR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_CURRENCY_BASIS_SWAP_RATE_11_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Currency Basis Swap Rate-11:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_CURRENCY_BASIS_SWAP_RATE_16_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Currency Basis Swap Rate-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "SGD-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Swap Rate-11:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "SGD-Semi-Annual Swap Rate-11.00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_16_00_TULLETT_PREBON",
+        "displayName" : "SGD-Semi-Annual Swap Rate-16:00-Tullett Prebon",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_ICAP",
+        "displayName" : "SGD-Semi-Annual Swap Rate-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_ICAP_REFERENCE_BANKS",
+        "displayName" : "SGD-Semi-Annual Swap Rate-ICAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "SGD-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SEMI_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "SGD-Semi-Annual Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR",
+        "displayName" : "SGD-SIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR_REFERENCE_BANKS",
+        "displayName" : "SGD-SIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR_REUTERS",
+        "displayName" : "SGD-SIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SIBOR_TELERATE",
+        "displayName" : "SGD-SIBOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SONAR_OIS_COMPOUND",
+        "displayName" : "SGD-SONAR-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SONAR_OIS_VWAP_COMPOUND",
+        "displayName" : "SGD-SONAR-OIS-VWAP-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR",
+        "displayName" : "SGD-SOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SORA",
+        "displayName" : "SGD-SORA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SORA_COMPOUND",
+        "displayName" : "SGD-SORA-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SORA_OIS_COMPOUND",
+        "displayName" : "SGD-SORA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_REFERENCE_BANKS",
+        "displayName" : "SGD-SOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_REUTERS",
+        "displayName" : "SGD-SOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_TELERATE",
+        "displayName" : "SGD-SOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_VWAP",
+        "displayName" : "SGD-SOR-VWAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SGD_SOR_VWAP_REFERENCE_BANKS",
+        "displayName" : "SGD-SOR-VWAP-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_BLOOMBERG",
+        "displayName" : "SKK-BRIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_BRBO",
+        "displayName" : "SKK-BRIBOR-BRBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_NBSK07",
+        "displayName" : "SKK-BRIBOR-NBSK07",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "SKK_BRIBOR_REFERENCE_BANKS",
+        "displayName" : "SKK-BRIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "THB-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "THB-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SOR_REFERENCE_BANKS",
+        "displayName" : "THB-SOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SOR_REUTERS",
+        "displayName" : "THB-SOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_SOR_TELERATE",
+        "displayName" : "THB-SOR-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THBFIX",
+        "displayName" : "THB-THBFIX",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THBFIX_REFERENCE_BANKS",
+        "displayName" : "THB-THBFIX-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THBFIX_REUTERS",
+        "displayName" : "THB-THBFIX-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THOR",
+        "displayName" : "THB-THOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THOR_COMPOUND",
+        "displayName" : "THB-THOR-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "THB_THOR_OIS_COMPOUND",
+        "displayName" : "THB-THOR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "TRY Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_ANNUAL_SWAP_RATE_11_15_BGCANTOR",
+        "displayName" : "TRY-Annual Swap Rate-11:15-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "TRY-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_SEMI_ANNUAL_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "TRY-Semi-Annual Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TLREF",
+        "displayName" : "TRY-TLREF",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TLREF_OIS_COMPOUND_1",
+        "displayName" : "TRY-TLREF-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TLREF_OIS_COMPOUND",
+        "displayName" : "TRY-TLREF-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TRLIBOR",
+        "displayName" : "TRY-TRLIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TRYIBOR_REFERENCE_BANKS",
+        "displayName" : "TRY-TRYIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TRY_TRYIBOR_REUTERS",
+        "displayName" : "TRY-TRYIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_QUARTERLY_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "TWD-Quarterly-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_QUARTERLY_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "TWD-Quarterly-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_REFERENCE_DEALERS",
+        "displayName" : "TWD-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_REUTERS_6165",
+        "displayName" : "TWD-Reuters-6165",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBIR01",
+        "displayName" : "TWD-TAIBIR01",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBIR02",
+        "displayName" : "TWD-TAIBIR02",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBOR",
+        "displayName" : "TWD-TAIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBOR_BLOOMBERG",
+        "displayName" : "TWD-TAIBOR-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TAIBOR_REUTERS",
+        "displayName" : "TWD-TAIBOR-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TELERATE_6165",
+        "displayName" : "TWD-Telerate-6165",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "TWD_TWCPBA",
+        "displayName" : "TWD-TWCPBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "UK_BASE_RATE",
+        "displayName" : "UK Base Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "USD-3M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_3_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "USD-3M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP",
+        "displayName" : "USD-6M LIBOR SWAP-CME vs LCH-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_6_M_LIBOR_SWAP_CME_VS_LCH_ICAP_BLOOMBERG",
+        "displayName" : "USD-6M LIBOR SWAP-CME vs LCH-ICAP-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR",
+        "displayName" : "USD-AMERIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_AVERAGE_30_D",
+        "displayName" : "USD-AMERIBOR Average 30D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_AVERAGE_90_D",
+        "displayName" : "USD-AMERIBOR Average 90D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_TERM",
+        "displayName" : "USD-AMERIBOR Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AMERIBOR_TERM_STRUCTURE",
+        "displayName" : "USD-AMERIBOR Term Structure",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "USD-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ANNUAL_SWAP_RATE_11_00_TRADITION",
+        "displayName" : "USD-Annual Swap Rate-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ANNUAL_SWAP_RATE_4_00_TRADITION",
+        "displayName" : "USD-Annual Swap Rate-4:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_AXI_TERM",
+        "displayName" : "USD-AXI Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BA_H_15",
+        "displayName" : "USD-BA-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BA_REFERENCE_DEALERS",
+        "displayName" : "USD-BA-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BMA_MUNICIPAL_SWAP_INDEX",
+        "displayName" : "USD-BMA Municipal Swap Index",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_BSBY",
+        "displayName" : "USD-BSBY",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CD_H_15",
+        "displayName" : "USD-CD-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CD_REFERENCE_DEALERS",
+        "displayName" : "USD-CD-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_REFERENCE_BANKS",
+        "displayName" : "USD-CMS-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_REFERENCE_BANKS_ICAP_SWAP_PX",
+        "displayName" : "USD-CMS-Reference Banks-ICAP SwapPX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_REUTERS",
+        "displayName" : "USD-CMS-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMS_TELERATE",
+        "displayName" : "USD-CMS-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT",
+        "displayName" : "USD-CMT",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT_AVERAGE_1_W",
+        "displayName" : "USD-CMT Average 1W",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT_T7051",
+        "displayName" : "USD-CMT-T7051",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CMT_T7052",
+        "displayName" : "USD-CMT-T7052",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COF11_FHLBSF",
+        "displayName" : "USD-COF11-FHLBSF",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COF_11_REUTERS",
+        "displayName" : "USD-COF11-Reuters",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COF_11_TELERATE",
+        "displayName" : "USD-COF11-Telerate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_COFI",
+        "displayName" : "USD-COFI",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CP_H_15",
+        "displayName" : "USD-CP-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CP_MONEY_MARKET_YIELD",
+        "displayName" : "USD-CP-Money Market Yield",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CP_REFERENCE_DEALERS",
+        "displayName" : "USD-CP-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_CRITR",
+        "displayName" : "USD-CRITR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS",
+        "displayName" : "USD-Federal Funds",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_H_15",
+        "displayName" : "USD-Federal Funds-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_H_15_BLOOMBERG",
+        "displayName" : "USD-Federal Funds-H.15-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_H_15_OIS_COMPOUND",
+        "displayName" : "USD-Federal Funds-H.15-OIS-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_OIS_COMPOUND",
+        "displayName" : "USD-Federal Funds-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FEDERAL_FUNDS_REFERENCE_DEALERS",
+        "displayName" : "USD-Federal Funds-Reference Dealers",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FFCB_DISCO",
+        "displayName" : "USD-FFCB-DISCO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_FXI_TERM",
+        "displayName" : "USD-FXI Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDAFIX_3_SWAP_RATE",
+        "displayName" : "USD-ISDAFIX3-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDAFIX_3_SWAP_RATE_3_00",
+        "displayName" : "USD-ISDAFIX3-Swap Rate-3:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDA_SWAP_RATE",
+        "displayName" : "USD-ISDA-Swap Rate",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_ISDA_SWAP_RATE_3_00",
+        "displayName" : "USD-ISDA-Swap Rate-3:00",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR",
+        "displayName" : "USD-LIBOR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_BBA",
+        "displayName" : "USD-LIBOR-BBA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_BBA_BLOOMBERG",
+        "displayName" : "USD-LIBOR-BBA-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_ICE_SWAP_RATE_11_00",
+        "displayName" : "USD-LIBOR ICE Swap Rate-11:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_ICE_SWAP_RATE_15_00",
+        "displayName" : "USD-LIBOR ICE Swap Rate-15:00",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_ISDA",
+        "displayName" : "USD-LIBOR-ISDA",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_LIBO",
+        "displayName" : "USD-LIBOR-LIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_LIBOR_REFERENCE_BANKS",
+        "displayName" : "USD-LIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_MUNICIPAL_SWAP_INDEX",
+        "displayName" : "USD-Municipal Swap Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_MUNICIPAL_SWAP_LIBOR_RATIO_11_00_ICAP",
+        "displayName" : "USD-Municipal Swap Libor Ratio-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_MUNICIPAL_SWAP_RATE_11_00_ICAP",
+        "displayName" : "USD-Municipal Swap Rate-11:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_BGCANTOR",
+        "displayName" : "USD-OIS-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_LON_ICAP",
+        "displayName" : "USD-OIS-11:00-LON-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_NY_ICAP",
+        "displayName" : "USD-OIS-11:00-NY-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_11_00_TRADITION",
+        "displayName" : "USD-OIS-11:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_3_00_BGCANTOR",
+        "displayName" : "USD-OIS-3:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_3_00_NY_ICAP",
+        "displayName" : "USD-OIS-3:00-NY-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OIS_4_00_TRADITION",
+        "displayName" : "USD-OIS-4:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_OVERNIGHT_BANK_FUNDING_RATE",
+        "displayName" : "USD-Overnight Bank Funding Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_PRIME",
+        "displayName" : "USD-Prime",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_PRIME_H_15",
+        "displayName" : "USD-Prime-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_PRIME_REFERENCE_BANKS",
+        "displayName" : "USD-Prime-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_S_P_INDEX_HIGH_GRADE",
+        "displayName" : "USD-S&P Index-High Grade",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SAND_P_INDEX_HIGH_GRADE",
+        "displayName" : "USD-SandP Index High Grade",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SIBOR_REFERENCE_BANKS",
+        "displayName" : "USD-SIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SIBOR_SIBO",
+        "displayName" : "USD-SIBOR-SIBO",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SIFMA_MUNICIPAL_SWAP_INDEX",
+        "displayName" : "USD-SIFMA Municipal Swap Index",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR",
+        "displayName" : "USD-SOFR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_AVERAGE_180_D",
+        "displayName" : "USD-SOFR Average 180D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_AVERAGE_30_D",
+        "displayName" : "USD-SOFR Average 30D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_AVERAGE_90_D",
+        "displayName" : "USD-SOFR Average 90D",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_CME_TERM",
+        "displayName" : "USD-SOFR CME Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_COMPOUND",
+        "displayName" : "USD-SOFR-COMPOUND",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_COMPOUNDED_INDEX",
+        "displayName" : "USD-SOFR Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX",
+        "displayName" : "USD-SOFR ICE Compounded Index",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR",
+        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR_2_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_0_FLOOR_5_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 0 Floor 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_2_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 2D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_COMPOUNDED_INDEX_5_D_LAG",
+        "displayName" : "USD-SOFR ICE Compounded Index 5D Lag",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_SWAP_RATE",
+        "displayName" : "USD-SOFR ICE Swap Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix and 2006 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_SWAP_RATE_SPREADS",
+        "displayName" : "USD-SOFR ICE Swap Rate Spreads",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_ICE_TERM",
+        "displayName" : "USD-SOFR ICE Term",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SOFR_OIS_COMPOUND",
+        "displayName" : "USD-SOFR-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_SWAP_RATE_BCMP_1",
+        "displayName" : "USD Swap Rate-BCMP1",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_AUCTION_HIGH_RATE",
+        "displayName" : "USD-TBILL Auction High Rate",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_H_15",
+        "displayName" : "USD-TBILL-H.15",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_H_15_BLOOMBERG",
+        "displayName" : "USD-TBILL-H.15-Bloomberg",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_SECONDARY_MARKET",
+        "displayName" : "USD-TBILL-Secondary Market",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TBILL_SECONDARY_MARKET_BOND_EQUIVALENT_YIELD",
+        "displayName" : "USD-TBILL Secondary Market-Bond Equivalent Yield",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TIBOR_ISDC",
+        "displayName" : "USD-TIBOR-ISDC",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TIBOR_REFERENCE_BANKS",
+        "displayName" : "USD-TIBOR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_19901_3_00_ICAP",
+        "displayName" : "USD-Treasury-19901-3:00-ICAP",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_BCMP_1",
+        "displayName" : "USD Treasury Rate-BCMP1",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_ICAP_BROKER_TEC",
+        "displayName" : "USD-Treasury Rate-ICAP BrokerTec",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_SWAP_MARKER_100",
+        "displayName" : "USD-Treasury Rate-SwapMarker100",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_SWAP_MARKER_99",
+        "displayName" : "USD-Treasury Rate-SwapMarker99",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_T_19901",
+        "displayName" : "USD-Treasury Rate-T19901",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "USD_TREASURY_RATE_T_500",
+        "displayName" : "USD-Treasury Rate-T500",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "VND_SEMI_ANNUAL_SWAP_RATE_11_00_BGCANTOR",
+        "displayName" : "VND-Semi-Annual Swap Rate-11:00-BGCANTOR",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "VND_SEMI_ANNUAL_SWAP_RATE_REFERENCE_BANKS",
+        "displayName" : "VND-Semi-Annual Swap Rate-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_DEPOSIT_REFERENCE_BANKS",
+        "displayName" : "ZAR-DEPOSIT-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_DEPOSIT_SAFEX",
+        "displayName" : "ZAR-DEPOSIT-SAFEX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_JIBAR",
+        "displayName" : "ZAR-JIBAR",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_JIBAR_REFERENCE_BANKS",
+        "displayName" : "ZAR-JIBAR-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_JIBAR_SAFEX",
+        "displayName" : "ZAR-JIBAR-SAFEX",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_PRIME_AVERAGE_1",
+        "displayName" : "ZAR-Prime Average",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_PRIME_AVERAGE",
+        "displayName" : "ZAR-PRIME-AVERAGE",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_PRIME_AVERAGE_REFERENCE_BANKS",
+        "displayName" : "ZAR-PRIME-AVERAGE-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_QUARTERLY_SWAP_RATE_1_00_TRADITION",
+        "displayName" : "ZAR-Quarterly Swap Rate-1:00-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_QUARTERLY_SWAP_RATE_5_30_TRADITION",
+        "displayName" : "ZAR-Quarterly Swap Rate-5:30-TRADITION",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_QUARTERLY_SWAP_RATE_TRADITION_REFERENCE_BANKS",
+        "displayName" : "ZAR-Quarterly Swap Rate-TRADITION-Reference Banks",
+        "description" : "Per 2006 ISDA Definitions or Annex to the 2000 ISDA Definitions, Section 7.1 Rate Options, as amended and supplemented through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_ZARONIA",
+        "displayName" : "ZAR-ZARONIA",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      }, {
+        "name" : "ZAR_ZARONIA_OIS_COMPOUND",
+        "displayName" : "ZAR-ZARONIA-OIS Compound",
+        "description" : "Per 2021 ISDA Interest Rate Derivatives Definitions Floating Rate Matrix, as amended through the date on which parties enter into the relevant transaction."
+      } ]
+    },
+    "description" : "The benchmark rate index (e.g., LIBOR, EURIBOR, SOFR) identified for this reset.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "tradeDate",
+    "type" : "date",
+    "description" : "The date the underlying trade was executed, used for referencing the relevant holiday calendars.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -174817,52 +178566,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.event.common.ExerciseEvent" : [ {
-    "name" : "adjustedExerciseDate",
-    "type" : "date",
-    "description" : "The date on which the option exercise takes place. This date should already be adjusted for any applicable business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "adjustedRelevantSwapEffectiveDate",
-    "type" : "date",
-    "description" : "The effective date of the underlying swap associated with a given exercise date. This date should already be adjusted for any applicable business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "adjustedCashSettlementValuationDate",
-    "type" : "date",
-    "description" : "The date by which the cash settlement amount must be agreed. This date should already be adjusted for any applicable business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "adjustedCashSettlementPaymentDate",
-    "type" : "date",
-    "description" : "The date on which the cash settlement amount is paid. This date should already be adjusted for any applicable business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "adjustedExerciseFeePaymentDate",
-    "type" : "date",
-    "description" : "The date on which the exercise fee amount is paid. This date should already be adjusted for any applicable business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  } ],
   "fpml.consolidated.riskdef.PricingParameterShift" : [ {
     "name" : "id",
     "type" : "string",
@@ -175314,7 +179017,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "The number of units included in the transaction for each delivery interval",
     "cardinality" : {
@@ -179993,25 +183696,6 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
-  "cdm.base.math.NonNegativeStep" : [ {
-    "name" : "stepDate",
-    "type" : "date",
-    "description" : "The date on which the associated stepValue becomes effective. This day may be subject to adjustment in accordance with a business day convention.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  }, {
-    "name" : "stepValue",
-    "type" : "number",
-    "description" : "The non-negative rate or amount which becomes effective on the associated stepDate. A rate of 5% would be represented as 0.05.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "1"
-    },
-    "metaField" : false
-  } ],
   "cdm.base.staticdata.party.AssetPartyRole" : [ {
     "name" : "partyReference",
     "type" : {
@@ -183122,6 +186806,76 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.event.common.AgreementEventInstruction" : [ {
+    "name" : "eventDate",
+    "type" : "date",
+    "description" : "Specifies the date of the agreement event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "effectiveDate",
+    "type" : "date",
+    "description" : "Specifies the effective date of the agreement event.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "instruction",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "AgreementInstruction",
+      "namespace" : "cdm.event.common",
+      "description" : "Instruction to a function that will be used to perform an agreement event"
+    },
+    "description" : "Specifies the instruction associated with the agreement event triggered by an amendment.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "intent",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "AgreementEventIntentEnum",
+      "values" : [ {
+        "name" : "AMENDED_TERMS",
+        "displayName" : "AmendedTerms",
+        "description" : "Specifies that an agreement event results in updated agreement terms for the overall legal agreement to which the agreement event applies."
+      }, {
+        "name" : "AMENDED_PARTIES",
+        "displayName" : "AmendedParties",
+        "description" : "Represents a change to the contractual parties to an agreement through the process of addition or deletion."
+      }, {
+        "name" : "TERMINATION",
+        "displayName" : "Termination",
+        "description" : "Represents a change that results in the related agreement being terminated."
+      }, {
+        "name" : "AMENDED_AND_RESTATED",
+        "displayName" : "AmendedAndRestated",
+        "description" : "Represents a change in terms and or parties where the agreement is required to be restated in its entirety."
+      }, {
+        "name" : "NOVATION",
+        "displayName" : "Novation",
+        "description" : "Represents a change where certain trades will be moved to a different agreement while the existing agreement remains in place."
+      }, {
+        "name" : "SUPERSEDED",
+        "displayName" : "Superseded",
+        "description" : "Represents a change where an agreement is being superseded by another existing agreement and the agreement that is being amended is being terminated as a function of this process."
+      } ]
+    },
+    "description" : "Specifies the purposes for which the amendment agreement exists and how it will impact the agreement to which it applies.",
+    "cardinality" : {
+      "upperBound" : "*",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.com.EEPRiskPeriod" : [ {
     "name" : "startDate",
     "type" : "zonedDateTime",
@@ -183373,6 +187127,109 @@ export const attributesJson = {
       "namespace" : "cdm.legaldocumentation.transaction.additionalterms",
       "description" : "Refers to the segregation deposit procedure parties may want to commmit into during the time a Disruption Event is effective"
     },
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
+  "cdm.legaldocumentation.master.isda.SubstituteCalculationAgentElection" : [ {
+    "name" : "methodologyForSubstitutionExists",
+    "type" : "boolean",
+    "description" : "A boolean to represent if the metholodgy exists for appointing a substitute Calculation Agent (True), or not (False).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
+    "name" : "substituteCalculationAgentIsIndependent",
+    "type" : "boolean",
+    "description" : "A boolean to represent that if a substitute Calculation Agent can be appointed, whether they should be independent (True) or not (False).",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "substituteCalculationAgentAppointedBy",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "SubstituteCalculationAgentAppointerEnum",
+      "values" : [ {
+        "name" : "PARTY_A",
+        "displayName" : "Party_A",
+        "description" : "Party A"
+      }, {
+        "name" : "PARTY_B",
+        "displayName" : "Party_B",
+        "description" : "Party B"
+      }, {
+        "name" : "PARTY_A_PARTY_B",
+        "displayName" : "PartyA_Party_B",
+        "description" : "Party A and Party B"
+      }, {
+        "name" : "THIRD_PARTY",
+        "displayName" : "Third_Party",
+        "description" : "A denoted third party (to be specified)"
+      }, {
+        "name" : "OTHER",
+        "displayName" : "Other",
+        "description" : "Other (to be specified)"
+      } ]
+    },
+    "description" : "A representation of who appoints the substitute Calculation Agent.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "substituteCalculationAgentAppointedByIfOther",
+    "type" : "string",
+    "description" : "A representation of who appoints the substitute Calculation Agent if 'Other' or 'Third Party'.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "costOfSubstituteCalculationAgentIsBoreBy",
+    "type" : {
+      "typeCategory" : "EnumType",
+      "name" : "PayeeOfSubstituteCalculationAgentEnum",
+      "values" : [ {
+        "name" : "PARTY_A",
+        "displayName" : "Party_A",
+        "description" : "Party A"
+      }, {
+        "name" : "PARTY_B",
+        "displayName" : "Party_B",
+        "description" : "Party B"
+      }, {
+        "name" : "PARTY_A_PARTY_B",
+        "displayName" : "PartyA_Party_B",
+        "description" : "Party A and Party B"
+      }, {
+        "name" : "FURTHEST_ESTIMATE",
+        "displayName" : "Furthest_Estimate",
+        "description" : "The party whose calculations were further away from those of the substitute"
+      }, {
+        "name" : "OTHER",
+        "displayName" : "Other",
+        "description" : "Other (to be specified)"
+      } ]
+    },
+    "description" : "A representation of who bears the cost of the substitute calculation agent.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "costOfSubstituteCalculationAgentBoreByIfOther",
+    "type" : "string",
+    "description" : "A representation of who bears the cost of the substitute calculation agent if 'Other'.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -184197,7 +188054,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "description" : "Defines the Event Currency Amount to be exchanged on the Settlement Date.",
     "cardinality" : {
@@ -188010,7 +191867,7 @@ export const attributesJson = {
         "description" : "A fractional number will be rounded either up or down to the specified number of decimal places (the precision) depending on its value. For example, 5.24 would be rounded down to 5.2 and 5.25 would be rounded up to 5.3 if a precision of 1 decimal place were specified."
       } ]
     },
-    "description" : "Specifies the rounding rounding rule as up, down, or nearest.",
+    "description" : "Specifies the rounding rule as up, down, or nearest.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "1"
@@ -202338,6 +206195,21 @@ export const attributesJson = {
     },
     "metaField" : false
   } ],
+  "cdm.legaldocumentation.master.isda.CreditEventUponMerger" : [ {
+    "name" : "partyElection",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "CreditEventUponMergerElection",
+      "namespace" : "cdm.legaldocumentation.master.isda",
+      "description" : "Defines whether Credit Event Upon Merger applies to either party, and specifies elections specific to the Credit Event Upon Merger Clause."
+    },
+    "description" : "The party election specific to the Credit Event Upon Merger clause.",
+    "cardinality" : {
+      "upperBound" : "2",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  } ],
   "fpml.consolidated.shared.FallbackRateObservation" : [ {
     "name" : "observationDate",
     "type" : "zonedDateTime",
@@ -210384,7 +214256,7 @@ export const attributesJson = {
       "typeCategory" : "StructuredType",
       "name" : "Quantity",
       "namespace" : "cdm.base.math",
-      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single amount value exists."
+      "description" : "Specifies a quantity as a single value to be associated to a financial product, for example a transfer amount resulting from a trade. This data type extends QuantitySchedule and requires that only the single value exists."
     },
     "cardinality" : {
       "upperBound" : "1",
@@ -213868,14 +217740,28 @@ export const attributesJson = {
     "metaField" : false
   } ],
   "cdm.base.math.QuantitySchedule" : [ {
+    "name" : "unit",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "UnitType",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines the unit to be used for price, quantity, or other purposes"
+    },
+    "description" : "Requires that a unit of amount must be specified for any quantity.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "1"
+    },
+    "metaField" : false
+  }, {
     "name" : "multiplier",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "Measure",
+      "name" : "NonNegativeMeasure",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional."
+      "description" : "Defines a concrete non-negative measure as a number associated to a unit. It extends Measure by requiring the value attribute to be non-negative. A measure may be unit-less so the unit attribute is still optional."
     },
-    "description" : "Defines an optional number that the quantity should be multiplied by to derive a total quantity. This number is associated to a unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
+    "description" : "Defines an optional measure that the quantity should be multiplied by to derive a total quantity. Requires that the multiplier must be positive. This number is associated to an optional unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unit would be contracts, the multiplier value would 1,000 and the mulitiplier unit would be 1,000 MT (Metric Tons).",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -213896,23 +217782,14 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
+    "name" : "total",
     "type" : {
       "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
+      "name" : "Schedule",
       "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+      "description" : "Specifies an amount or quantity, either as a single value or as a schedule of dated values. This can be used where the applicable quantity changes over time, with each dated value becoming effective from its associated step date."
     },
-    "description" : "A schedule of step date and value pairs. On each step date the associated step value becomes effective. The step dates are used to order the steps by ascending order. This attribute is optional so the data type may be used to define a schedule with a single value.",
-    "cardinality" : {
-      "upperBound" : "*",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.",
+    "description" : "Specifies the total quantity when the quantity itself is specified with a frequency.",
     "cardinality" : {
       "upperBound" : "1",
       "lowerBound" : "0"
@@ -213929,6 +217806,29 @@ export const attributesJson = {
     "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
     "cardinality" : {
       "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "value",
+    "type" : "number",
+    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
+    "cardinality" : {
+      "upperBound" : "1",
+      "lowerBound" : "0"
+    },
+    "metaField" : false
+  }, {
+    "name" : "datedValue",
+    "type" : {
+      "typeCategory" : "StructuredType",
+      "name" : "DatedValue",
+      "namespace" : "cdm.base.math",
+      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
+    },
+    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
+    "cardinality" : {
+      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
@@ -221739,7 +225639,8 @@ export const attributesJson = {
     "type" : {
       "typeCategory" : "StructuredType",
       "name" : "NonNegativeQuantitySchedule",
-      "namespace" : "cdm.base.math"
+      "namespace" : "cdm.base.math",
+      "description" : "Specifies a quantity schedule where all the values must be non-negative."
     },
     "description" : "Specifies a quantity schedule to be associated to an individual underlier that is a basket constituent. The multiple cardinality is aligned to the one of the PriceQuantity->quantity that this quantity is referencing.",
     "cardinality" : {
