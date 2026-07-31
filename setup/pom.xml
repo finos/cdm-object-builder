@@ -21,6 +21,8 @@
         <guice.version>6.0.0</guice.version>
         <logback.version>1.4.14</logback.version>
         <guava.version>33.3.1-jre</guava.version>
+        <jackson-databind.version>2.22.1</jackson-databind.version>
+        <plexus-utils.version>3.6.1</plexus-utils.version>
     </properties>
 
     <dependencies>
@@ -89,6 +91,19 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
+            </dependency>
+            <!-- Transitive via rune-common; pinned to fix CVE-2026-54512 / CVE-2026-54513 -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+            <!-- Transitive via rune-maven-plugin -> maven-plugin-api; pinned past
+                 3.6.0 to fix CVE-2025-67030 (directory traversal in Expand.extractFile) -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus-utils.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
