@@ -42,11 +42,6 @@
             <version>${finos.cdm.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.finos.rune</groupId>
-            <artifactId>rune-lang</artifactId>
-            <version>${rosetta.dsl.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>org.eclipse.xtext</artifactId>
         </dependency>
