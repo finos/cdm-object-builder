@@ -10,7 +10,9 @@ export class JsonExportService {
   constructor() {}
 
   export(jsonRootNode: JsonRootNode): any {
+    const modelName = jsonRootNode.type.namespace.split('.')[0];
     const jsonObject: any = {
+      '@model': modelName,
       '@type': `${jsonRootNode.type.namespace}.${jsonRootNode.type.name}`,
     };
     this.exportChildren(jsonRootNode.children, jsonObject);
