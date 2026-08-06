@@ -10,7 +10,9 @@ export class JsonExportService {
   constructor() {}
 
   export(jsonRootNode: JsonRootNode): any {
-    const jsonObject = {};
+    const jsonObject: any = {
+      '@type': `${jsonRootNode.type.namespace}.${jsonRootNode.type.name}`,
+    };
     this.exportChildren(jsonRootNode.children, jsonObject);
     return jsonObject;
   }
@@ -36,7 +38,6 @@ export class JsonExportService {
         jsonAttributeNode.children
       ) {
         this.buildIntermediateNode(
-          isMeta,
           isArray,
           jsonObject,
           definitionName,
@@ -64,7 +65,7 @@ export class JsonExportService {
       Array.isArray(jsonAttributeNode.value)
     ) {
       const newValues = jsonAttributeNode.value.map((val) => {
-        return isMeta ? { value: val } : val;
+        return isMeta ? { '@data': val } : val;
       });
 
       const fieldIsMultiCardinality = isMultiCardinality(
@@ -80,7 +81,7 @@ export class JsonExportService {
         : newValues[0];
     } else {
       const newValue = isMeta
-        ? { value: jsonAttributeNode.value }
+        ? { '@data': jsonAttributeNode.value }
         : jsonAttributeNode.value;
 
       jsonObject[definitionName] = newValue;
@@ -88,7 +89,6 @@ export class JsonExportService {
   }
 
   private buildIntermediateNode(
-    isMeta: boolean,
     isArray: boolean,
     jsonObject: any,
     definitionName: string,
@@ -97,7 +97,7 @@ export class JsonExportService {
     if (!jsonAttributeNode.children) {
       throw Error('Intermediate nodes must have children');
     }
-    const child = isMeta ? { value: {} } : {};
+    const child: any = {};
 
     if (isArray) {
       jsonObject[definitionName].push(child);
@@ -107,7 +107,7 @@ export class JsonExportService {
 
     this.exportChildren(
       jsonAttributeNode.children,
-      isMeta ? child.value : child
+      child
     );
   }
 }
