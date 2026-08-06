@@ -65,7 +65,8 @@ export class JsonImportService {
 
     for (const [attributeName, attributeValue] of sourceJsonAttributes) {
       const modelAttribute = attributesForTypes.find(
-        attr => attr.name === attributeName
+        attr => attr.name === attributeName ||
+          attr.name.toLowerCase() === attributeName.toLowerCase()
       );
 
       if (!modelAttribute) {

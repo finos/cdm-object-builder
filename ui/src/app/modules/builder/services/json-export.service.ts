@@ -24,7 +24,10 @@ export class JsonExportService {
     jsonObject: any
   ) {
     jsonAttributeNodes.forEach((jsonAttributeNode) => {
-      const definitionName = jsonAttributeNode.definition.name;
+      const rawName = jsonAttributeNode.definition.name;
+      const definitionName = jsonAttributeNode.definition.attributeOfChoice
+        ? rawName.charAt(0).toLowerCase() + rawName.slice(1)
+        : rawName;
       const isMeta = jsonAttributeNode.definition.metaField || false;
       let isArray = false;
 
