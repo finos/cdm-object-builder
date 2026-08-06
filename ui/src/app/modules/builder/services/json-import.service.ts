@@ -208,6 +208,9 @@ export class JsonImportService {
     if (currentKey === 'meta') {
       return false;
     }
+    if (currentKey.startsWith('@') && !isJsonAttribute(jsonNode)) {
+      return false;
+    }
     const isMetaField = isJsonAttribute(jsonNode)
       ? !!jsonNode.definition.metaField
       : false;
@@ -221,6 +224,6 @@ export class JsonImportService {
       return false;
     }
     const isMetaField = !!jsonNode.definition.metaField;
-    return currentKey === 'value' && isMetaField;
+    return (currentKey === 'value' || currentKey === '@data') && isMetaField;
   }
 }
