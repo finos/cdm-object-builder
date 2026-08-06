@@ -65,7 +65,8 @@ export class JsonImportService {
 
     for (const [attributeName, attributeValue] of sourceJsonAttributes) {
       const modelAttribute = attributesForTypes.find(
-        attr => attr.name === attributeName
+        attr => attr.name === attributeName ||
+          attr.name.toLowerCase() === attributeName.toLowerCase()
       );
 
       if (!modelAttribute) {
@@ -208,6 +209,16 @@ export class JsonImportService {
     if (currentKey === 'meta') {
       return false;
     }
+    if (currentKey.startsWith('@')) {
+      // Keep @data for meta-field attribute nodes so expandValueNode can unwrap it;
+      // filter out all other @-prefixed Rune JSON annotations (@type, @model, @key, etc.)
+      // at every level of the tree.
+      return (
+        currentKey === '@data' &&
+        isJsonAttribute(jsonNode) &&
+        !!jsonNode.definition.metaField
+      );
+    }
     const isMetaField = isJsonAttribute(jsonNode)
       ? !!jsonNode.definition.metaField
       : false;
@@ -221,6 +232,6 @@ export class JsonImportService {
       return false;
     }
     const isMetaField = !!jsonNode.definition.metaField;
-    return currentKey === 'value' && isMetaField;
+    return (currentKey === 'value' || currentKey === '@data') && isMetaField;
   }
 }
