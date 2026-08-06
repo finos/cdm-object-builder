@@ -208,8 +208,15 @@ export class JsonImportService {
     if (currentKey === 'meta') {
       return false;
     }
-    if (currentKey.startsWith('@') && !isJsonAttribute(jsonNode)) {
-      return false;
+    if (currentKey.startsWith('@')) {
+      // Keep @data for meta-field attribute nodes so expandValueNode can unwrap it;
+      // filter out all other @-prefixed Rune JSON annotations (@type, @model, @key, etc.)
+      // at every level of the tree.
+      return (
+        currentKey === '@data' &&
+        isJsonAttribute(jsonNode) &&
+        !!jsonNode.definition.metaField
+      );
     }
     const isMetaField = isJsonAttribute(jsonNode)
       ? !!jsonNode.definition.metaField
