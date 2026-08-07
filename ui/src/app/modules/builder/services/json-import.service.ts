@@ -9,6 +9,15 @@ import {
 } from '../models/builder.model';
 import { isListBasedBasicType } from '../utils/node.util';
 import {
+  LEGACY_VALUE_KEY,
+  RUNE_DATA_KEY,
+  RUNE_TYPE_KEY,
+  isRuneMetaKey,
+  runeQualifiedTypeName,
+  unwrapRuneValue,
+} from '../utils/rune-serialisation.util';
+import {
+  isChoiceType,
   isJsonAttribute,
   isJsonRootNode,
   isStructuredType,
@@ -16,7 +25,13 @@ import {
 import { BuilderApiService } from './builder-api.service';
 import { IdentityService } from './identity.service';
 
-const EXCLUDED_FIELDS = [
+/**
+ * Metadata keys of the pre-CDM-7 serialisation. Rune metadata is now `@`-prefixed
+ * and handled by {@link isRuneMetaKey}, but these are still skipped so that
+ * previously exported documents remain importable. `address` is also a genuine
+ * CDM attribute, which is why these only apply to metadata-annotated nodes.
+ */
+const LEGACY_EXCLUDED_FIELDS = [
   'meta',
   'externalReference',
   'globalReference',
@@ -63,6 +78,18 @@ export class JsonImportService {
       this.builderApiService.getAttributesForType(parentNodeType)
     );
 
+    // Without `@type` the document is using the pre-CDM-7 form, where the option
+    // is a key named after it and so resolves through the normal attribute lookup.
+    if (isChoiceType(parentNodeType) && sourceJson?.[RUNE_TYPE_KEY]) {
+      await this.generateChildForChoiceOption(
+        parentNode,
+        parentNodeType,
+        sourceJson,
+        attributesForTypes
+      );
+      return;
+    }
+
     for (const [attributeName, attributeValue] of sourceJsonAttributes) {
       const modelAttribute = attributesForTypes.find(
         attr => attr.name === attributeName
@@ -90,6 +117,44 @@ export class JsonImportService {
         );
       }
     }
+  }
+
+  /**
+   * A choice value names its selected option with `@type` and inlines that
+   * option's fields, so the option has to be resolved before the remaining keys
+   * can be matched against a type's attributes. The builder models each option as
+   * a named attribute of the choice, which is the node inserted here.
+   */
+  private async generateChildForChoiceOption(
+    parentNode: JsonNode,
+    parentNodeType: StructuredType,
+    sourceJson: any,
+    choiceOptions: ModelAttribute[]
+  ) {
+    const qualifiedTypeName = sourceJson[RUNE_TYPE_KEY];
+
+    const selectedOption = choiceOptions.find(
+      option =>
+        isStructuredType(option.type) &&
+        runeQualifiedTypeName(option.type) === qualifiedTypeName
+    );
+
+    if (!selectedOption) {
+      throw Error(
+        `Could not find option ${JSON.stringify(
+          qualifiedTypeName
+        )} in choice type ${parentNodeType.namespace}.${parentNodeType.name}`
+      );
+    }
+
+    const optionNode: JsonAttributeNode = {
+      definition: selectedOption,
+      id: this.identityService.getId(),
+    };
+
+    await this.generateChildrenForNode(optionNode, sourceJson);
+
+    this.addChildToParent(parentNode, optionNode);
   }
 
   private generateChildForUnstructuredNode(
@@ -121,7 +186,7 @@ export class JsonImportService {
 
     if (isListBasedBasicType(modelAttribute)) {
       const newValues = attributeValues.map(val =>
-        modelAttribute.metaField ? val.value : val
+        modelAttribute.metaField ? unwrapRuneValue(val) : val
       );
 
       const newJsonAttribute: JsonAttributeNode = {
@@ -134,7 +199,7 @@ export class JsonImportService {
       for (const val of attributeValues) {
         const newJsonAttribute: JsonAttributeNode = {
           definition: modelAttribute,
-          value: modelAttribute.metaField ? val.value : val,
+          value: modelAttribute.metaField ? unwrapRuneValue(val) : val,
           id: this.identityService.getId(),
         };
         newJsonAttributes.push(newJsonAttribute);
@@ -205,13 +270,19 @@ export class JsonImportService {
   }
 
   private preserveJsonField(currentKey: string, jsonNode: JsonNode): boolean {
+    // `@data` carries the value and is unwrapped by expandValueNode; every other
+    // Rune metadata key (`@scheme`, `@key`, `@ref`, and the envelope keys
+    // `@model`/`@type`/`@version`) describes the document rather than the model.
+    if (isRuneMetaKey(currentKey)) {
+      return currentKey === RUNE_DATA_KEY;
+    }
     if (currentKey === 'meta') {
       return false;
     }
     const isMetaField = isJsonAttribute(jsonNode)
       ? !!jsonNode.definition.metaField
       : false;
-    const isReservedName = EXCLUDED_FIELDS.includes(currentKey);
+    const isReservedName = LEGACY_EXCLUDED_FIELDS.includes(currentKey);
 
     return !isReservedName || !isMetaField;
   }
@@ -221,6 +292,9 @@ export class JsonImportService {
       return false;
     }
     const isMetaField = !!jsonNode.definition.metaField;
-    return currentKey === 'value' && isMetaField;
+    return (
+      (currentKey === RUNE_DATA_KEY || currentKey === LEGACY_VALUE_KEY) &&
+      isMetaField
+    );
   }
 }

@@ -4,6 +4,10 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
+import {
+  RUNE_DATA_KEY,
+  isRuneMetaKey,
+} from '../../utils/rune-serialisation.util';
 
 interface GridDataItem {
   style: object;
@@ -18,12 +22,7 @@ interface GridData {
   style: object;
 }
 
-const EXCLUDED_NODES = [
-  'meta',
-  'externalReference',
-  'globalReference',
-  'address',
-];
+const EXCLUDED_NODES = ['meta', 'externalReference', 'globalReference'];
 
 @Component({
     selector: 'app-tabular-view',
@@ -38,10 +37,41 @@ export class TabularViewComponent implements OnInit {
 
   @Input()
   set cdmJson(jsonStructure: any) {
-    if (jsonStructure !== undefined && jsonStructure !== null) {
-      this.gridData = this.convertJsonStructureToGrid(jsonStructure);
+    const displayable = this.stripRuneMetadata(jsonStructure);
+    if (displayable !== undefined && displayable !== null) {
+      this.gridData = this.convertJsonStructureToGrid(displayable);
     }
-    this._jsonStructure = jsonStructure;
+    this._jsonStructure = displayable;
+  }
+
+  /**
+   * Rune metadata is not part of the object being built, so it is removed before
+   * the grid is laid out: `@data` collapses to the value it wraps (otherwise every
+   * metadata-annotated attribute would render an extra `@data` column) and the
+   * remaining `@`-prefixed keys — the `@model`/`@type`/`@version` envelope,
+   * `@scheme`, `@key`, `@ref` — are dropped.
+   */
+  private stripRuneMetadata(jsonStructure: any): any {
+    if (Array.isArray(jsonStructure)) {
+      return jsonStructure.map(item => this.stripRuneMetadata(item));
+    }
+
+    if (!(jsonStructure instanceof Object)) {
+      return jsonStructure;
+    }
+
+    if (RUNE_DATA_KEY in jsonStructure) {
+      return this.stripRuneMetadata(jsonStructure[RUNE_DATA_KEY]);
+    }
+
+    const stripped: any = {};
+    for (const [key, value] of Object.entries(jsonStructure)) {
+      if (isRuneMetaKey(key)) {
+        continue;
+      }
+      stripped[key] = this.stripRuneMetadata(value);
+    }
+    return stripped;
   }
 
   constructor() {}

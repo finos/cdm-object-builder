@@ -35,6 +35,13 @@ export function isStructuredType(
   );
 }
 
+export function isChoiceType(modelType: ModelType): modelType is StructuredType {
+  if (isBasicType(modelType)) {
+    return false;
+  }
+  return modelType.typeCategory === RosettaTypeCategory.ChoiceType;
+}
+
 export function isJsonRootNode(node: JsonNode): node is JsonRootNode {
   return 'type' in node && !('definition' in node);
 }

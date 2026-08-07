@@ -176,8 +176,15 @@ export class BuilderComponent implements OnInit, OnDestroy {
     this.jsonRootNode$
       .pipe(
         first(),
-        tap(jsonRootNode => {
-          const jsonContents = this.jsonExportService.export(jsonRootNode);
+        switchMap(jsonRootNode =>
+          this.builderApiService.getModelVersion().pipe(
+            first(),
+            map(modelVersion =>
+              this.jsonExportService.export(jsonRootNode, modelVersion)
+            )
+          )
+        ),
+        tap(jsonContents => {
           const blob = new Blob([JSON.stringify(jsonContents, null, 2)], {
             type: 'application/json',
           });

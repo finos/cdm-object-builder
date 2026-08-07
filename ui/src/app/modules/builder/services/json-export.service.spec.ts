@@ -164,13 +164,16 @@ describe('JsonExportService', () => {
 
     // Expected
     const expectedJsonOutput = {
+      '@model': 'cdm',
+      '@type': 'cdm.base.staticdata.party.Party',
+      '@version': '7.0.0',
       name: {
-        value: 'Party B',
+        '@data': 'Party B',
       },
       partyId: [
         {
           identifier: {
-            value: '48750084UKLVTR22DS78',
+            '@data': '48750084UKLVTR22DS78',
           },
           identifierType: 'LEI',
         },
@@ -180,12 +183,12 @@ describe('JsonExportService', () => {
           firstName: 'John',
           surname: 'Doe',
           dateOfBirth: '1980-01-01',
+          // personId is metadata-annotated and structured: the Rune serialisation
+          // inlines it rather than wrapping it in a `value` object.
           personId: [
             {
-              value: {
-                identifier: {
-                  value: 'jdoe',
-                },
+              identifier: {
+                '@data': 'jdoe',
               },
             },
           ],
@@ -194,7 +197,7 @@ describe('JsonExportService', () => {
       ],
     };
 
-    const exported = service.export(inputJsonRootNode);
+    const exported = service.export(inputJsonRootNode, '7.0.0');
 
     expect(exported).toEqual(expectedJsonOutput);
   });
@@ -250,6 +253,9 @@ describe('JsonExportService', () => {
     };
 
     const expectedJsonOutput = {
+      '@model': 'cdm',
+      '@type': 'cdm.product.collateral.EligibleCollateralSpecification',
+      '@version': '7.0.0',
       party: [
         {
           contactInformation: {
@@ -263,7 +269,7 @@ describe('JsonExportService', () => {
       ],
     };
 
-    const exported = service.export(inputJsonRootNode);
+    const exported = service.export(inputJsonRootNode, '7.0.0');
 
     expect(exported).toEqual(expectedJsonOutput);
   });
@@ -323,18 +329,22 @@ describe('JsonExportService', () => {
     };
 
     const expectedJsonOutput = {
+      '@model': 'cdm',
+      '@type': 'cdm.product.collateral.EligibleCollateralSpecification',
+      '@version': '7.0.0',
       criteria: [
         {
+          // The selected choice option is identified by `@type` and inlined,
+          // rather than nested under a key named after the option.
           collateralCriteria: {
-            AssetType: {
-              equityType: 'ORDINARY',
-            },
+            '@type': 'cdm.base.staticdata.asset.common.AssetType',
+            equityType: 'ORDINARY',
           },
         },
       ],
     };
 
-    const exported = service.export(inputJsonRootNode);
+    const exported = service.export(inputJsonRootNode, '7.0.0');
 
     expect(exported).toEqual(expectedJsonOutput);
   });

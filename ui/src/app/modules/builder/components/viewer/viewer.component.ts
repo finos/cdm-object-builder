@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { first, map, tap } from 'rxjs';
+import { first, map, switchMap, tap } from 'rxjs';
+import { BuilderApiService } from '../../services/builder-api.service';
 import { JsonExportService } from '../../services/json-export.service';
 import { NodeDatabaseService } from '../../services/node-database.service';
 
@@ -14,7 +15,8 @@ export class ViewerComponent {
 
   constructor(
     private jsonExportService: JsonExportService,
-    private nodeDatabaseService: NodeDatabaseService
+    private nodeDatabaseService: NodeDatabaseService,
+    private builderApiService: BuilderApiService
   ) {}
 
   refreshViewer() {
@@ -22,9 +24,17 @@ export class ViewerComponent {
       .pipe(
         first(),
         map((nodeDataChange) => nodeDataChange.rootNode),
-        tap((rootNode) => {
-          this.cdmJson = this.jsonExportService.export(rootNode);
-        })
+        switchMap((rootNode) =>
+          this.builderApiService
+            .getModelVersion()
+            .pipe(
+              first(),
+              map((modelVersion) =>
+                this.jsonExportService.export(rootNode, modelVersion)
+              )
+            )
+        ),
+        tap((cdmJson) => (this.cdmJson = cdmJson))
       )
       .subscribe();
   }

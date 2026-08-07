@@ -197,6 +197,160 @@ describe('JsonImportService', () => {
     expect(imported).toEqual(expectedPartyNode);
   });
 
+  it('should import the CDM 7 rune serialisation', async () => {
+    // The same object as the test above, written in the serialisation CDM 7
+    // emits: metadata sits on `@`-prefixed keys next to the data instead of in a
+    // `meta` sibling, `@data` replaces the `value` wrapper, and metadata-annotated
+    // structured attributes (personId) are inlined rather than wrapped.
+    const inputJsonObject = {
+      '@model': 'cdm',
+      '@type': 'cdm.base.staticdata.party.Party',
+      '@version': '7.0.0',
+      '@key:external': 'party2',
+      '@key': '490e5f44',
+      name: {
+        '@data': 'Party B',
+      },
+      partyId: [
+        {
+          identifier: {
+            '@scheme': 'http://www.fpml.org/coding-scheme/external/iso17442',
+            '@data': '48750084UKLVTR22DS78',
+          },
+          identifierType: 'LEI',
+          '@key': 'de31bddc',
+        },
+      ],
+      person: [
+        {
+          firstName: 'John',
+          surname: 'Doe',
+          dateOfBirth: '1980-01-01',
+          personId: [
+            {
+              identifier: {
+                '@data': 'jdoe',
+              },
+              '@key': 'baeb8c0d',
+            },
+          ],
+        },
+      ],
+    };
+
+    const partyType: StructuredType = {
+      name: 'Party',
+      namespace: 'cdm.base.staticdata.party',
+      description: 'Party Description',
+      typeCategory: RosettaTypeCategory.StructuredType,
+    };
+
+    const partyIdentifierType: StructuredType = {
+      name: 'PartyIdentifier',
+      namespace: 'cdm.base.staticdata.party',
+      description: 'PartyIdentifier Description',
+      typeCategory: RosettaTypeCategory.StructuredType,
+    };
+
+    const naturalPersonType: StructuredType = {
+      name: 'NaturalPerson',
+      namespace: 'cdm.base.staticdata.party',
+      description: 'NaturalPerson Description',
+      typeCategory: RosettaTypeCategory.StructuredType,
+    };
+
+    const personIdentifierType: StructuredType = {
+      name: 'PersonIdentifier',
+      namespace: 'cdm.base.staticdata.party',
+      description: 'PersonIdentifier Description',
+      typeCategory: RosettaTypeCategory.StructuredType,
+    };
+
+    const expectedPartyNode: JsonRootNode = {
+      type: partyType,
+      children: [
+        {
+          id: 12345,
+          definition: testDataUtil.findAttributeInType(partyType, 'name'),
+          value: 'Party B',
+        },
+        {
+          id: 12345,
+          definition: testDataUtil.findAttributeInType(partyType, 'partyId'),
+          children: [
+            {
+              id: 12345,
+              definition: testDataUtil.findAttributeInType(
+                partyIdentifierType,
+                'identifier'
+              ),
+              value: '48750084UKLVTR22DS78',
+            },
+            {
+              id: 12345,
+              definition: testDataUtil.findAttributeInType(
+                partyIdentifierType,
+                'identifierType'
+              ),
+              value: 'LEI',
+            },
+          ],
+        },
+        {
+          id: 12345,
+          definition: testDataUtil.findAttributeInType(partyType, 'person'),
+          children: [
+            {
+              id: 12345,
+              definition: testDataUtil.findAttributeInType(
+                naturalPersonType,
+                'firstName'
+              ),
+              value: 'John',
+            },
+            {
+              id: 12345,
+              definition: testDataUtil.findAttributeInType(
+                naturalPersonType,
+                'surname'
+              ),
+              value: 'Doe',
+            },
+            {
+              id: 12345,
+              definition: testDataUtil.findAttributeInType(
+                naturalPersonType,
+                'dateOfBirth'
+              ),
+              value: '1980-01-01',
+            },
+            {
+              id: 12345,
+              definition: testDataUtil.findAttributeInType(
+                naturalPersonType,
+                'personId'
+              ),
+              children: [
+                {
+                  id: 12345,
+                  definition: testDataUtil.findAttributeInType(
+                    personIdentifierType,
+                    'identifier'
+                  ),
+                  value: 'jdoe',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const imported = await service.import(inputJsonObject, partyType);
+
+    expect(imported).toEqual(expectedPartyNode);
+  });
+
   it('should import multi cardinality meta fields', async () => {
     const inputJsonObject = {
       criteria: [
