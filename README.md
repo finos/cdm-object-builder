@@ -29,7 +29,7 @@ A use case for the Object Builder is the selection of Eligible Collateral Schedu
 
 ### Basic Method
 
-There is an `npm` command that is set up to update to the latest model vesion. The command assumes that `mvn` and `java` are installed.
+There is an `npm` command that is set up to update to the latest model version. The command assumes that `mvn` and `java` are installed.
 
 Steps:
 1. Run the command `cd ui && npm run update-model`
