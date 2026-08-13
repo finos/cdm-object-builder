@@ -4,8 +4,8 @@ This file lists the maintainers of this repository.
 
 ## Current maintainers
 
-| GitHub Username | Name | Organization | Email |
-|----------------|------|--------------|-------|
+| GitHub Username | Name | Organization | Email (optional) |
+|----------------|------|--------------|------------------|
 | @ADaleISLA | *please add name* | *please add organization* |  |
 | @CDM-ReleaseManagement-AP | *please add name* | *please add organization* |  |
 | @CDM-ReleaseManagement-EC | *please add name* | *please add organization* |  |
