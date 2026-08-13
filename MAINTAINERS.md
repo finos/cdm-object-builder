@@ -6,26 +6,26 @@ This file lists the maintainers of this repository.
 
 | GitHub Username | Name | Organization | Email |
 |----------------|------|--------------|-------|
-| @ADaleISLA | *please add name* | *please add organization* | *please add email* |
-| @CDM-ReleaseManagement-AP | *please add name* | *please add organization* | *please add email* |
-| @CDM-ReleaseManagement-EC | *please add name* | *please add organization* | *please add email* |
-| @CDM-ReleaseManagement-LSG | *please add name* | *please add organization* | *please add email* |
-| @CDM-ReleaseManagement-OT | *please add name* | *please add organization* | *please add email* |
-| @JayasriR | *please add name* | *please add organization* | *please add email* |
-| @ReleaseManagement-BP | *please add name* | *please add organization* | *please add email* |
-| @chrisisla | Chris | ISLA | *please add email* |
-| @dshoneisda | *please add name* | *please add organization* | *please add email* |
-| @eacunaISDA | *please add name* | *please add organization* | *please add email* |
-| @gabriel-ICMA | *please add name* | *please add organization* | *please add email* |
-| @hugohills-regnosys | Hugo Hills | REGnosys | *please add email* |
-| @llynhiavu | *please add name* | *please add organization* | *please add email* |
-| @lolabeis | *please add name* | *please add organization* | *please add email* |
-| @manel-martos | Manel Martos | TradeHeader S.L. | *please add email* |
-| @mgratacos | Marc Gratacos | TradeHeader | *please add email* |
-| @minesh-s-patel | *please add name* | *please add organization* | *please add email* |
-| @tabi5h | *please add name* | *please add organization* | *please add email* |
-| @tomhealey-icma | *please add name* | *please add organization* | *please add email* |
-| @valdensmith | *please add name* | *please add organization* | *please add email* |
+| @ADaleISLA | *please add name* | *please add organization* |  |
+| @CDM-ReleaseManagement-AP | *please add name* | *please add organization* |  |
+| @CDM-ReleaseManagement-EC | *please add name* | *please add organization* |  |
+| @CDM-ReleaseManagement-LSG | *please add name* | *please add organization* |  |
+| @CDM-ReleaseManagement-OT | *please add name* | *please add organization* |  |
+| @JayasriR | *please add name* | *please add organization* |  |
+| @ReleaseManagement-BP | *please add name* | *please add organization* |  |
+| @chrisisla | Chris | ISLA |  |
+| @dshoneisda | *please add name* | *please add organization* |  |
+| @eacunaISDA | *please add name* | *please add organization* |  |
+| @gabriel-ICMA | *please add name* | *please add organization* |  |
+| @hugohills-regnosys | Hugo Hills | REGnosys |  |
+| @llynhiavu | *please add name* | *please add organization* |  |
+| @lolabeis | *please add name* | *please add organization* |  |
+| @manel-martos | Manel Martos | TradeHeader S.L. |  |
+| @mgratacos | Marc Gratacos | TradeHeader |  |
+| @minesh-s-patel | *please add name* | *please add organization* |  |
+| @tabi5h | *please add name* | *please add organization* |  |
+| @tomhealey-icma | *please add name* | *please add organization* |  |
+| @valdensmith | *please add name* | *please add organization* |  |
 
 For information about maintainer responsibilities and resources, see the [FINOS Maintainers Cheatsheet](https://community.finos.org/docs/finos-maintainers-cheatsheet).
 
