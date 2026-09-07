@@ -18,7 +18,7 @@
         <finos.cdm.version>7.0.0</finos.cdm.version>
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
-        <logback.version>1.4.14</logback.version>
+        <logback.version>1.6.3</logback.version>
         <guava.version>33.3.1-jre</guava.version>
         <jackson.version>2.22.1</jackson.version>
         <plexus-utils.version>3.6.1</plexus-utils.version>
