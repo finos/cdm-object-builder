@@ -20,7 +20,7 @@
         <guice.version>6.0.0</guice.version>
         <logback.version>1.4.14</logback.version>
         <guava.version>33.3.1-jre</guava.version>
-        <jackson.version>2.22.1</jackson.version>
+        <jackson.version>2.22.2</jackson.version>
         <plexus-utils.version>3.6.1</plexus-utils.version>
     </properties>
 
