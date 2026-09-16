@@ -1,6 +1,88 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Scheduling, grouping and ignore rules ported over from this repo's former dependabot.yml when it was replaced by Renovate, translated to Renovate's packageRules; kept here in `description` fields since plain JSON has no comments.",
   "extends": [
     "config:base"
+  ],
+  "timezone": "Europe/London",
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 9,
+  "packageRules": [
+    {
+      "description": "Maven: setup/pom.xml is the only reactor. Weekly on Monday",
+      "matchManagers": ["maven"],
+      "matchFileNames": ["setup/pom.xml"],
+      "schedule": ["* 6 * * 1"]
+    },
+    {
+      "description": "npm: the Angular app. Weekly on Monday",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["ui/package.json"],
+      "schedule": ["* 6 * * 1"]
+    },
+    {
+      "description": "GitHub Actions: monthly",
+      "matchManagers": ["github-actions"],
+      "schedule": ["* * 1 * *"]
+    },
+    {
+      "description": "CDM versions are bumped deliberately as part of release coordination, not by a bot.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["org.finos.cdm**"],
+      "enabled": false
+    },
+    {
+      "description": "plexus-utils is pinned in setup/pom.xml to fix a specific CVE and shouldn't move independently of that.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["org.codehaus.plexus:plexus-utils"],
+      "enabled": false
+    },
+    {
+      "description": "jackson-bom is kept off minor/major bumps entirely - only patch updates are allowed through.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["com.fasterxml.jackson**"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "xtext-dev-bom is kept off minor/major bumps entirely - only patch updates are allowed through.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["org.eclipse.xtext**"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "guava is kept off minor/major bumps entirely - only patch updates are allowed through.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["com.google.guava:guava"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "description": "Guice stays on major version 6 - minor/patch updates are fine.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["com.google.inject**"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "One PR for routine Maven minor/patch drift, excluding jackson/xtext/guava (see rules above) so their occasional patch update still lands standalone; majors still come through individually.",
+      "matchManagers": ["maven"],
+      "matchFileNames": ["setup/pom.xml"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": [
+        "!com.fasterxml.jackson**",
+        "!org.eclipse.xtext**",
+        "!com.google.guava:guava"
+      ],
+      "groupName": "maven-minor-and-patch"
+    },
+    {
+      "description": "One PR for routine npm minor/patch drift.",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["ui/package.json"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "npm-minor-and-patch"
+    }
   ]
 }
