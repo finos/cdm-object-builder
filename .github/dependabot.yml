@@ -30,7 +30,7 @@ updates:
         update-types:
           - version-update:semver-major
           - version-update:semver-minor
-      - dependency-name: org.eclipse.xtext:xtext-dev-bom
+      - dependency-name: org.eclipse.xtext*
         update-types:
           - version-update:semver-major
           - version-update:semver-minor
@@ -48,7 +48,7 @@ updates:
       maven-minor-and-patch:
         exclude-patterns:
           - com.fasterxml.jackson*
-          - org.eclipse.xtext:xtext-dev-bom
+          - org.eclipse.xtext*
           - com.google.guava:guava
         update-types:
           - minor
