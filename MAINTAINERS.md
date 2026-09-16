@@ -6,26 +6,26 @@ This file lists the maintainers of this repository.
 
 | GitHub Username | Name | Organization | Email (optional) |
 |----------------|------|--------------|------------------|
-| @ADaleISLA | *please add name* | *please add organization* |  |
-| @CDM-ReleaseManagement-AP | *please add name* | *please add organization* |  |
-| @CDM-ReleaseManagement-EC | *please add name* | *please add organization* |  |
-| @CDM-ReleaseManagement-LSG | *please add name* | *please add organization* |  |
-| @CDM-ReleaseManagement-OT | *please add name* | *please add organization* |  |
-| @JayasriR | *please add name* | *please add organization* |  |
-| @ReleaseManagement-BP | *please add name* | *please add organization* |  |
-| @chrisisla | Chris | ISLA |  |
-| @dshoneisda | *please add name* | *please add organization* |  |
-| @eacunaISDA | *please add name* | *please add organization* |  |
-| @gabriel-ICMA | *please add name* | *please add organization* |  |
+| @ADaleISLA | Adrian Dale | ISLA |  |
+| @CDM-ReleaseManagement-AP | Akash Patel | REGnosys |  |
+| @CDM-ReleaseManagement-EC | Erin Cassidy | REGnosys |  |
+| @CDM-ReleaseManagement-LSG | Lionel Smith-Gordon | REGnosys |  |
+| @CDM-ReleaseManagement-OT | Oscar Twomey | REGnosys |  |
+| @JayasriR | Jayasri Radhakrishnan | REGnosys |  |
+| @ReleaseManagement-BP | Benjamin Page | REGnosys |  |
+| @chrisisla | Chris Rayner | ISLA |  |
+| @dshoneisda | David Shone | ISDA |  |
+| @eacunaISDA | Eleonora Acuna | ISDA |  |
+| @gabriel-ICMA | Gabriel Callsen | ICMA |  |
 | @hugohills-regnosys | Hugo Hills | REGnosys |  |
-| @llynhiavu | *please add name* | *please add organization* |  |
-| @lolabeis | *please add name* | *please add organization* |  |
+| @llynhiavu | Lyteck Lynhiavu | ISDA |  |
+| @lolabeis | Leo Labeis | REGnosys |  |
 | @manel-martos | Manel Martos | TradeHeader S.L. |  |
 | @mgratacos | Marc Gratacos | TradeHeader |  |
-| @minesh-s-patel | *please add name* | *please add organization* |  |
-| @tabi5h | *please add name* | *please add organization* |  |
-| @tomhealey-icma | *please add name* | *please add organization* |  |
-| @valdensmith | *please add name* | *please add organization* |  |
+| @minesh-s-patel | Minesh Patel | Individual |  |
+| @tabi5h | Tabish Ahmed | ISDA |  |
+| @tomhealey-icma | Tom Healey | ICMA |  |
+| @valdensmith | Vernon AldenSmith | ISDA |  |
 
 For information about maintainer responsibilities and resources, see the [FINOS Maintainers Cheatsheet](https://community.finos.org/docs/finos-maintainers-cheatsheet).
 
