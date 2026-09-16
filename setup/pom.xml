@@ -21,7 +21,7 @@
         <logback.version>1.6.3</logback.version>
         <guava.version>33.3.1-jre</guava.version>
         <jackson.version>2.22.1</jackson.version>
-        <plexus-utils.version>3.6.1</plexus-utils.version>
+        <plexus-utils.version>3.6.2</plexus-utils.version>
     </properties>
 
     <dependencies>
