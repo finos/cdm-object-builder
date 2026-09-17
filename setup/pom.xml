@@ -22,6 +22,7 @@
         <guava.version>33.3.1-jre</guava.version>
         <jackson.version>2.22.2</jackson.version>
         <plexus-utils.version>3.6.1</plexus-utils.version>
+        <jsoup.version>1.23.2</jsoup.version>
     </properties>
 
     <dependencies>
@@ -103,6 +104,14 @@
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
                 <version>${plexus-utils.version}</version>
+            </dependency>
+            <!-- Transitive via cdm-java; pinned to fix CVE-2026-75140 (uncontrolled
+                 resource consumption in XmlTreeBuilder) and CVE-2026-71497 (Cleaner
+                 markup exposure with custom raw-text elements). -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
