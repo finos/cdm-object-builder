@@ -74,6 +74,12 @@
       "enabled": false
     },
     {
+      "description": "Guava publishes a -jre and an -android build of every release; this project runs on the JVM, so only offer -jre.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["com.google.guava:guava"],
+      "allowedVersions": "/-jre$/"
+    },
+    {
       "description": "Guice stays on major version 6 - minor/patch updates are fine.",
       "matchManagers": ["maven"],
       "matchPackageNames": ["com.google.inject**"],
