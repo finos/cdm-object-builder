@@ -38,8 +38,8 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.31",
-    "@angular/cli": "~20.3.31",
+    "@angular-devkit/build-angular": "^20.3.42",
+    "@angular/cli": "~20.3.42",
     "@angular/compiler-cli": "^20.3.34",
     "@types/jasmine": "^5.0.0",
     "@types/lodash-es": "^4.17.6",
@@ -53,5 +53,10 @@
     "prettier": "^3.5.2",
     "typescript": "^5.8.3",
     "webpack-bundle-analyzer": "^4.6.1"
+  },
+  "overrides": {
+    "sockjs": {
+      "uuid": "11.1.1"
+    }
   }
 }
