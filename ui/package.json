@@ -38,8 +38,8 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^20.3.31",
-    "@angular/cli": "~20.3.31",
+    "@angular-devkit/build-angular": "^20.3.42",
+    "@angular/cli": "~20.3.42",
     "@angular/compiler-cli": "^20.3.34",
     "@types/jasmine": "^5.0.0",
     "@types/lodash-es": "^4.17.6",
