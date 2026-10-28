@@ -7,6 +7,21 @@
   "timezone": "Europe/London",
   "labels": ["dependencies"],
   "prConcurrentLimit": 9,
+  "dependencyDashboard": true,
+  "minimumReleaseAge": "7 days",
+  "lockFileMaintenance": {
+    "description": "Refresh ui/package-lock.json transitives that in-range updates leave behind. Weekly, ahead of the Monday 6am dependency run.",
+    "enabled": true,
+    "schedule": ["before 7am on monday"]
+  },
+  "vulnerabilityAlerts": {
+    "description": "Security updates bypass the 7-day release-age hold and get their own label.",
+    "enabled": true,
+    "labels": ["security"],
+    "minimumReleaseAge": null
+  },
+  "osvVulnerabilityAlerts": true,
+  "reviewers": ["hugohills-regnosys", "manel-martos"],
   "packageRules": [
     {
       "description": "Maven: setup/pom.xml is the only reactor. Weekly on Monday",
@@ -64,6 +79,11 @@
       "matchPackageNames": ["com.google.inject**"],
       "matchUpdateTypes": ["major"],
       "enabled": false
+    },
+    {
+      "description": "Hold zone.js at 0.15 while on Angular 20; remove when upgrading Angular",
+      "matchPackageNames": ["zone.js"],
+      "allowedVersions": "~0.15.0"
     },
     {
       "description": "One PR for routine Maven minor/patch drift, excluding jackson/xtext/guava (see rules above) so their occasional patch update still lands standalone; majors still come through individually.",
