@@ -97,8 +97,21 @@ export class TabularViewComponent implements OnInit {
     if (!(data instanceof Object)) {
       return depth;
     }
+    if (Array.isArray(data)) {
+      let currentMaxDepth = depth;
+      for (const item of data) {
+        const currentDepth = this.getGridDepth(depth, item);
+        if (currentDepth > currentMaxDepth) {
+          currentMaxDepth = currentDepth;
+        }
+      }
+      return currentMaxDepth;
+    }
     let currentMaxDepth = depth;
-    for (const value of Object.values(data)) {
+    for (const [key, value] of Object.entries(data)) {
+      if (EXCLUDED_NODES.includes(key)) {
+        continue;
+      }
       const currentDepth = this.getGridDepth(depth + 1, value);
       if (currentDepth > currentMaxDepth) {
         currentMaxDepth = currentDepth;
@@ -181,7 +194,7 @@ export class TabularViewComponent implements OnInit {
 
     const xSpan =
       1 + this.directChildColumnDepthDiff(childGridItems, currentDepth);
-    const ySpan = childGridItems.filter(c => c.leaf).length;
+    const ySpan = Math.max(1, childGridItems.filter(c => c.leaf).length);
     let columnIndex = currentDepth;
 
     let gridDataItems = [
@@ -228,11 +241,14 @@ export class TabularViewComponent implements OnInit {
     const directChildGridItems = childGridItems.filter(
       c => c.depth === currentDepth + 1
     );
+    if (directChildGridItems.length === 0) {
+      return 0;
+    }
 
     const directChildColumnDepthDiffs = directChildGridItems.map(
       c => c.columnIndex - c.depth
     );
-    const directChildColumnDepthDiff = Math.max(...directChildColumnDepthDiffs);
+    const directChildColumnDepthDiff = Math.min(...directChildColumnDepthDiffs);
     return directChildColumnDepthDiff;
   }
 
