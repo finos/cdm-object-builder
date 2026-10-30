@@ -39,13 +39,20 @@ public class TypescriptObjectBuilderModelGenerator {
     private final List<RosettaModel> rosettaModels;
 
     public TypescriptObjectBuilderModelGenerator() throws MalformedURLException {
-        new RosettaStandaloneSetup().createInjectorAndDoEMFRegistration().injectMembers(this);
-        rosettaModels = loadModels();
+        this("cdm");
     }
 
-    private List<RosettaModel> loadModels() throws MalformedURLException {
+    public TypescriptObjectBuilderModelGenerator(String modelPathName) throws MalformedURLException {
+        new RosettaStandaloneSetup().createInjectorAndDoEMFRegistration().injectMembers(this);
+        rosettaModels = loadModels(modelPathName);
+    }
+
+    private List<RosettaModel> loadModels(String modelPathName) throws MalformedURLException {
         XtextResourceSet resourceSet = resourceSetProvider.get();
-        List<Path> rosettaFilePaths = ClassPathUtils.findRosettaFilePaths();
+        List<Path> rosettaFilePaths = findRosettaFilePaths(modelPathName);
+        if (rosettaFilePaths.isEmpty()) {
+            throw new IllegalArgumentException("No Rosetta model files found on classpath for model: " + modelPathName);
+        }
         for (Path rosettaFilePath : rosettaFilePaths) {
             resourceSet.getResource(URI.createURI(rosettaFilePath.toUri().toURL()
                     .toString(), true), true);
@@ -56,6 +63,15 @@ public class TypescriptObjectBuilderModelGenerator {
                 .flatMap(Collection::stream)
                 .map(RosettaModel.class::cast)
                 .collect(Collectors.toList());
+    }
+
+    public static List<Path> findRosettaFilePaths(String modelPathName) {
+        return ClassPathUtils.findPathsFromClassPath(
+                List.of("model", modelPathName + "/rosetta"),
+                ".*\\.rosetta",
+                Optional.empty(),
+                ClassPathUtils.class.getClassLoader()
+        );
     }
 
     public List<StructuredType> rootTypes() {
@@ -375,18 +391,19 @@ public class TypescriptObjectBuilderModelGenerator {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 3) {
-            System.out.println("Usage: TypescriptObjectBuilderModelGenerator <output file> <groupId> <modelName>");
+        if (args.length < 3 || args.length > 4) {
+            System.out.println("Usage: TypescriptObjectBuilderModelGenerator <output file> <groupId> <modelName> [modelPathName]");
 
-            System.out.println("E.G. >: TypescriptObjectBuilderModelGenerator ../ui/src/app/modules/builder/services/builder-api.model.ts org.finos.cdm cdm-java");
+            System.out.println("E.G. >: TypescriptObjectBuilderModelGenerator ../ui/src/app/modules/builder/services/builder-api.model.ts org.finos.cdm cdm-java [cdm]");
             System.exit(1);
         }
 
         var outputFile = args[0]; //../ui/src/app/modules/builder/services/builder-api.model.ts
         var groupId =  args[1]; //"org.finos.cdm";
         var modelName = args[2]; // "cdm-java";
+        var modelPathName = args.length == 4 ? args[3] : modelName.replaceFirst("-java$", "");
 
-        TypescriptObjectBuilderModelGenerator typescriptObjectBuilderModelGenerator = new TypescriptObjectBuilderModelGenerator();
+        TypescriptObjectBuilderModelGenerator typescriptObjectBuilderModelGenerator = new TypescriptObjectBuilderModelGenerator(modelPathName);
 
         List<StructuredType> structuredTypes = typescriptObjectBuilderModelGenerator.rootTypes();
 
