@@ -50097,20 +50097,6 @@ export const attributesJson = {
     },
     "metaField" : false
   }, {
-    "name" : "datedValue",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
-      "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
-    },
-    "description" : "The schedule must be absent.",
-    "cardinality" : {
-      "upperBound" : "0",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
     "name" : "unit",
     "type" : {
       "typeCategory" : "StructuredType",
@@ -50163,43 +50149,6 @@ export const attributesJson = {
     "description" : "Specifies the total quantity when the quantity itself is specified with a frequency.",
     "cardinality" : {
       "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "unit",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "UnitType",
-      "namespace" : "cdm.base.math",
-      "description" : "Defines the unit to be used for price, quantity, or other purposes"
-    },
-    "description" : "Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "value",
-    "type" : "number",
-    "description" : "The initial rate or amount, as the case may be. An initial rate of 5% would be represented as 0.05.",
-    "cardinality" : {
-      "upperBound" : "1",
-      "lowerBound" : "0"
-    },
-    "metaField" : false
-  }, {
-    "name" : "datedValue",
-    "type" : {
-      "typeCategory" : "StructuredType",
-      "name" : "DatedValue",
-      "namespace" : "cdm.base.math",
-      "description" : "Defines a date and value pair. This definition is used for varying rate or amount schedules, e.g. a notional amortisation or a step-up coupon schedule."
-    },
-    "description" : "The schedule of step date and value pairs. On each step date the associated step value becomes effective. A list of steps may be ordered in the document by ascending step date. An FpML document containing an unordered list of steps is still regarded as a conformant document.",
-    "cardinality" : {
-      "upperBound" : "*",
       "lowerBound" : "0"
     },
     "metaField" : false
