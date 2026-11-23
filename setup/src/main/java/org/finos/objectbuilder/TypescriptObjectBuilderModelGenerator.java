@@ -88,11 +88,18 @@ public class TypescriptObjectBuilderModelGenerator {
 
     private List<Attribute> getDataAttributes(Data data) {
         Data superType = data.getSuperType();
+        List<Attribute> allAttributes;
         if (superType == null) {
-            return data.getAttributes();
+            allAttributes = data.getAttributes();
+        } else {
+            List<Attribute> dataAttributes = getDataAttributes(superType);
+            allAttributes = Streams.concat(data.getAttributes().stream(), dataAttributes.stream()).collect(Collectors.toList());
         }
-        List<Attribute> dataAttributes = getDataAttributes(superType);
-        return Streams.concat(data.getAttributes().stream(), dataAttributes.stream()).collect(Collectors.toList());
+        Set<String> seenNames = new HashSet<>();
+        return allAttributes.stream()
+                .filter(attr -> seenNames.add(attr.getName()))
+                .filter(attr -> attr.getCard() == null || attr.getCard().isUnbounded() || attr.getCard().getSup() > 0)
+                .collect(Collectors.toList());
     }
 
     public List<ModelAttribute> getModelAttributeForType(Data type) {
